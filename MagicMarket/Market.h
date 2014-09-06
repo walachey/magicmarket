@@ -66,8 +66,6 @@ namespace MM
 		std::vector<ExpertAdvisor*> experts;
 		void loadConfig();
 
-
-		void updateTrade(Trade *trade);
 		friend class Stock;
 
 		// to notify agents

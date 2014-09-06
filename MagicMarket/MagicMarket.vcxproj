@@ -51,7 +51,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\MagicMarket\simpleini;..\..\MagicMarket\lwneuralnetplus\source;..\..\MagicMarket\quantlib\QuantLib\;D:\Users\David\forex\libzmq_\include;D:\Users\David\forex\boost_1_55_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;..\deps\simpleini;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
