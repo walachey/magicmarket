@@ -1,0 +1,402 @@
+# extends "layout.html"
+
+# block head
+<style>
+.tick
+{
+	width: 100%;
+	background-color: #ddeedd;
+	padding-left: 2em;
+	border: 1px dashed grey;
+	display: none;
+}
+
+.graph
+{
+	width: 100%;
+	min-height: 30em;
+	border: 10px solid black;
+}
+.infocontainer 
+{
+	margin-top: 5em;
+	width:100%;
+	border: 1px solid grey;
+	border-radius: 20px;
+}
+
+.heading
+{
+	width:100%;
+	height: 2em;
+	background-color:#335588;
+	color:#ffffff;
+	padding-left: 2em;
+}
+
+
+{{'#'}}openpositions
+{
+	float:left;
+	position:absolute;
+	margin-left:-25em;
+	width:20em;
+	padding-bottom: 1.5em;
+}
+
+{{'#'}}openpositions hr
+{
+	margin: 0px;
+}
+
+{{'#'}}openpositions table
+{
+	width: 100%;
+}
+
+td.success
+{
+	background-color: #00ff00;
+	font-weight: bold;
+}
+
+td.warning
+{
+	background-color: #ff0000;
+	font-weight: bold;
+}
+
+.ticket
+{
+	margin-left: 1em;
+	margin-right: 1em;
+	text-align: center;
+	padding-left: 1em;
+	padding-right: 1em;
+	font-variant: small-caps;
+	border: 1px dashed grey;
+}
+.ticketbuy
+{
+	background-color:#aaffaa;
+}
+
+.ticketsell
+{
+	background-color:#ffaaaa;
+}
+
+{{'#'}}experts
+{
+	float:right;
+	margin-right:-25em;
+	width:20em;
+	padding-bottom: 1.5em;
+	text-align: center;
+}
+
+.expert
+{
+	width: 9em;
+	box-shadow: 10px 10px 5px #888888;
+	border: 1px dashed grey;
+	margin: 0.5em;
+	margin-bottom: 2em;
+}
+
+.expert span
+{
+	float: left;
+	margin-bottom: -1em;
+	display: block;
+	width: 100%;
+	text-align: center;
+	font-family: cursive, fantasy;
+	font-style: oblique;
+}
+
+.expert .face
+{
+	width: 100%;
+	font-size: 7em;
+	text-align: center;
+}
+
+.expert .opinion
+{
+	margin-top: -1.5em;
+}
+
+.expertbubble
+{
+	position:absolute;
+	width: 9em;
+	height: 10em;
+	margin-left: 10em;
+	box-shadow: 10px 10px 5px #888888;
+	border: 1px solid lightgrey;
+	border-radius: 10px;
+	text-align: left;
+	padding-left: 0.5em;
+	background-color: #ffffff;
+}
+
+</style>
+
+
+
+<script type="text/javascript">
+$(document).ready(function()
+{
+	window.experts = [];
+	window.data_points = [];
+	prepareChart();
+	
+	window.eventOutputContainer = document.getElementById("tickercontents");
+	window.eventSource = new EventSource("/ticker");
+	
+	window.eventSource.onmessage = onNewData;
+	
+	// normal, buy, sell, idk lol
+	addExpert("frank", ["&#128559;", "&#128527;", "&#128530;", "&#128543;"]);
+	expertSay("frank", "ur a dick");
+	
+	addExpert("ajeet", ["&#128115;"]);
+});
+
+function getExpert(name)
+{
+	for (var i = 0, ii = window.experts.length; i < ii; ++i)
+	{
+		var expert = window.experts[i];
+		if (expert.name == name) return expert;
+	}
+	return null;
+}
+
+function expertSay(name, text)
+{
+	var expert = getExpert(name);
+	expert.element.children(".expertbubble").html(text);
+}
+
+function updateExpert(name, opinion, certainty)
+{
+	var what = "lol";
+	if (opinion < 0.0) what = "sell";
+	else if (opinion > 0.0) what = "buy";
+	
+	var howsure = ", idk";
+	if (certainty > 0.9) howsure = "!!!";
+	else if (certainty > 0.7) howsure = "!!";
+	else if (certainty > 0.5) howsure = "!";
+	else if (certainty > 0.3) howsure = "";
+	else if (certainty > 0.1) howsure = "?";
+	
+	var face = 0;
+	if (certainty < 0.1) face = 3;
+	else if (opinion > 0.0 && certainty > 0.3) face = 1;
+	else if (opinion < 0.0 && certainty > 0.3) face = 2;
+	
+	var expert = getExpert(name);
+	expert.opinion = opinion;
+	expert.certainty = certainty;
+	expert.element.children(".opinion").text(what + howsure);
+	expert.element.children(".face").html(expert.faces[face]);
+}
+
+function addExpert(name, faces)
+{
+	var div = '<div class="expert" id="exp_' +  name +'">';
+	div = div + '<div class="expertbubble">this is my good opinön</div>';
+	div = div + '<span>' + name + '</span>';
+	div = div + '<div class="face">' + faces[0] + '</div>';
+	div = div + '<div class="opinion">idk lol</div>';
+	div = div + '</div>';
+	$("#expertcontainer").append(div);
+	var expert = 
+	{
+		name: name,
+		faces: faces,
+		opinion: 0.0,
+		certainty: 0.0,
+		element: $("#exp_" + name),
+	};
+	window.experts.push(expert);
+}
+
+function onNewData(e)
+{	
+	// and add to chart
+	var parameters = e.data.split(" ");
+	
+	if (parameters[0] == "tick")
+	{
+		if (parameters[2] == "EURUSD")
+		{
+			var timestamp = parseInt(parameters[5]);
+			var date = new Date(timestamp*1000);
+			var mean = (parseFloat(parameters[3]) + parseFloat(parameters[4])) / 2.0;
+			var lowhigh = [parseFloat(parameters[3]), parseFloat(parameters[4])];
+			var point = mean;
+
+			window.data_points.push(point);	
+			var shift = false; //window.chart.series[0].data.length > 20;
+			window.chart.series[0].addPoint({x: date.getTime(), y: mean}, true, shift);
+			
+			if (Math.random() > 0.5)
+			{
+				var action = Math.random() - 0.5;
+				var certainty = Math.random();
+				updateExpert("frank", action, certainty);
+			}
+			if (false && Math.random() > 0.5)
+			{
+				var items = ["😅", "ಠ_ಠ", "😭", "😐", "☭", "☠", "°Д°"];
+				var last_point = window.chart.series[0].data[window.chart.series[0].data.length - 1];
+				var annotation = {
+					x: last_point.x,
+					title: items[Math.floor(Math.random()*items.length)],
+					text: "yolo"
+				};
+				window.chart.series[1].addPoint(annotation, true, false);
+			}
+		}
+	}
+	else if (parameters[0] == "orders")
+	{
+		$("#opencontainer").replaceWith('<table id="opencontainer">&nbsp;</table>');
+		var container = $("#opencontainer");
+		var data = JSON.parse(e.data.substring(e.data.indexOf("[")));
+
+		var len = data.length;
+		for (var i = 0; i < len; ++i)
+		{
+			var json = data[i];
+			
+			var type = "buy";
+			var symbol = "&#10169;";
+			var goodjob = "success";
+			
+			if (json.type == 1)
+			{
+				type = "sell";
+				symbol = "&#10167;";
+			}
+			if (json.profit < 0)
+				goodjob = "warning"
+			var div = '<tr class="ticket ticket' + type + '">';
+			div = div + "<td>" + symbol + type + "</td>";
+			div = div + "<td>" + json.pair + "</td>";
+			div = div + '<td class="' + goodjob + '">' + json.profit + "</td>";
+			div = div + '</tr>';
+			container.append(div);
+		}
+	}
+	else if (parameters[0] == "chat")
+	{
+		var len = parameters[0].length + parameters[1].length + 2;
+		expertSay(parameters[1], e.data.substring(len));
+	}
+	else // if not processed, just add to ticker
+	{
+		$(window.eventOutputContainer).prepend(
+		'<div class="tick">' + 
+		e.data +
+		'</div>'
+		);
+		$(window.eventOutputContainer).children().first().show("fade");
+		
+		var len = $(window.eventOutputContainer).children().length;
+		while (len-- > 10)
+			$(window.eventOutputContainer).children().eq(len).fadeOut(500, function(){$(this).remove();});
+	}
+}
+
+function prepareChart()
+{
+	window.chart = new Highcharts.StockChart({
+			chart: {
+				renderTo: 'graphcontainer',
+				//defaultSeriesType: 'spline',
+			},
+
+            rangeSelector : {
+                selected : 1,
+                inputEnabled: $('#graphcontainer').width() > 480
+            },
+
+            title : {
+                text : 'EURUSD Stock Price'
+            },
+
+            series : [{
+				id : 'dataseries',
+                name : 'EURUSD',
+                data : [],
+                tooltip: {
+                    valueDecimals: 2
+                }
+            },
+			{
+                type : 'flags',
+				onSeries : 'dataseries',
+                shape : 'circlepin',
+                width : 16
+			}
+			]
+        });
+}
+
+function prepareChartGRAPHAEL()
+{
+	var N = window.data_points.length;
+	if (N == 0) return;
+	var x_vals = Array.apply(null, {length: N}).map(Number.call, Number)
+	
+	$('#graphcontainer').replaceWith('<div class="graph" id="graphcontainer"></div>')
+	var chartContainer = $("#graphcontainer");
+	
+	var r = Raphael("graphcontainer");
+	var chart = r.linechart(10, 10, chartContainer.width() - 10, chartContainer.height()-30, [x_vals], [window.data_points],
+	{
+		nostroke: false,
+		axis: "0 0 1 1",
+		smooth: true, 
+		dash: "-"
+	});
+}
+
+</script>
+# endblock
+
+# block contents
+<div id="openpositions" class="infocontainer">
+<div class="heading"><h3>Open Trades</h3></div>
+<hr>
+<table id="opencontainer">&nbsp;</table>
+</div>
+
+<div id="experts" class="infocontainer">
+<div class="heading"><h3>Experts</h3></div>
+<hr>
+<table id="expertcontainer">&nbsp;</table>
+</div>
+
+<h1>Real Time Overview</h1>
+<h2 class="lead">Overview over money.<small> And making more money.</small></h2>
+
+<div class="graph" id="graphcontainer">
+graph goes here
+</div>
+<hr>
+<div class="infocontainer">
+	<div class="heading">
+	<h3>Ticker</h3>
+	</div>
+	<div id="tickercontents" style="width:100%;min-height:20em;">
+	<div class="tick">You are rich now, gratz</div>
+	</div>
+</div>
+<hr>
+# endblock
