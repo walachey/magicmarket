@@ -2,6 +2,10 @@
 
 # block head
 <style>
+.container
+{
+	width: 100%;
+}
 .tick
 {
 	width: 100%;
@@ -20,7 +24,6 @@
 .infocontainer 
 {
 	margin-top: 5em;
-	width:100%;
 	border: 1px solid grey;
 	border-radius: 20px;
 }
@@ -37,10 +40,6 @@
 
 {{'#'}}openpositions
 {
-	float:left;
-	position:absolute;
-	margin-left:-25em;
-	width:20em;
 	padding-bottom: 1.5em;
 }
 
@@ -88,9 +87,6 @@ td.warning
 
 {{'#'}}experts
 {
-	float:right;
-	margin-right:-25em;
-	width:20em;
 	padding-bottom: 1.5em;
 	text-align: center;
 }
@@ -101,10 +97,11 @@ td.warning
 	box-shadow: 10px 10px 5px #888888;
 	border: 1px dashed grey;
 	margin: 0.5em;
+	margin-left:-1em;
 	margin-bottom: 2em;
 }
 
-.expert span
+.expert > span
 {
 	float: left;
 	margin-bottom: -1em;
@@ -146,6 +143,12 @@ td.warning
 
 
 <script type="text/javascript">
+function htmlDecode(input){
+  var e = document.createElement('div');
+  e.innerHTML = input;
+  return e.childNodes[0].nodeValue;
+}
+
 $(document).ready(function()
 {
 	window.experts = [];
@@ -154,13 +157,10 @@ $(document).ready(function()
 	
 	window.eventOutputContainer = document.getElementById("tickercontents");
 	window.eventSource = new EventSource("/ticker");
-	
 	window.eventSource.onmessage = onNewData;
 	
 	// normal, buy, sell, idk lol
-	addExpert("frank", ["&#128559;", "&#128527;", "&#128530;", "&#128543;"]);
-	expertSay("frank", "ur a dick");
-	
+	addExpert("frank", ["&#128559;", "&#128527;", "&#128530;", "&#128543;"]);	
 	addExpert("ajeet", ["&#128115;"]);
 });
 
@@ -176,8 +176,15 @@ function getExpert(name)
 
 function expertSay(name, text)
 {
+	console.log(text);
 	var expert = getExpert(name);
-	expert.element.children(".expertbubble").html(text);
+	var bubble = expert.element.children(".expertbubble");
+	var len = bubble.children().length;
+	while (len-- > 1)
+		bubble.children().first().remove();
+	bubble.append("<div>" + text + "</div>");
+	
+	addAnnotation(expert.faces[0], text);
 }
 
 function updateExpert(name, opinion, certainty)
@@ -208,7 +215,7 @@ function updateExpert(name, opinion, certainty)
 function addExpert(name, faces)
 {
 	var div = '<div class="expert" id="exp_' +  name +'">';
-	div = div + '<div class="expertbubble">this is my good opinön</div>';
+	div = div + '<div class="expertbubble"><span>This is my good opinön:</span></div>';
 	div = div + '<span>' + name + '</span>';
 	div = div + '<div class="face">' + faces[0] + '</div>';
 	div = div + '<div class="opinion">idk lol</div>';
@@ -223,6 +230,18 @@ function addExpert(name, faces)
 		element: $("#exp_" + name),
 	};
 	window.experts.push(expert);
+}
+
+function addAnnotation(title, msg)
+{
+	var last_point = window.chart.series[0].data[window.chart.series[0].data.length - 1];
+	if (title[0] == "&") title = htmlDecode(title);
+	var annotation = {
+		x: last_point.x,
+		title: title,
+		text: msg
+	};
+	window.chart.series[1].addPoint(annotation, true, false);
 }
 
 function onNewData(e)
@@ -249,17 +268,6 @@ function onNewData(e)
 				var action = Math.random() - 0.5;
 				var certainty = Math.random();
 				updateExpert("frank", action, certainty);
-			}
-			if (false && Math.random() > 0.5)
-			{
-				var items = ["😅", "ಠ_ಠ", "😭", "😐", "☭", "☠", "°Д°"];
-				var last_point = window.chart.series[0].data[window.chart.series[0].data.length - 1];
-				var annotation = {
-					x: last_point.x,
-					title: items[Math.floor(Math.random()*items.length)],
-					text: "yolo"
-				};
-				window.chart.series[1].addPoint(annotation, true, false);
 			}
 		}
 	}
@@ -371,18 +379,21 @@ function prepareChartGRAPHAEL()
 # endblock
 
 # block contents
-<div id="openpositions" class="infocontainer">
+<div class="row">
+
+<div id="openpositions" class="col-xs-6 col-md-2 infocontainer">
 <div class="heading"><h3>Open Trades</h3></div>
 <hr>
 <table id="opencontainer">&nbsp;</table>
 </div>
 
-<div id="experts" class="infocontainer">
+<div id="experts" class="col-xs-6 col-md-2 infocontainer col-md-push-8">
 <div class="heading"><h3>Experts</h3></div>
 <hr>
 <table id="expertcontainer">&nbsp;</table>
 </div>
 
+<div class="col-xs-12 col-md-8 col-md-pull-2">
 <h1>Real Time Overview</h1>
 <h2 class="lead">Overview over money.<small> And making more money.</small></h2>
 
@@ -398,5 +409,6 @@ graph goes here
 	<div class="tick">You are rich now, gratz</div>
 	</div>
 </div>
-<hr>
+</div>
+</div>
 # endblock

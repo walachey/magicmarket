@@ -20,7 +20,10 @@ namespace MM
 		virtual void execute() = 0;
 		virtual void onNewTick(const std::string &currencyPair, const QuantLib::Date &date, const std::time_t &time) = 0;
 
+
 		void say(std::string);
+	private:
+		std::string lastMessage;
 	};
 
 };

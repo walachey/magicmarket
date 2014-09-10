@@ -25,15 +25,11 @@ namespace MM
 	{
 		return TimePeriod(this, start, end, &Tick::getMid);
 	}
-#include <cstdlib>
 
 	TimePeriod Stock::getTimePeriod(const std::time_t &time)
 	{
 		assert(sizeof(time) == 8);
-		//TimePeriod period(this, time, time, &Tick::getMid);
-		TimePeriod *tp = (TimePeriod*)std::calloc(1, sizeof(TimePeriod));
-		return *tp;
-		//return TimePeriod(nullptr, 0, 0, nullptr);
+		return TimePeriod(this, time, time, &Tick::getMid);
 	}
 
 	void Stock::receiveFreshTick(Tick tick)

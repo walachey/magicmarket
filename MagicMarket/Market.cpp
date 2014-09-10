@@ -225,7 +225,7 @@ namespace MM
 
 	void Market::parseMessage(const std::string &message)
 	{
-		std::cout << "received:\n\t" << message << std::endl;
+		//std::cout << "received:\n\t" << message << std::endl;
 
 		std::istringstream is(message);
 		std::string type, accountName;
@@ -255,7 +255,7 @@ namespace MM
 		else if (type == "orders")
 		{
 			// remove all (non virtual) trades
-			/*for (size_t i = 0; i < trades.size(); ++i)
+			for (size_t i = 0; i < trades.size(); ++i)
 			{
 				Trade *& trade = trades[i];
 				// if (trade.isVirtual()) continue;
@@ -264,10 +264,9 @@ namespace MM
 			}
 			trades.erase(std::remove(std::begin(trades), std::end(trades), nullptr), std::end(trades));
 			assert(trades.size() == 0); // for now
-			*/trades.clear();
 
 			// dummy trade
-			Trade *trade = new Trade();
+			/*Trade *trade = new Trade();
 			trade->currencyPair = "EURUSD";
 			trade->lotSize = 10.;
 			trade->orderPrice = 0.5;
@@ -275,7 +274,7 @@ namespace MM
 			trade->takeProfitPrice = 0.0;
 			trade->ticketID = 213214;
 			trades.push_back(trade);
-			return;
+			return;*/
 
 			// and fill with current trade data
 			std::string jsonString;

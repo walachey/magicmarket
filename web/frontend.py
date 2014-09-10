@@ -58,17 +58,19 @@ def debug():
 
 @app.route("/ticker")
 def subscribe():
-    def gen():
-        ticker = ZMQTicker("tcp://127.0.0.1:1986")
-        try:
-            while True:
-                result = ticker.get()
-                ev = ServerSentEvent(str(result))
-                yield ev.encode()
-        except GeneratorExit: # Or maybe use flask signals
-            pass
-
-    return Response(gen(), mimetype="text/event-stream")
+	def gen():
+		ticker = ZMQTicker("tcp://127.0.0.1:1986")
+		try:
+			while True:
+				result = ticker.get()
+				ev = ServerSentEvent(str(result))
+				yield ev.encode()
+		except GeneratorExit: # Or maybe use flask signals
+			pass
+	
+	response = Response(gen(), mimetype="text/event-stream")
+	#response.headers.add('content-length', "10000")
+	return response
 
 if __name__ == "__main__":
 	app.debug = True
