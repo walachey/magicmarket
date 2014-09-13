@@ -30,6 +30,7 @@
 #include "Stock.h"
 #include "TradingDay.h"
 
+
 int main (int argc, char *argv [])
 {
 	market.init();

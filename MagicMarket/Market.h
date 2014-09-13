@@ -46,6 +46,7 @@ namespace MM
 		std::vector<Trade*> &getOpenTrades() { return trades; };
 		Trade *newTrade(Trade trade);
 		void updateTrade(Trade *trade);
+		void closeTrade(Trade *trade);
 
 		void chat(std::string name, std::string message);
 
@@ -56,7 +57,7 @@ namespace MM
 
 		std::string getSaveFolderName() { return "saves"; }
 
-		void addEvent(Event e);
+		void addEvent(const Event &e);
 
 	private:
 		Account account;
@@ -69,7 +70,7 @@ namespace MM
 		friend class Stock;
 
 		// to notify agents
-		std::list<Event> events;
+		std::vector<Event> events;
 
 		// for the communication protocol
 		void *zmqContext;

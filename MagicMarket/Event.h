@@ -27,6 +27,9 @@ namespace MM
 		std::string currencyPair;
 		QuantLib::Date date;
 		std::time_t time;
+
+		bool operator==(const Event &other) const;
+		bool youngerThan(const Event &other) const;
 	};
 
 };

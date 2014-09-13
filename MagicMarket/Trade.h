@@ -27,6 +27,11 @@ namespace MM
 			T_SELL
 		} type;
 
+		// completes the trade data with saved information
+		std::string getSaveFileName();
+		void load();
+		void save();
+
 		static Trade Buy(std::string currencyPair, QuantLib::Decimal lotSize)
 		{
 			Trade trade;

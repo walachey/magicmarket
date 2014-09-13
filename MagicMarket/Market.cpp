@@ -73,8 +73,18 @@ namespace MM
 		std::cout << "..connected" << std::endl;
 	}
 
-	void Market::addEvent(Event e)
+	void Market::addEvent(const Event &e)
 	{
+		for (size_t i = 0, ii = events.size(); i < ii; ++i)
+		{
+			if (events[i] == e) return;
+			if (events[i].youngerThan(e))
+			{
+				events[i] = e;
+				return;
+			}
+			if (e.youngerThan(events[i])) return;
+		}
 		events.push_back(e);
 	}
 
@@ -110,10 +120,8 @@ namespace MM
 			}
 
 			// if new things happened, notify the experts
-			//for (Event &event : events)
-			for (std::list<Event>::iterator iter = events.begin(); iter != events.end(); ++iter)
+			for (Event &event : events)
 			{
-				Event &event = *iter;
 				switch (event.type)
 				{
 				case Event::Type::NEW_TICK:
@@ -178,6 +186,16 @@ namespace MM
 			" reset " << trade->ticketID <<
 			" " << trade->takeProfitPrice <<
 			" " << trade->stopLossPrice;
+		send(os.str());
+	}
+
+	void Market::closeTrade(Trade *trade)
+	{
+		assert(trade->ticketID != -1);
+
+		std::ostringstream os;
+		os << getCommandPrefix() <<
+			" unset " << trade->ticketID;
 		send(os.str());
 	}
 
@@ -259,6 +277,7 @@ namespace MM
 			{
 				Trade *& trade = trades[i];
 				// if (trade.isVirtual()) continue;
+				trade->save();
 				delete trade;
 				trades[i] = nullptr;
 			}
@@ -296,6 +315,8 @@ namespace MM
 				if (order["type"].int_value() == 0) trade->type = Trade::T_BUY;
 				else trade->type = Trade::T_SELL;
 				
+				trade->load();
+
 				trades.push_back(trade);
 			}
 

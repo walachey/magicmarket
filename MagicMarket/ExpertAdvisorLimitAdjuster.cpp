@@ -41,8 +41,8 @@ namespace MM
 			
 			TimePeriod pips = stock->getTimePeriod(time);
 			if (trade->type == Trade::T_BUY)
-				pips.setValueFunction(&Tick::getAsk);
-			else pips.setValueFunction(&Tick::getBid);
+				pips.setValueFunction(&Tick::getBid);
+			else pips.setValueFunction(&Tick::getAsk);
 
 			PossibleDecimal closePos = pips.getClose();
 			if (closePos == nullptr)
@@ -53,7 +53,7 @@ namespace MM
 
 			QuantLib::Decimal profitPips = *closePos - trade->orderPrice;
 			if (trade->type == Trade::T_SELL) profitPips = trade->orderPrice - *closePos;
-			if (profitPips > ONEPIP)
+			if (profitPips > 2.0 * ONEPIP)
 			{
 				assert(profitPips >= 0.0);
 				QuantLib::Decimal difference = 0.5 * profitPips;
@@ -62,17 +62,35 @@ namespace MM
 
 				bool improvement = trade->stopLossPrice == 0.0 || (
 					((trade->type == Trade::T_BUY) && (trade->stopLossPrice < stopLoss))
-					&& ((trade->type == Trade::T_SELL) && (trade->stopLossPrice > stopLoss)));
+					|| ((trade->type == Trade::T_SELL) && (trade->stopLossPrice > stopLoss)));
 				
 				if (improvement)
 				{
 					trade->stopLossPrice = stopLoss;
 					market.updateTrade(trade);
-					std::ostringstream os; os << "@" << trade->currencyPair << " updated: SL/" << stopLoss;
-					message = os.str();
+					std::ostringstream os; os << "@" << trade->currencyPair << "/" << *closePos << " set SL/" << stopLoss;
+					say(os.str());
 				}
 				else
 					++badTradeCount;
+			}
+
+			// now check enforcement of current limits
+			bool closeTrade = false;
+			if (trade->type == Trade::T_SELL && 
+				(((trade->stopLossPrice != 0.0) && ((*closePos - ONEPIP) > trade->stopLossPrice))
+				|| ((trade->takeProfitPrice != 0.0) && ((*closePos + ONEPIP) < trade->takeProfitPrice))))
+				closeTrade = true;
+			if (trade->type == Trade::T_BUY && 
+				(((trade->stopLossPrice != 0.0) && ((*closePos + ONEPIP) < trade->stopLossPrice))
+				|| ((trade->takeProfitPrice != 0.0) && ((*closePos - ONEPIP) > trade->takeProfitPrice))))
+				closeTrade = true;
+
+			if (closeTrade)
+			{
+				std::ostringstream os; os << "@" << trade->currencyPair << " Closing Trade! PIPS: " << int(profitPips / ONEPIP);
+				say(os.str());
+				market.closeTrade(trade);
 			}
 		}
 

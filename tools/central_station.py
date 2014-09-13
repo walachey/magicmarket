@@ -67,12 +67,6 @@ class MetaTraderBridge:
 		self.listen()
 		
 		if self.metatraders:
-			readers, writers, errors = select.select([], [], self.metatraders, 0.5)
-			if errors:
-				print "ERROR in socket:"
-				print str(errors)
-				self.onConnectionError(errors)
-			
 			self.receiveMessage()
 			if self.metatraders: # might have died
 				self.flushMessages()
@@ -81,7 +75,11 @@ class MetaTraderBridge:
 	def listen(self):
 		try:
 			metatrader, client_address = self.metatrader_listener.accept()
-			metatrader.settimeout(0.5)
+			metatrader.settimeout(0.05)
+			# we want speed over bandwidth
+			if not metatrader.getsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY):
+				metatrader.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+			
 			self.metatraders.append(metatrader)
 			# at this point, filters (for the client address) could be implemented
 		except socket.timeout:
@@ -96,7 +94,7 @@ class MetaTraderBridge:
 	# sends out all outgoing messages
 	def flushMessages(self):
 		assert self.metatraders
-		
+		error_traders = []
 		try:
 			while not self.messages_out.empty():
 				msg = self.messages_out.get(block=False)
@@ -106,13 +104,18 @@ class MetaTraderBridge:
 				# always make sure to null-terminate messages
 				msg = msg + '\00'
 				for metatrader in self.metatraders:
-					metatrader.sendall(msg)
+					try:
+						metatrader.sendall(msg)					
+					except:
+						error_traders.append(metatrader)
+						traceback.print_exc()
+						continue
 		except Queue.Empty:
 			return # ok
+		if error_traders:
+			self.onConnectionError(error_traders)
 		# except socket.timeout: # not ok
-		except:
-			self.onConnectionError()
-			traceback.print_exc()
+		
 	
 	def onConnectionError(self, error_traders):
 		for et in error_traders:
@@ -121,7 +124,7 @@ class MetaTraderBridge:
 	
 	def isReadyToReceive(self):
 		# check if socket is ready for reading
-		readers, writers, errors = select.select(self.metatraders, [], [], 0.5)
+		readers, writers, errors = select.select(self.metatraders, [], [], 0.05)
 		if not readers:
 			return False
 		return True
@@ -129,14 +132,14 @@ class MetaTraderBridge:
 	# gets a new message part from meta trader
 	def receiveMessage(self):
 		assert self.metatraders
-		readers, writers, errors = select.select(self.metatraders, [], [], 0.5)
-		buffer_size = 8
-		
+		readers, writers, errors = select.select(self.metatraders, [], self.metatraders, 0.05)
+		if errors:
+			self.onConnectionError(errors)
+		buffer_size = 1
+		error_traders = []
 		for metatrader in readers:
 			try:
 				while True: # allow for a stream of data
-					if not self.isReadyToReceive():
-						return
 					data = metatrader.recv(buffer_size)
 					if not data: # I don't know how this can happen
 						self.onConnectionError([metatrader])
@@ -158,13 +161,15 @@ class MetaTraderBridge:
 
 			except socket.timeout:
 				# that's alright
-				return
+				continue
 			except:
 				print "ERROR when receiving:"
 				traceback.print_exc()
-				self.onConnectionError([metatrader]) # something happened
-				return
-	
+				error_traders.append(metatrader)
+				continue
+				
+		if error_traders:
+			self.onConnectionError(error_traders)
 	# public interface
 	def isConnected(self):
 		return self.metatraders
@@ -232,15 +237,17 @@ if __name__ == "__main__":
 	print "Running..."
 	while True:
 		metatrader.execute()
-
+		received = False
+		
 		while metatrader.hasMessage():
+			received = True
 			msg = metatrader.getMessage()
-			#station.sendMessage(msg)
-			print "Msg: '" + msg + "'"
+			station.sendMessage(msg)
+			print "<- MT: " + msg
 		if metatrader.isConnected():
 			#metatrader.sendMessage("cmd|David|testuid maek magic")
 			pass
-		faketick = True
+		faketick = False
 		if faketick:
 			low = 0.75 + random.random()
 			high = low + random.random() / 2
@@ -250,9 +257,18 @@ if __name__ == "__main__":
 			station.sendMessage('orders David [{"pair":"EURGBP", "type":"0", "ticket_id":"40564195", "open_price":"0.81645", "take_profit":"0", "stop_loss":"0", "open_time":"1400194678","expire_time":"0", "lots":"0.01", "profit":"-38.39"}, {"pair":"EURUSD", "type":"0", "ticket_id":"40760473", "open_price":"1.37141", "take_profit":"0", "stop_loss":"0", "open_time":"1400669257", "expire_time":"0", "lots":"0.01", "profit":"-76.44"}, {"pair":"EURUSD", "type":"0", "ticket_id":"42929335", "open_price":"1.35437", "take_profit":"0", "stop_loss":"0", "open_time":"1405512967", "expire_time":"0", "lots":"0.01", "profit":"-59.4"}]')
 			time.sleep(4.0)
 		msg = ""
-		msg = station.getMessage()
-		if msg:
-			print "ZMQ says:\n\t" + msg
+		while True:
+			msg = station.getMessage()
+			if not msg: break
+		
+			received = True
+			
+			# pipe to metatrader
+			metatrader.sendMessage(msg)
+			print "-> MT: " + msg
+			
+			# route to all connected things, too
 			station.sendMessage(msg)
 		print ".",
-		time.sleep(0.5)
+		if not received:
+			time.sleep(0.05)

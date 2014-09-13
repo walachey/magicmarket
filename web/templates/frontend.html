@@ -176,7 +176,6 @@ function getExpert(name)
 
 function expertSay(name, text)
 {
-	console.log(text);
 	var expert = getExpert(name);
 	var bubble = expert.element.children(".expertbubble");
 	var len = bubble.children().length;
@@ -184,7 +183,8 @@ function expertSay(name, text)
 		bubble.children().first().remove();
 	bubble.append("<div>" + text + "</div>");
 	
-	addAnnotation(expert.faces[0], text);
+	if (text[0] == "@")
+		addAnnotation(expert.faces[0], text);
 }
 
 function updateExpert(name, opinion, certainty)
@@ -234,8 +234,18 @@ function addExpert(name, faces)
 
 function addAnnotation(title, msg)
 {
-	var last_point = window.chart.series[0].data[window.chart.series[0].data.length - 1];
 	if (title[0] == "&") title = htmlDecode(title);
+	var last_point = window.chart.series[0].data[window.chart.series[0].data.length - 1];
+	var last_annotation;
+	if (window.chart.series[1].data.length)
+	{
+		last_annotation = window.chart.series[1].data[window.chart.series[1].data.length - 1];
+		if ((last_annotation.x == last_point.x) && (last_annotation.title == title))
+		{
+			last_annotation.text = last_annotation.text + "<br>" + msg;
+			return;
+		}
+	}	
 	var annotation = {
 		x: last_point.x,
 		title: title,
@@ -258,10 +268,18 @@ function onNewData(e)
 			var mean = (parseFloat(parameters[3]) + parseFloat(parameters[4])) / 2.0;
 			var lowhigh = [parseFloat(parameters[3]), parseFloat(parameters[4])];
 			var point = mean;
-
-			window.data_points.push(point);	
-			var shift = false; //window.chart.series[0].data.length > 20;
-			window.chart.series[0].addPoint({x: date.getTime(), y: mean}, true, shift);
+			var x = date.getTime();
+			var last_point = window.chart.series[0].data[window.chart.series[0].data.length - 1];
+			if (last_point && (last_point.x == x))
+			{
+				last_point.update(mean);
+			}
+			else
+			{
+				//window.data_points.push(point);	
+				var shift = false; //window.chart.series[0].data.length > 20;
+				window.chart.series[0].addPoint({x: x, y: mean}, true, shift);
+			}
 			
 			if (Math.random() > 0.5)
 			{
@@ -305,6 +323,10 @@ function onNewData(e)
 	{
 		var len = parameters[0].length + parameters[1].length + 2;
 		expertSay(parameters[1], e.data.substring(len));
+	}
+	else if (parameters[0] == "account")
+	{
+		$("#accountdata").html(e.data);
 	}
 	else // if not processed, just add to ticker
 	{
@@ -394,7 +416,7 @@ function prepareChartGRAPHAEL()
 </div>
 
 <div class="col-xs-12 col-md-8 col-md-pull-2">
-<h1>Real Time Overview</h1>
+<h1 style="width:100%">Real Time Overview<small id="accountdata" class="pull-right"></small></h1>
 <h2 class="lead">Overview over money.<small> And making more money.</small></h2>
 
 <div class="graph" id="graphcontainer">
