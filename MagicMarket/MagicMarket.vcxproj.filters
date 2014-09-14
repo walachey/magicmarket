@@ -5,6 +5,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="Source Files\lwneuralnetplus">
+      <UniqueIdentifier>{113de003-8b04-4d32-abb3-e26753541a37}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Market.cpp">
@@ -46,6 +49,30 @@
     <ClCompile Include="Helpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ExpertAdvisorAtama.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\lwneuralnetplus\source\iomanage.cc">
+      <Filter>Source Files\lwneuralnetplus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\lwneuralnetplus\source\iomanagebinary.cc">
+      <Filter>Source Files\lwneuralnetplus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\lwneuralnetplus\source\iomanagelwnnfann.cc">
+      <Filter>Source Files\lwneuralnetplus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\lwneuralnetplus\source\network.cc">
+      <Filter>Source Files\lwneuralnetplus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\lwneuralnetplus\source\shuffle.cc">
+      <Filter>Source Files\lwneuralnetplus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\lwneuralnetplus\source\sigmoidal.cc">
+      <Filter>Source Files\lwneuralnetplus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\lwneuralnetplus\source\trainer.cc">
+      <Filter>Source Files\lwneuralnetplus</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -61,6 +88,25 @@
     <ClInclude Include="thirdparty\json11.hpp" />
     <ClInclude Include="Helpers.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExpertAdvisorAtama.h" />
+    <ClInclude Include="..\deps\lwneuralnetplus\source\iomanage.h">
+      <Filter>Source Files\lwneuralnetplus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\deps\lwneuralnetplus\source\iomanagebinary.h">
+      <Filter>Source Files\lwneuralnetplus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\deps\lwneuralnetplus\source\iomanagelwnnfann.h">
+      <Filter>Source Files\lwneuralnetplus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\deps\lwneuralnetplus\source\network.h">
+      <Filter>Source Files\lwneuralnetplus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\deps\lwneuralnetplus\source\shuffle.h">
+      <Filter>Source Files\lwneuralnetplus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\deps\lwneuralnetplus\source\trainer.h">
+      <Filter>Source Files\lwneuralnetplus</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -208,4 +208,11 @@ namespace MM
 		return true;
 	}
 
+	bool TimePeriod::shift(int seconds)
+	{
+		startTime += seconds;
+		endTime += seconds;
+		return true;
+	}
+
 }; // namespace MM

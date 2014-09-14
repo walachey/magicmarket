@@ -65,7 +65,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalLibraryDirectories>..\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ws2_32.lib;QuantLib-vc110-mt-sgd.lib;lwneuralnetplus.lib;libzmq.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;QuantLib-vc110-mt-sgd.lib;libzmq.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -90,9 +90,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\deps\lwneuralnetplus\source\iomanage.cc" />
+    <ClCompile Include="..\deps\lwneuralnetplus\source\iomanagebinary.cc" />
+    <ClCompile Include="..\deps\lwneuralnetplus\source\iomanagelwnnfann.cc" />
+    <ClCompile Include="..\deps\lwneuralnetplus\source\network.cc" />
+    <ClCompile Include="..\deps\lwneuralnetplus\source\shuffle.cc" />
+    <ClCompile Include="..\deps\lwneuralnetplus\source\sigmoidal.cc" />
+    <ClCompile Include="..\deps\lwneuralnetplus\source\trainer.cc" />
     <ClCompile Include="Account.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="ExpertAdvisor.cpp" />
+    <ClCompile Include="ExpertAdvisorAtama.cpp" />
     <ClCompile Include="ExpertAdvisorLimitAdjuster.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="main.cpp" />
@@ -105,9 +113,16 @@
     <ClCompile Include="TradingDay.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\deps\lwneuralnetplus\source\iomanage.h" />
+    <ClInclude Include="..\deps\lwneuralnetplus\source\iomanagebinary.h" />
+    <ClInclude Include="..\deps\lwneuralnetplus\source\iomanagelwnnfann.h" />
+    <ClInclude Include="..\deps\lwneuralnetplus\source\network.h" />
+    <ClInclude Include="..\deps\lwneuralnetplus\source\shuffle.h" />
+    <ClInclude Include="..\deps\lwneuralnetplus\source\trainer.h" />
     <ClInclude Include="Account.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="ExpertAdvisor.h" />
+    <ClInclude Include="ExpertAdvisorAtama.h" />
     <ClInclude Include="ExpertAdvisorLimitAdjuster.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Market.h" />

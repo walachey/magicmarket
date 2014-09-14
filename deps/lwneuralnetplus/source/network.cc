@@ -23,6 +23,14 @@
 
 #include "network.h"
 
+using std::vector;
+using std::ostream;
+using std::runtime_error;
+using std::string;
+using std::cerr;
+using std::stringstream;
+using std::endl;
+
 /****************************************
  * Compile-time options
  ****************************************/

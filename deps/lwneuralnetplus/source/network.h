@@ -29,7 +29,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <vector>
-using namespace std;
+
 
 /*! \brief Class implementing a feed forward neural network with backpropagation learning
  */
@@ -79,7 +79,7 @@ public:
    *
    * If layers.size() < 2 throws a runtime_error exception
    */
-    network (int activ, vector<int> layers);
+    network (int activ, std::vector<int> layers);
 
 
   /*!\brief Constructor. Load network from  file.
@@ -708,7 +708,7 @@ private:
   float nudown;
 
   /* operator<< is declared friend because it needs to access private fields */
-  friend ostream & operator<< (ostream &, const network &);
+  friend std::ostream & operator<< (std::ostream &, const network &);
 
 };
 
@@ -720,7 +720,7 @@ private:
  * Usage:
  * os << net;
  */
-ostream & operator<< (ostream & os, const network & net);
+std::ostream & operator<< (std::ostream & os, const network & net);
 
 
 /****************************************

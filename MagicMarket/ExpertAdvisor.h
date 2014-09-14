@@ -17,7 +17,7 @@ namespace MM
 
 		virtual std::string getName() = 0;
 
-		virtual void execute() = 0;
+		virtual void execute(const std::time_t &secondsSinceStart) {};
 		virtual void onNewTick(const std::string &currencyPair, const QuantLib::Date &date, const std::time_t &time) = 0;
 
 

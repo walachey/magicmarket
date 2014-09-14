@@ -14,14 +14,6 @@ namespace MM
 	{
 	}
 
-
-
-	void ExpertAdvisorLimitAdjuster::execute()
-	{
-
-	}
-
-
 	void ExpertAdvisorLimitAdjuster::onNewTick(const std::string &currencyPair, const QuantLib::Date &date, const std::time_t &time)
 	{
 		std::string message = "";

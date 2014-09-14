@@ -98,11 +98,16 @@ namespace MM
 
 	void Market::run()
 	{
+		// sleep duration between loops
 		std::chrono::milliseconds sleepDuration(100);
+		// for the experts' execute() callback
+		std::time_t startTime = time(0), lastExecutionTime(0);
+		// for debugging & testing
 		bool onlyOnce = false;
 		
 		while (true)
 		{
+			// receive new data over the ZMQ interface
 			std::string data;
 			do
 			{
@@ -125,10 +130,8 @@ namespace MM
 				switch (event.type)
 				{
 				case Event::Type::NEW_TICK:
-					//for (ExpertAdvisor *&expert : experts)
-					for (std::vector<ExpertAdvisor*>::iterator iter = experts.begin(); iter != experts.end(); ++iter)
+					for (ExpertAdvisor *&expert : experts)
 					{
-						ExpertAdvisor *&expert = *iter;
 						expert->onNewTick(event.currencyPair, event.date, event.time);
 					}
 
@@ -142,6 +145,16 @@ namespace MM
 			}
 			events.clear();
 
+			// allow all experts to execute if they want to
+			std::time_t timePassed = time(0) - startTime;
+			if (timePassed != lastExecutionTime)
+			{
+				lastExecutionTime = timePassed;
+				for (ExpertAdvisor *&expert : experts)
+				{
+					expert->execute(timePassed);
+				}
+			}
 			std::this_thread::sleep_for(sleepDuration);
 		}
 	}
