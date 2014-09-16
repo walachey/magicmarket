@@ -86,14 +86,18 @@ class Stock:
 stocks = []
 
 # get all stock folders
-stock_path = "../MagicMarket2/run/saves"
-today_filename = "2014-9-4.ticks"
+MON = 9
+DAY = 11
+stock_path = "../run/saves"
+today_filename = "2014-" + str(MON) + "-" + str(DAY) + ".ticks"
 for root, dirs, files in os.walk(stock_path):
 	for dir in dirs:
 		stock = Stock(dir)
-		stock.load(stock_path + "/" + dir + "/" + today_filename)
-		stocks.append(stock)
-	
+		try:
+			stock.load(stock_path + "/" + dir + "/" + today_filename)
+			stocks.append(stock)
+		except:
+			print "Invalid stock: " + dir
 # sanity check - stocks + tick count
 print "####### LOADED STOCKS #######"
 print "#NAME#\t#TICKS#\t#FROM#\t\t\t#TO#"
@@ -103,8 +107,8 @@ for stock in stocks:
 # create good sequences for the dates
 TIME_ZONE_OFFSET = timedelta(0, hours=3)
 timestep = timedelta(0, 10)
-start_time = datetime(2014, 9, 4, 10, 0, 0) + TIME_ZONE_OFFSET
-end_time = datetime(2014, 9, 4, 16, 0, 0) + TIME_ZONE_OFFSET
+start_time = datetime(2014, MON, DAY, 10, 0, 0) + TIME_ZONE_OFFSET
+end_time = datetime(2014, MON, DAY, 16, 0, 0) + TIME_ZONE_OFFSET
 
 print "-------------------------------------------"
 print "SEQUENCE FROM " + str(start_time) + " TO " + str(end_time)
@@ -215,4 +219,4 @@ ax.set_yticklabels(labels)
 ax.scatter(markers_min[0], markers_min[1])
 ax.scatter(markers_max[0], markers_max[1], c="r")
 plt.tight_layout()
-plt.savefig("heatmap2.png")
+plt.savefig("heatmap-" + str(MON) + "-" + str(DAY) + ".png")
