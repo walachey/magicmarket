@@ -49,6 +49,7 @@ namespace MM
 		void closeTrade(Trade *trade);
 
 		void chat(std::string name, std::string message);
+		void updateMood(std::string name, float mood);
 
 		void init();
 		void run();

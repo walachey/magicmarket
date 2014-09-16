@@ -22,8 +22,11 @@ namespace MM
 
 
 		void say(std::string);
+		// >0 -> buy; <0 -> sell
+		void setMood(float mood, float certainty);
 	private:
 		std::string lastMessage;
+		float lastMood, lastCertainty;
 	};
 
 };

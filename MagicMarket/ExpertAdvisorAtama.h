@@ -18,7 +18,7 @@
 		Two hidden layers. One |currency pairs| * 2 neurons smaller. Another one |currency pairs| * 4 neurons smaller.
 		Prior to the "normal" training, the hidden layers have been trained to resemble the original output.
 	Output:
-		Buy Sell
+		Buy Sell NoAction
 
 	Training:
 		First setup: train hidden layers to resemble original input; then train net normally.
@@ -27,6 +27,8 @@
 
 namespace MM
 {
+	class Stock;
+
 	class ExpertAdvisorAtama : public ExpertAdvisor, private iomanage
 	{
 	public:
@@ -41,6 +43,13 @@ namespace MM
 		// implement methods to server as a trainer for the neural networks
 		virtual void info_from_file(const std::string & filename, int *npatterns, int *ninput, int *noutput);
 		virtual void load_patterns(const std::string & filename, float **inputs, float **targets, int ninput, int noutput, int npatterns);
+
+	private:
+		std::vector<std::string> stocksToEvaluate;
+		std::vector<QuantLib::Date> daysForInitialTraining;
+		void prepareTrainingData();
+		std::vector<float> getInputVector(std::vector<Stock*> &stocks, const std::time_t &time);
+		std::vector<float> getInputVectorForStock(Stock *stock, const std::time_t &time);
 	};
 
 };

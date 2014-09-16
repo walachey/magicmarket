@@ -212,6 +212,12 @@ namespace MM
 		send(os.str());
 	}
 
+	void Market::updateMood(std::string name, float mood, float certainty)
+	{
+		std::ostringstream os; os << "mood " << name << " " << mood << " " << certainty;
+		send(os.str());
+	}
+
 	void Market::chat(std::string name, std::string msg)
 	{
 		std::ostringstream os;
