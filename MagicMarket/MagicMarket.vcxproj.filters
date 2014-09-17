@@ -49,7 +49,6 @@
     <ClCompile Include="Helpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExpertAdvisorDumbo.cpp">
     <ClCompile Include="ExpertAdvisorAtama.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -80,6 +79,9 @@
     <ClCompile Include="ExpertAdvisorBroker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ExpertAdvisorDumbo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -96,7 +98,6 @@
     <ClInclude Include="Helpers.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="ExpertAdvisorDumbo.h" />
     <ClInclude Include="ExpertAdvisorAtama.h" />
     <ClInclude Include="..\deps\lwneuralnetplus\source\iomanage.h">
       <Filter>Source Files\lwneuralnetplus</Filter>
@@ -118,5 +119,8 @@
     </ClInclude>
     <ClInclude Include="ExpertAdvisorRSI.h" />
     <ClInclude Include="ExpertAdvisorBroker.h" />
+    <ClInclude Include="ExpertAdvisorDumbo.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

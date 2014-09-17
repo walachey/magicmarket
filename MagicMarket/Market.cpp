@@ -19,6 +19,7 @@ namespace filesystem = std::tr2::sys;
 #include "ExpertAdvisorLimitAdjuster.h"
 #include "ExpertAdvisorRSI.h"
 #include "ExpertAdvisorBroker.h"
+#include "ExpertAdvisorDumbo.h"
 
 #include "thirdparty/json11.hpp"
 
@@ -96,6 +97,7 @@ namespace MM
 		setupConnection();
 
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRSI()));
+		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorDumbo()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorLimitAdjuster()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorBroker()));
 	}

@@ -20,7 +20,7 @@ namespace MM
 
 
 
-	void ExpertAdvisorDumbo::execute(const std::time_t &secondsSinceStart, const QuantLib::Date &date, const std::time_t &time)
+	void ExpertAdvisorDumbo::execute(const std::time_t &secondsSinceStart, const std::time_t &time)
 	{
 		//30 min frequency
 		if (secondsSinceStart % (60 * 30) != 0)
@@ -38,9 +38,12 @@ namespace MM
 		}
 
 		Stock *stock = market.getStock(currencyPair);
-		TimePeriod pips = stock->getTimePeriod(time - 30, time);
+		TimePeriod pips = stock->getTimePeriod(time - 30 * ONEMINUTE, time);
+		PossibleDecimal close(pips.getClose()), open(pips.getOpen());
 
-		int iOpenCloseDif = pips.getClose - pips.getOpen;
+		if (!close || !open) return;
+
+		QuantLib::Decimal iOpenCloseDif = *open - *close;
 
 		if (iOpenCloseDif > 0.00120)
 		{
