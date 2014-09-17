@@ -42,13 +42,13 @@ namespace MM
 
 		int iOpenCloseDif = pips.getClose - pips.getOpen;
 
-		if (iOpenCloseDif > 0.0120)
+		if (iOpenCloseDif > 0.00120)
 		{
 			Trade *trade = market.newTrade(Trade::Sell(currencyPair, 0.01));
 			say("New trade: I just sold " + currencyPair);
 		}
 
-		if (iOpenCloseDif < -0.0120)
+		if (iOpenCloseDif < -0.00120)
 		{
 			Trade *trade = market.newTrade(Trade::Buy(currencyPair, 0.01));
 			say("New trade: I just bought " + currencyPair);
