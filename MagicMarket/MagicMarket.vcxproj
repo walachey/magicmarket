@@ -93,6 +93,7 @@
     <ClCompile Include="Account.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="ExpertAdvisor.cpp" />
+    <ClCompile Include="ExpertAdvisorDumbo.cpp" />
     <ClCompile Include="ExpertAdvisorLimitAdjuster.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="main.cpp" />
@@ -108,6 +109,7 @@
     <ClInclude Include="Account.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="ExpertAdvisor.h" />
+    <ClInclude Include="ExpertAdvisorDumbo.h" />
     <ClInclude Include="ExpertAdvisorLimitAdjuster.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Market.h" />
