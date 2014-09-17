@@ -26,6 +26,10 @@ namespace MM
 	}
 
 	
+	int Tick::getOutputBitSize()
+	{
+		return sizeof(uint8_t)+sizeof(time)+sizeof(bid)+sizeof(ask);
+	}
 
 	// this expects a binary stream
 	std::ostream& operator<< (std::ostream &out, MM::Tick &tick)

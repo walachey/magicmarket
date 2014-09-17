@@ -49,7 +49,7 @@ namespace MM
 		void closeTrade(Trade *trade);
 
 		void chat(std::string name, std::string message);
-		void updateMood(std::string name, float mood);
+		void updateMood(std::string name, float mood, float certainty);
 
 		void init();
 		void run();
@@ -59,7 +59,7 @@ namespace MM
 		std::string getSaveFolderName() { return "saves"; }
 
 		void addEvent(const Event &e);
-
+		std::vector<ExpertAdvisor*> &getExperts() { return experts; };
 	private:
 		Account account;
 

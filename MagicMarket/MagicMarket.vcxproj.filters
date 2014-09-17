@@ -73,6 +73,12 @@
     <ClCompile Include="..\deps\lwneuralnetplus\source\trainer.cc">
       <Filter>Source Files\lwneuralnetplus</Filter>
     </ClCompile>
+    <ClCompile Include="ExpertAdvisorRSI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpertAdvisorBroker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -108,5 +114,7 @@
     <ClInclude Include="..\deps\lwneuralnetplus\source\trainer.h">
       <Filter>Source Files\lwneuralnetplus</Filter>
     </ClInclude>
+    <ClInclude Include="ExpertAdvisorRSI.h" />
+    <ClInclude Include="ExpertAdvisorBroker.h" />
   </ItemGroup>
 </Project>

@@ -34,19 +34,23 @@ namespace MM
 		template<typename T> std::vector<T> derive(const std::vector<T> &values)
 		{
 			std::vector<T> returnValues;
-			returnValue.reserve(values.size() - 1);
+			returnValues.reserve(values.size() - 1);
 
 			for (size_t i = 1; i < values.size(); ++i)
 			{
 				T diff = values[i] - values[i - 1];
-				returnValues.append(diff);
+				returnValues.push_back(diff);
 			}
 			return returnValues;
 		}
 
 		template<typename T> T sum(const std::vector<T> &values)
 		{
-			return std::accumulate(values.begin(), values.end(), 0);
+			return std::accumulate(values.begin(), values.end(), (T)0.0);
 		}
+
+		template std::vector<QuantLib::Decimal> derive<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
+
+		template QuantLib::Decimal sum<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
 	};
 };

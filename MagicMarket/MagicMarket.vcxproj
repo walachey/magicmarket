@@ -101,7 +101,9 @@
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="ExpertAdvisor.cpp" />
     <ClCompile Include="ExpertAdvisorAtama.cpp" />
+    <ClCompile Include="ExpertAdvisorBroker.cpp" />
     <ClCompile Include="ExpertAdvisorLimitAdjuster.cpp" />
+    <ClCompile Include="ExpertAdvisorRSI.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Market.cpp" />
@@ -123,7 +125,9 @@
     <ClInclude Include="Event.h" />
     <ClInclude Include="ExpertAdvisor.h" />
     <ClInclude Include="ExpertAdvisorAtama.h" />
+    <ClInclude Include="ExpertAdvisorBroker.h" />
     <ClInclude Include="ExpertAdvisorLimitAdjuster.h" />
+    <ClInclude Include="ExpertAdvisorRSI.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Market.h" />
     <ClInclude Include="Stock.h" />

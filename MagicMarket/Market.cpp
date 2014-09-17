@@ -17,6 +17,8 @@ namespace filesystem = std::tr2::sys;
 #include "TradingDay.h"
 #include "ExpertAdvisor.h"
 #include "ExpertAdvisorLimitAdjuster.h"
+#include "ExpertAdvisorRSI.h"
+#include "ExpertAdvisorBroker.h"
 
 #include "thirdparty/json11.hpp"
 
@@ -93,7 +95,9 @@ namespace MM
 		loadConfig();
 		setupConnection();
 
+		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorLimitAdjuster()));
+		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorBroker()));
 	}
 
 	void Market::run()
@@ -102,6 +106,7 @@ namespace MM
 		std::chrono::milliseconds sleepDuration(100);
 		// for the experts' execute() callback
 		std::time_t startTime = time(0), lastExecutionTime(0);
+		std::time_t lastTickTime = 0;
 		// for debugging & testing
 		bool onlyOnce = false;
 		
@@ -127,6 +132,7 @@ namespace MM
 			// if new things happened, notify the experts
 			for (Event &event : events)
 			{
+				lastTickTime = std::max(lastTickTime, event.time);
 				switch (event.type)
 				{
 				case Event::Type::NEW_TICK:
@@ -147,12 +153,12 @@ namespace MM
 
 			// allow all experts to execute if they want to
 			std::time_t timePassed = time(0) - startTime;
-			if (timePassed != lastExecutionTime)
+			if ((timePassed != lastExecutionTime) && (lastTickTime != 0))
 			{
 				lastExecutionTime = timePassed;
 				for (ExpertAdvisor *&expert : experts)
 				{
-					expert->execute(timePassed);
+					expert->execute(timePassed, lastTickTime);
 				}
 			}
 			std::this_thread::sleep_for(sleepDuration);
@@ -167,7 +173,7 @@ namespace MM
 	Trade *Market::newTrade(Trade trade)
 	{
 		Trade *accepted = new Trade(trade);
-		trades.push_back(accepted);
+		//trades.push_back(accepted);
 
 		int tradeType = -1;
 
@@ -187,7 +193,7 @@ namespace MM
 			" " << accepted->lotSize;
 		send(os.str());
 
-		return accepted;
+		return nullptr;
 	}
 
 	void Market::updateTrade(Trade *trade)

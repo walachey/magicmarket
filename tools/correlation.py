@@ -87,7 +87,7 @@ stocks = []
 
 # get all stock folders
 MON = 9
-DAY = 11
+DAY = 17
 stock_path = "../run/saves"
 today_filename = "2014-" + str(MON) + "-" + str(DAY) + ".ticks"
 for root, dirs, files in os.walk(stock_path):

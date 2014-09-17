@@ -5,7 +5,8 @@ namespace MM
 {
 	ExpertAdvisor::ExpertAdvisor()
 	{
-		lastMood = 0.0;
+		lastMood = 0.0f;
+		lastCertainty = 0.0f;
 	}
 
 
