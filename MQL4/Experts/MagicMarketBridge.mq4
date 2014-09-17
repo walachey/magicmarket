@@ -39,36 +39,39 @@ int socketIsConnected()
 string socketReceive()
 {
 	if (bridgeSocket == -1) return "";
-	int bufLen = 32; 
-	string message;
-	int errorValue = sock_receive(bridgeSocket, bufLen, message);
-	if (errorValue == 0) return "";
-	
-	if (errorValue < 0)
+	while (True)
 	{
-	   socketCleanup();
-	   return "";
-	}
-	
-	// check if messsage is complete (null-terminated)
-	int terminationPosition = -1;
-	for (int i = 0; i < bufLen; ++i)
-	{
-		if (StringGetChar(message, i) != '\0') continue;
-		terminationPosition = i;
-		break;
-	}
-	
-	int oldLength = StringLen(socketReceiveBuffer);
-
-	StringAdd(socketReceiveBuffer, message);
-	
-	if (terminationPosition != -1)
-	{
-		int position = oldLength + terminationPosition;
-		message = StringSubstr(socketReceiveBuffer, 0, position);
-		socketReceiveBuffer = StringSubstr(socketReceiveBuffer, position + 1, StringLen(socketReceiveBuffer)); 
-		return message;
+   	int bufLen = 1; 
+   	string message;
+   	int errorValue = sock_receive(bridgeSocket, bufLen, message);
+   	if (errorValue == 0) return "";
+   	
+   	if (errorValue < 0)
+   	{
+   	   socketCleanup();
+   	   return "";
+   	}
+   	
+   	// check if messsage is complete (null-terminated)
+   	int terminationPosition = -1;
+   	for (int i = 0; i < bufLen; ++i)
+   	{
+   		if (StringGetChar(message, i) != '\0') continue;
+   		terminationPosition = i;
+   		break;
+   	}
+   	
+   	int oldLength = StringLen(socketReceiveBuffer);
+      //Print ("STAT: " + socketReceiveBuffer + " += " + message);
+   	StringAdd(socketReceiveBuffer, message);
+   	
+   	if (terminationPosition != -1)
+   	{
+   		int position = oldLength + terminationPosition;
+   		message = StringSubstr(socketReceiveBuffer, 0, position);
+   		socketReceiveBuffer = StringSubstr(socketReceiveBuffer, position + 1, StringLen(socketReceiveBuffer)); 
+   		return message;
+   	}
 	}
 	return "";
 }
@@ -253,6 +256,7 @@ int executeCommands()
    //       string message2 = s_recv(listener);
    //
    string message2 = socketReceive();
+
    //message2 = "cmd|David|11234 test test";
    if (message2 == "" || message2 == 0) return 0; 
    if (StringLen(message2) <= 3) return 1;

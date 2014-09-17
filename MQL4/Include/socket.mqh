@@ -29,7 +29,7 @@ string inet_ntoa2(int addr)
 	return mql4_mysql_ansi2unicode(inet_ntoa(addr));
 }
 
-#define RECV_BUFFER_SIZE 8
+#define RECV_BUFFER_SIZE 1
 
 int err = 0;
 int err(int code) {
@@ -68,7 +68,7 @@ int sock_close(int sock) {
 int sock_receive(int msgsock, int buffer_size, string &outString) {
    outString = "";
    int Buffer[RECV_BUFFER_SIZE];
-   int retval = recv(msgsock, Buffer, buffer_size, 0);
+   int retval = recv(msgsock, Buffer, 1, 0);
    if (retval == SOCKET_ERROR && WSAGetLastError() == WSAEWOULDBLOCK) return 0;
    
    if (retval == SOCKET_ERROR) {
