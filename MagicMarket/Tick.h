@@ -41,6 +41,7 @@ namespace MM
 
 		friend std::ostream& operator<< (std::ostream &out, MM::Tick &tick);
 		friend std::istream& operator>> (std::istream &in, MM::Tick &tick);
+		int getOutputBitSize();
 	};
 
 	std::ostream& operator<< (std::ostream &out, MM::Tick &tick);

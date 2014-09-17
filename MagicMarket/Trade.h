@@ -22,7 +22,7 @@ namespace MM
 
 		int32_t ticketID;
 
-		enum {
+		enum Type {
 			T_BUY,
 			T_SELL
 		} type;

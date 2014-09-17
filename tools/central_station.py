@@ -25,8 +25,7 @@ class MetaTraderBridge:
 	messages_in = None
 	# messages going TO meta trader
 	messages_out = None
-	# the current message, not yet terminated by NULL
-	current_message_in = None
+	
 	
 	##
 	# management
@@ -36,12 +35,13 @@ class MetaTraderBridge:
 	metatrader_listener = None
 	# the connection socket to metatrader
 	metatraders = None
-	
+	# every metatrader might have a partial message
+	current_messages_in = None
 	def __init__(self):
 		self.messages_in = Queue.Queue()
 		self.messages_out = Queue.Queue()
-		self.current_message_in = ""
 		self.metatraders = []
+		self.current_messages_in = {}
 	
 	def setup(self):
 		print "Creating the MetaTrader TCP server..."
@@ -79,7 +79,7 @@ class MetaTraderBridge:
 			# we want speed over bandwidth
 			if not metatrader.getsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY):
 				metatrader.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-			
+			self.current_messages_in[metatrader] = ""
 			self.metatraders.append(metatrader)
 			# at this point, filters (for the client address) could be implemented
 		except socket.timeout:
@@ -119,6 +119,7 @@ class MetaTraderBridge:
 	
 	def onConnectionError(self, error_traders):
 		for et in error_traders:
+			self.current_messages_in[et] = None
 			self.metatraders.remove(et)
 		print "Metatrader disconnected. Now " + str(len(self.metatraders))
 	
@@ -138,6 +139,7 @@ class MetaTraderBridge:
 		buffer_size = 1
 		error_traders = []
 		for metatrader in readers:
+			current_msg = self.current_messages_in[metatrader]
 			try:
 				while True: # allow for a stream of data
 					data = metatrader.recv(buffer_size)
@@ -147,15 +149,15 @@ class MetaTraderBridge:
 
 					# check if this terminates a message
 					terminating_position = data.find('\00')
-					old_message_len = len(self.current_message_in)
+					old_message_len = len(current_msg)
 					
-					self.current_message_in += data
+					current_msg += data
 					
 					# new complete message?
 					if terminating_position != -1:
 						truncation_position = old_message_len + terminating_position
-						complete_message = self.current_message_in[:truncation_position]
-						self.current_message_in = self.current_message_in[truncation_position+1:]
+						complete_message = current_msg[:truncation_position]
+						current_msg = current_msg[truncation_position+1:]
 						# add the new message to the queue
 						self.messages_in.put(complete_message)
 
@@ -167,6 +169,8 @@ class MetaTraderBridge:
 				traceback.print_exc()
 				error_traders.append(metatrader)
 				continue
+			finally:
+				self.current_messages_in[metatrader] = current_msg
 				
 		if error_traders:
 			self.onConnectionError(error_traders)

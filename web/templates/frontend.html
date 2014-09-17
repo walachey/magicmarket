@@ -160,8 +160,11 @@ $(document).ready(function()
 	window.eventSource.onmessage = onNewData;
 	
 	// normal, buy, sell, idk lol
-	addExpert("frank", ["&#128559;", "&#128527;", "&#128530;", "&#128543;"]);	
+	addExpert("karl", ["&#128559;", "&#128527;", "&#128530;", "&#128543;"]);	
 	addExpert("ajeet", ["&#128115;"]);
+	addExpert("atama", ["&#x1f64b;", "&#128582;", "&#128581;", "&#x1f647;"]);	
+	addExpert("lika", ["&#x1f4b1;", "&#x1f4c8;", "&#x1f4c9;", "&#x1f4a4;"]);	
+	addExpert("dumbo", ["&#x1f4b8;", "&#x1f44d;", "&#x1f44e;", "&#x1f440;"]); // x1f4b8, x1f445
 });
 
 function getExpert(name)
@@ -240,6 +243,9 @@ function addAnnotation(title, msg)
 	if (window.chart.series[1].data.length)
 	{
 		last_annotation = window.chart.series[1].data[window.chart.series[1].data.length - 1];
+		console.log ("Try to say-----");
+		console.log (last_annotation.x);
+		console.log (last_point.x);
 		if ((last_annotation.x == last_point.x) && (last_annotation.title == title))
 		{
 			last_annotation.text = last_annotation.text + "<br>" + msg;
@@ -278,16 +284,15 @@ function onNewData(e)
 			{
 				//window.data_points.push(point);	
 				var shift = false; //window.chart.series[0].data.length > 20;
-				window.chart.series[0].addPoint({x: x, y: mean}, true, shift);
-			}
-			
-			if (Math.random() > 0.5)
-			{
-				var action = Math.random() - 0.5;
-				var certainty = Math.random();
-				updateExpert("frank", action, certainty);
+				window.chart.series[0].addPoint([x, mean], true, shift);
 			}
 		}
+	}
+	else if (parameters[0] == "mood")
+	{
+		var mood = parseFloat(parameters[2]);
+		var certainty = parseFloat(parameters[3]);
+		updateExpert(parameters[1], mood, certainty);
 	}
 	else if (parameters[0] == "orders")
 	{
@@ -366,7 +371,8 @@ function prepareChart()
                 data : [],
                 tooltip: {
                     valueDecimals: 2
-                }
+                },
+				turboThreshold : 0
             },
 			{
                 type : 'flags',

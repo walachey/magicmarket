@@ -17,6 +17,8 @@ namespace filesystem = std::tr2::sys;
 #include "TradingDay.h"
 #include "ExpertAdvisor.h"
 #include "ExpertAdvisorLimitAdjuster.h"
+#include "ExpertAdvisorRSI.h"
+#include "ExpertAdvisorBroker.h"
 
 #include "thirdparty/json11.hpp"
 
@@ -93,16 +95,24 @@ namespace MM
 		loadConfig();
 		setupConnection();
 
+		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorLimitAdjuster()));
+		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorBroker()));
 	}
 
 	void Market::run()
 	{
+		// sleep duration between loops
 		std::chrono::milliseconds sleepDuration(100);
+		// for the experts' execute() callback
+		std::time_t startTime = time(0), lastExecutionTime(0);
+		std::time_t lastTickTime = 0;
+		// for debugging & testing
 		bool onlyOnce = false;
 		
 		while (true)
 		{
+			// receive new data over the ZMQ interface
 			std::string data;
 			do
 			{
@@ -122,13 +132,12 @@ namespace MM
 			// if new things happened, notify the experts
 			for (Event &event : events)
 			{
+				lastTickTime = std::max(lastTickTime, event.time);
 				switch (event.type)
 				{
 				case Event::Type::NEW_TICK:
-					//for (ExpertAdvisor *&expert : experts)
-					for (std::vector<ExpertAdvisor*>::iterator iter = experts.begin(); iter != experts.end(); ++iter)
+					for (ExpertAdvisor *&expert : experts)
 					{
-						ExpertAdvisor *&expert = *iter;
 						expert->onNewTick(event.currencyPair, event.date, event.time);
 					}
 
@@ -142,6 +151,16 @@ namespace MM
 			}
 			events.clear();
 
+			// allow all experts to execute if they want to
+			std::time_t timePassed = time(0) - startTime;
+			if ((timePassed != lastExecutionTime) && (lastTickTime != 0))
+			{
+				lastExecutionTime = timePassed;
+				for (ExpertAdvisor *&expert : experts)
+				{
+					expert->execute(timePassed, lastTickTime);
+				}
+			}
 			std::this_thread::sleep_for(sleepDuration);
 		}
 	}
@@ -154,7 +173,7 @@ namespace MM
 	Trade *Market::newTrade(Trade trade)
 	{
 		Trade *accepted = new Trade(trade);
-		trades.push_back(accepted);
+		//trades.push_back(accepted);
 
 		int tradeType = -1;
 
@@ -174,7 +193,7 @@ namespace MM
 			" " << accepted->lotSize;
 		send(os.str());
 
-		return accepted;
+		return nullptr;
 	}
 
 	void Market::updateTrade(Trade *trade)
@@ -196,6 +215,12 @@ namespace MM
 		std::ostringstream os;
 		os << getCommandPrefix() <<
 			" unset " << trade->ticketID;
+		send(os.str());
+	}
+
+	void Market::updateMood(std::string name, float mood, float certainty)
+	{
+		std::ostringstream os; os << "mood " << name << " " << mood << " " << certainty;
 		send(os.str());
 	}
 

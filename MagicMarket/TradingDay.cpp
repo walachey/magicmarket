@@ -43,6 +43,9 @@ namespace MM
 			if (ticks.back().time == tick.time)
 			{
 				ticks.back() = tick;
+				// overwrite the old tick in the savefile..
+				getSaveFile().seekp(-tick.getOutputBitSize(), std::ios_base::cur);
+				getSaveFile() << tick << std::flush;
 				return;
 			}
 		}
@@ -81,7 +84,7 @@ namespace MM
 		if (saveFile) return *saveFile;
 
 		std::string filename = getSavePath();
-		saveFile = new std::fstream(filename.c_str(), std::ios_base::out | std::ios_base::binary | std::ios_base::app);
+		saveFile = new std::fstream(filename.c_str(), std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::app);
 
 		return *saveFile;
 	}

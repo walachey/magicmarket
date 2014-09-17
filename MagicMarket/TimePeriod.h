@@ -20,7 +20,7 @@ namespace MM
 	class TimePeriod
 	{
 	public:
-		TimePeriod(Stock *stock_, const std::time_t &startTime_, const std::time_t &endTime_, QuantLib::Decimal(Tick::*valueFunction_)());
+		TimePeriod(Stock *stock_, const std::time_t &startTime_, const std::time_t &endTime_, QuantLib::Decimal(Tick::*valueFunction_)() = nullptr);
 		TimePeriod(const TimePeriod &other);
 		~TimePeriod();
 
@@ -30,6 +30,11 @@ namespace MM
 		// seconds can be negative or positive
 		bool expandStartTime(int seconds);
 		bool expandEndTime(int seconds);
+		// shifts the whole time period to the right (positive) or left (negative)
+		bool shift(int seconds);
+		// sets the time period to point to another stock
+		bool setStock(std::string currencyPair);
+		bool setStock(Stock *stock);
 
 		// accessors
 		PossibleDecimal getClose();
@@ -40,6 +45,9 @@ namespace MM
 		int getMaximumSecondsBetweenTicks();
 
 		std::vector<double> toVector(int secondsInterval);
+
+		std::time_t getStartTime() const { return startTime; }
+		std::time_t getEndTime() const { return endTime; }
 
 	private:
 		QuantLib::Decimal (Tick::*valueFunction)();

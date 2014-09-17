@@ -2,6 +2,7 @@
 #include "Tick.h"
 #include "Stock.h"
 #include "TradingDay.h"
+#include "Market.h"
 
 #include <assert.h>
 #include <algorithm>
@@ -205,6 +206,26 @@ namespace MM
 		std::time_t newTime = endTime + seconds;
 		if (newTime < startTime) return false;
 		endTime = newTime;
+		return true;
+	}
+
+	bool TimePeriod::shift(int seconds)
+	{
+		startTime += seconds;
+		endTime += seconds;
+		return true;
+	}
+
+	bool TimePeriod::setStock(std::string currencyPair)
+	{
+		Stock *s = market.getStock(currencyPair);
+		if (s == nullptr) return false;
+		return setStock(s);
+	}
+
+	bool TimePeriod::setStock(Stock *stock)
+	{
+		this->stock = stock;
 		return true;
 	}
 

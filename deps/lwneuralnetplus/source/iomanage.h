@@ -15,7 +15,11 @@
  * 
  */
 #include <stdexcept>
-using namespace std;
+#include <string>
+#include <vector>
+//using namespace std;
+using std::string;
+using std::vector;
 
 /*!\brief This is an abstract class which declares some methods 
  *        to be implemented by a iomanager.
