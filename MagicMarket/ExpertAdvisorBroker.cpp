@@ -100,12 +100,12 @@ namespace MM
 
 		Trade trade;
 		trade.currencyPair = currencyPair;
-		trade.lotSize = 0.1;
+		trade.lotSize = 0.014;
 		trade.type = type;
 		trade.orderPrice = *close;
 		market.newTrade(trade);
 
-		std::ostringstream os; os << "Executed " << action << " !!";
+		std::ostringstream os; os << "@" << currencyPair << " executed " << action << " !!";
 		say(os.str());
 	}
 };

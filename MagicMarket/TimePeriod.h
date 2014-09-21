@@ -48,7 +48,7 @@ namespace MM
 
 		std::time_t getStartTime() const { return startTime; }
 		std::time_t getEndTime() const { return endTime; }
-
+		std::time_t getDuration() const { return endTime - startTime; }
 	private:
 		QuantLib::Decimal (Tick::*valueFunction)();
 		Stock *stock;

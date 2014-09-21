@@ -25,8 +25,8 @@ namespace MM
 		Stock *stock = market.getStock(currencyPair);
 		if (!stock) return;
 
-		const int rsiPeriodLength = 14;
-		const int rsiTimespans[] = { 5 * ONEMINUTE, 10 * ONEMINUTE };
+		const int rsiPeriodLength = 28;
+		const int rsiTimespans[] = { 1 * ONEMINUTE, 5 * ONEMINUTE };
 		double rsiValues[] = { 0.0, 0.0 };
 		const int timespanCount = 2;
 		int validRSIEntries = 0;
@@ -35,7 +35,6 @@ namespace MM
 		{
 			const int &timespan = rsiTimespans[timespanIndex];
 			double winSum(0.0), lossSum(0.0);
-			int winCount(0), lossCount(0);
 			const int timeStart = time - rsiPeriodLength * timespan;
 			std::vector<QuantLib::Decimal> wins, losses;
 			wins.reserve(rsiPeriodLength);
@@ -55,22 +54,27 @@ namespace MM
 
 			winSum = Math::sum(wins);
 			lossSum = Math::sum(losses);
-			winCount = wins.size();
-			lossCount = losses.size();
+			int winCount = wins.size();
+			int lossCount = losses.size();
+			int totalObersvations = derivation.size();
+			if (totalObersvations == 0) continue;
+			if (!winCount && !lossCount) continue;
 
-			QuantLib::Decimal avgWin(winSum);
-			if (winCount != 0) winSum /= (QuantLib::Decimal)winCount;
-			QuantLib::Decimal avgLoss(lossSum);
-			if (lossCount != 0) lossSum /= (QuantLib::Decimal)lossCount;
+			QuantLib::Decimal avgWin(winSum / (QuantLib::Decimal)totalObersvations);
+			QuantLib::Decimal avgLoss(lossSum / (QuantLib::Decimal)totalObersvations);
 
-			QuantLib::Decimal sum = avgWin + std::abs(avgLoss);
-			QuantLib::Decimal RS = 0;
-			if (sum != 0.0) RS = avgWin / sum;
+			QuantLib::Decimal RS = avgWin / std::abs(avgLoss);
 
-			rsiValues[timespanIndex] = QuantLib::Decimal(100) - 
-					(QuantLib::Decimal(100)
+			QuantLib::Decimal RSI = QuantLib::Decimal(100) -
+				(QuantLib::Decimal(100)
 				/ (QuantLib::Decimal(1) + RS));
-			if (rsiValues[timespanIndex] != 0.0)
+			
+			if (avgWin == avgLoss) RSI = 50.0; // f.e. if both are 0
+			else if (avgWin == 0.0) RSI = 0.0;
+			else if (avgLoss == 0.0) RSI = 100.0;
+
+			rsiValues[timespanIndex] = RSI;
+			if (RSI != 0.0)
 				++validRSIEntries;
 
 			assert((rsiValues[timespanIndex] >= 0.0) && (rsiValues[timespanIndex] <= 100.0));
@@ -86,16 +90,17 @@ namespace MM
 
 		QuantLib::Decimal margin = 30.0;
 
+		market.updateParameter("RSI", avgRSI);
+
 		if (validRSIEntries > 0)
 		{
 			if (avgRSI > (100.0 - margin))
 				return setMood(-1.0, (avgRSI - (100.0 - margin)) / margin);
 			if (avgRSI < (margin))
 				return setMood(+1.0, (1.0 - (avgRSI / margin)));
-			std::ostringstream os; os << "RSI is " << std::setprecision(3) << avgRSI;
-			say(os.str());
 		}
-		setMood(0.0, 0.0);
+		setMood(0.0, 0.25);
+		
 	}
 
 };

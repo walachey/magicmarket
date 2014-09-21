@@ -5,6 +5,7 @@
 #include <ctime>
 #include <chrono>
 #include <thread>
+#include <iomanip>
 
 #include <filesystem>
 namespace filesystem = std::tr2::sys;
@@ -107,7 +108,7 @@ namespace MM
 		// sleep duration between loops
 		std::chrono::milliseconds sleepDuration(100);
 		// for the experts' execute() callback
-		std::time_t startTime = time(0), lastExecutionTime(0);
+		std::time_t startTime = (0), lastExecutionTime(0);
 		std::time_t lastTickTime = 0;
 		// for debugging & testing
 		bool onlyOnce = false;
@@ -127,7 +128,7 @@ namespace MM
 			
 			if (!onlyOnce)
 			{
-				//MM::Trade::Buy("EURUSD", 0.01);
+				//newTrade(MM::Trade::Sell("EURUSD", 0.01));
 				onlyOnce = true;
 			}
 
@@ -154,7 +155,8 @@ namespace MM
 			events.clear();
 
 			// allow all experts to execute if they want to
-			std::time_t timePassed = time(0) - startTime;
+			if (startTime == 0) startTime = lastTickTime;
+			std::time_t timePassed = lastTickTime - startTime;
 			if ((timePassed != lastExecutionTime) && (lastTickTime != 0))
 			{
 				lastExecutionTime = timePassed;
@@ -223,6 +225,12 @@ namespace MM
 	void Market::updateMood(std::string name, float mood, float certainty)
 	{
 		std::ostringstream os; os << "mood " << name << " " << mood << " " << certainty;
+		send(os.str());
+	}
+
+	void Market::updateParameter(std::string name, double value)
+	{
+		std::ostringstream os; os << "par " << name << " " << std::setprecision(3) << value;
 		send(os.str());
 	}
 
@@ -377,7 +385,7 @@ namespace MM
 			}
 			assert(errorValue >= 0);
 		}
-		std::cout << "SENT:\n\t" << data << std::endl;
+		// std::cout << "SENT:\n\t" << data << std::endl;
 
 		zmq_msg_close(&msg);
 	}

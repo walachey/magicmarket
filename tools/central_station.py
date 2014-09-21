@@ -120,7 +120,10 @@ class MetaTraderBridge:
 	def onConnectionError(self, error_traders):
 		for et in error_traders:
 			self.current_messages_in[et] = None
-			self.metatraders.remove(et)
+			try:
+				self.metatraders.remove(et)
+			except:
+				print "ERROR when removing Metatrader from list!"
 		print "Metatrader disconnected. Now " + str(len(self.metatraders))
 	
 	def isReadyToReceive(self):

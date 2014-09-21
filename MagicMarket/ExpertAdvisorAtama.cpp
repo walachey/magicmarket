@@ -2,6 +2,8 @@
 
 #include <ql/time/date.hpp>
 
+#include <random>
+
 #include "Stock.h"
 #include "Trade.h"
 #include "Market.h"
@@ -13,7 +15,15 @@ namespace MM
 	ExpertAdvisorAtama::ExpertAdvisorAtama()
 	{
 		stocksToEvaluate = { "EURUSD", "USDDKK", "USDCHF", "EURCAD", "EURAUD", "EURJPY", "AUDCHF" };
-		daysForInitialTraining = { QuantLib::Date(15, (QuantLib::Month)(9 + 1), 2014), QuantLib::Date(12, (QuantLib::Month)(9 + 1), 2014), QuantLib::Date(11, (QuantLib::Month)(9 + 1), 2014) };
+		daysForInitialTraining = { 
+			QuantLib::Date(11, (QuantLib::Month)(9 + 1), 2014),
+			QuantLib::Date(12, (QuantLib::Month)(9 + 1), 2014),
+			QuantLib::Date(15, (QuantLib::Month)(9 + 1), 2014),
+			QuantLib::Date(16, (QuantLib::Month)(9 + 1), 2014),
+			QuantLib::Date(17, (QuantLib::Month)(9 + 1), 2014),
+			QuantLib::Date(18, (QuantLib::Month)(9 + 1), 2014)
+			
+		};
 
 		// flush log file
 		std::fstream log("saves/ANN.log", std::ios_base::out | std::ios_base::trunc);
@@ -106,6 +116,37 @@ namespace MM
 			}
 			log << "Data Minutes:\t" << totalSeconds / 60 << std::endl;
 
+
+			const int sampleCount = 2000;
+			std::random_device rd;
+			std::default_random_engine randomEngine(rd());
+			std::uniform_int_distribution<int> randomSecond(0, totalSeconds);
+
+			for (int sampleNumber = 0; sampleNumber < sampleCount; ++sampleNumber)
+			{
+				int second = randomSecond(randomEngine);
+
+				// figure out time period that contains the second
+				int currentSecond = 0;
+				TimePeriod *period = nullptr;
+
+				for (TimePeriod &toCheck : dataPeriods)
+				{
+					int duration = toCheck.getDuration();
+					currentSecond += duration;
+					if (currentSecond < second) continue;
+					period = &toCheck;
+					break;
+				}
+				assert(period);
+
+				// we now have a random period to take a sample from
+				std::time_t duration = period->getDuration();
+				assert(duration > 30 * ONEMINUTE);
+				std::time_t randomSampleTime = std::uniform_int_distribution<int>(30 * ONEMINUTE, duration)(randomEngine);
+
+				// now get the input vector for that time & day
+			}
 
 		}
 		catch (const char * s)

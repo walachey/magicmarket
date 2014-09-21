@@ -38,7 +38,8 @@ namespace MM
 		// add new day for the tick?
 		if (!tradingDays.count(date))
 		{
-			tradingDays[date] = new TradingDay(date, this);
+			TradingDay *day = getTradingDay(date, true);
+			assert(day);
 		}
 		tradingDays[date]->receiveFreshTick(tick);
 	}

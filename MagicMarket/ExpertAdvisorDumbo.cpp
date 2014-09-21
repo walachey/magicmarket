@@ -23,7 +23,7 @@ namespace MM
 	void ExpertAdvisorDumbo::execute(const std::time_t &secondsSinceStart, const std::time_t &time)
 	{
 		//30 min frequency
-		if (secondsSinceStart % (60 * 30) != 0)
+		if (time % (60 * 30) != 0)
 			return;
 
 		std::string currencyPair = "EURUSD";
@@ -47,16 +47,19 @@ namespace MM
 
 		if (iOpenCloseDif > 0.00120)
 		{
-			Trade *trade = market.newTrade(Trade::Sell(currencyPair, 0.01));
-			say("New trade: I just sold " + currencyPair);
+			Trade *trade = market.newTrade(Trade::Sell(currencyPair, 0.015));
+			setMood(-1.0, 0.9);
+			say("@" + currencyPair + " I just sold.");
 		}
 
 		if (iOpenCloseDif < -0.00120)
 		{
-			Trade *trade = market.newTrade(Trade::Buy(currencyPair, 0.01));
-			say("New trade: I just bought " + currencyPair);
+			Trade *trade = market.newTrade(Trade::Buy(currencyPair, 0.015));
+			setMood(+1.0, 0.9);
+			say("@" + currencyPair + " I just bought.");
 		}
-
+		market.updateParameter("m30D", iOpenCloseDif / ONEPIP);
+		setMood(0.0, 0.25);
 
 	}
 

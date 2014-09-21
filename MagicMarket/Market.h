@@ -50,6 +50,7 @@ namespace MM
 
 		void chat(std::string name, std::string message);
 		void updateMood(std::string name, float mood, float certainty);
+		void updateParameter(std::string name, double value);
 
 		void init();
 		void run();
