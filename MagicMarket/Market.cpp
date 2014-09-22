@@ -178,7 +178,7 @@ namespace MM
 
 	std::string Market::getCommandPrefix()
 	{
-		return std::string("cmd|") + accountName + "|" + uid;
+		return std::string("C ") + accountName + "|" + uid;
 	}
 
 	Trade *Market::newTrade(Trade trade)
@@ -231,20 +231,20 @@ namespace MM
 
 	void Market::updateMood(std::string name, float mood, float certainty)
 	{
-		std::ostringstream os; os << "mood " << name << " " << mood << " " << certainty;
+		std::ostringstream os; os << "M " << name << " " << mood << " " << certainty;
 		send(os.str());
 	}
 
 	void Market::updateParameter(std::string name, double value)
 	{
-		std::ostringstream os; os << "par " << name << " " << std::setprecision(3) << value;
+		std::ostringstream os; os << "P " << name << " " << std::setprecision(3) << value;
 		send(os.str());
 	}
 
 	void Market::chat(std::string name, std::string msg)
 	{
 		std::ostringstream os;
-		os << "chat " << name
+		os << "! " << name
 			<< " " << msg;
 		send(os.str());
 	}
@@ -286,13 +286,15 @@ namespace MM
 	void Market::parseMessage(const std::string &message)
 	{
 		//std::cout << "received:\n\t" << message << std::endl;
+		if (message.empty()) return;
 
 		std::istringstream is(message);
-		std::string type, accountName;
+		char type;
+		std::string accountName;
 
 		is >> type >> accountName;
 
-		if (type == "tick")
+		if (type == 'T')
 		{
 			std::string pair;
 			Tick tick;
@@ -303,16 +305,12 @@ namespace MM
 			// notify the experts asap
 			addEvent(Event(Event::Type::NEW_TICK, pair, QuantLib::Date::todaysDate(), tick.time));
 		}
-		else if (type == "ema")
-		{
-			
-		}
-		else if (type == "response")
+		else if (type == 'R')
 		{
 			std::string uid;
 			is >> uid;
 		}
-		else if (type == "orders")
+		else if (type == 'O')
 		{
 			// remove all (non virtual) trades
 			for (size_t i = 0; i < trades.size(); ++i)
@@ -367,16 +365,20 @@ namespace MM
 			}
 
 		}
-		else if (type == "account")
+		else if (type == 'A')
 		{
 			is >> account.leverage
 				>> account.balance
 				>> account.margin
 				>> account.marginFree;
 		}
-		else if (isVirtual() && (message.substr(0, 3) == "cmd"))
+		else if (isVirtual() && (type == 'C'))
 		{
 			virtualMarket->onReceive(message);
+		}
+		else
+		{
+			// pass
 		}
 	}
 

@@ -285,10 +285,13 @@ function addAnnotation(title, msg)
 function onNewData(e)
 {	
 	// and add to chart
-	var parameters = e.data.split(" ");
+	var message = e.data;
+	var messageType = message.charAt(0);
 	
-	if (parameters[0] == "tick")
+	if (messageType == "T")
 	{
+		var parameters = e.data.split(" ");
+
 		if (!window.first_tick)
 		{
 			window.first_tick = false;
@@ -316,24 +319,25 @@ function onNewData(e)
 			}
 		}
 	}
-	else if (parameters[0] == "mood")
+	else if (messageType == "M")
 	{
+		var parameters = e.data.split(" ");
 		var mood = parseFloat(parameters[2]);
 		var certainty = parseFloat(parameters[3]);
 		updateExpert(parameters[1], mood, certainty);
 	}
-	else if (parameters[0] == "orders")
+	else if (messageType == "O")
 	{
 		$("#opencontainer").empty();
 		var container = $("#opencontainer");
 		var string = "";
 		if (window.is_virtual_mode)
 		{
-			var len = e.data.length;
-			var start = e.data.indexOf("[");
-			string = e.data.substring(start, len - 1);
+			var len = message.length;
+			var start = message.indexOf("[");
+			string = message.substring(start, len - 1);
 		}
-		else string = e.data.substring(e.data.indexOf("["));
+		else string = message.substring(message.indexOf("["));
 		var data = JSON.parse(string);
 
 		var len = data.length;
@@ -360,18 +364,20 @@ function onNewData(e)
 			container.append(div);
 		}
 	}
-	else if (parameters[0] == "par")
+	else if (messageType == "P")
 	{
+		var parameters = e.data.split(" ");
 		updateParameter(parameters[1], parameters[2]);
 	}
-	else if (parameters[0] == "chat")
+	else if (messageType == "!")
 	{
+		var parameters = e.data.split(" ");
 		var len = parameters[0].length + parameters[1].length + 2;
 		expertSay(parameters[1], e.data.substring(len));
 	}
-	else if (parameters[0] == "account")
+	else if (messageType == "A")
 	{
-		$("#accountdata").html(e.data);
+		$("#accountdata").html(message);
 	}
 	else // if not processed, just add to ticker
 	{

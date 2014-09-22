@@ -257,11 +257,12 @@ int executeCommands()
    //
    string message2 = socketReceive();
 
-   //message2 = "cmd|David|11234 test test";
+   //message2 = "C David|11234 test test";
    if (message2 == "" || message2 == 0) return 0; 
    if (StringLen(message2) <= 3) return 1;
-   // all commands need to start with "cmd|accountname|uid"
-   if (StringSubstr(message2, 0, 3) != "cmd") return 0;
+   // all commands need to start with "C accountname|uid"
+   if (StringGetChar(message2, 0) != 'C') return 0; 
+   //if (StringSubstr(message2, 0, 3) != "cmd") return 0;
    
    
    // always pull out name, uid, and pair which are required to control a trade
@@ -582,7 +583,7 @@ int publishStock()
 ////////// to do the same thing using the helpers instead.
 
    // Publish current tick value.
-   string current_tick = "tick " + Name() + " " + Symbol() + " " + Bid + " " + Ask + " " + TimeCurrent();
+   string current_tick = "T " + Name() + " " + Symbol() + " " + Bid + " " + Ask + " " + TimeCurrent();
    
    char buffer[1024];
    S2A(current_tick, buffer);
@@ -590,18 +591,7 @@ int publishStock()
       Print("Error sending message: " + current_tick);
    else
       ;//Print("Published message: " + current_tick);
-   
-   return 0;
-   // WE DONT NEED NO EMA
-   // Current EMA info.	
-   // Publish currently requested EMA's.
-   string current_ema_info = "ema " + Name() + " " + Symbol() + " " + EMA_long + " " + iMA(Symbol(),0,EMA_long,0,MODE_EMA,PRICE_MEDIAN,0) + " " + EMA_short + " " + iMA(Symbol(),0,EMA_short,0,MODE_EMA,PRICE_MEDIAN,0);
-   S2A(current_ema_info, buffer);
-   if(socketSend(current_ema_info) == -1)
-      Print("Error sending message: " + current_ema_info);
-   else
-      ;//Print("Published message: " + current_ema_info );
-      
+
   return 0;
 }
 
@@ -612,7 +602,7 @@ int publishGeneralData()
    string current_orders = lookup_open_orders(); 
    
    // Publish account info.
-   string current_account_info = "account " + Name() + " " + AccountLeverage() + " " + AccountBalance() + " " + AccountMargin() + " " + AccountFreeMargin();
+   string current_account_info = "A " + Name() + " " + AccountLeverage() + " " + AccountBalance() + " " + AccountMargin() + " " + AccountFreeMargin();
    
 
    // Currently open orders.
@@ -656,7 +646,7 @@ string lookup_open_orders()
    }
       
    // Return the completed string.
-   return ("orders " + Name() + " " + "[" + current_orders + "]");
+   return ("O " + Name() + " " + "[" + current_orders + "]");
 }
 
 //+------------------------------------------------------------------+
@@ -666,7 +656,7 @@ string lookup_open_orders()
 bool send_response(string uid, string response)
 {
    // Compose response string.
-   string response_string = "response " + Name() + " " + uid + " " + response;
+   string response_string = "R " + Name() + " " + uid + " " + response;
    char buffer[1024];
    S2A(response_string, buffer);
    // Send the message.

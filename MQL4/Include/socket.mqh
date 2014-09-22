@@ -7,6 +7,7 @@ string socket_protocol="TCP";
 //| format                                                                     |
 //| http://forum.mql4.com/60708                                                |
 //+----------------------------------------------------------------------------+
+
 #import "kernel32.dll"
    int lstrlenA(int);
    void RtlMoveMemory(uchar & arr[], int, int);

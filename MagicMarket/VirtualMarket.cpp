@@ -134,7 +134,7 @@ namespace MM
 	{
 		// account info message gets abused for the profit stuff
 		std::ostringstream accountInfo;
-		accountInfo << "account VM " << 0 << " " << totalProfitPips << " " << (double)wonTrades << " " << (double)lostTrades;
+		accountInfo << "A VM " << 0 << " " << totalProfitPips << " " << (double)wonTrades << " " << (double)lostTrades;
 		market.send(accountInfo.str());
 
 		// publish all currently open trades in the same json format as the metatrader
@@ -171,19 +171,19 @@ namespace MM
 #undef OrderProfit
 		}
 
-		market.send(std::string("orders VM [") + orderString.str() + "]");
+		market.send(std::string("O VM [") + orderString.str() + "]");
 	}
 
 	void VirtualMarket::sendTickMsg(Tick *tick, TradingDay *day)
 	{
 		std::ostringstream msg;
-		msg << "tick VM " << day->getCurrencyPair() << " " << tick->getBid() << " " << tick->getAsk() << " " << tick->getTime();
+		msg << "T VM " << day->getCurrencyPair() << " " << tick->getBid() << " " << tick->getAsk() << " " << tick->getTime();
 		market.send(msg.str());
 	}
 
 	void VirtualMarket::onReceive(const std::string &message)
 	{
-		assert(message.substr(0, 3) == "cmd");
+		assert(message[0] == 'C');
 
 		std::istringstream is(message);
 		std::string accountInfo, command;
