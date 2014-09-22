@@ -1,10 +1,12 @@
 #pragma once
 
+#include <chrono>
 #include <vector>
 #include <string>
 #include <map>
 #include <list>
 #include <assert.h>
+#include <WinSock2.h>
 #include <zmq.h>
 
 #include <ql/time/date.hpp>
@@ -88,6 +90,16 @@ namespace MM
 		std::string receive();
 		void parseMessage(const std::string &message);
 
+		// Interface for the virtual market
+	private:
+		friend class VirtualMarket;
+		std::chrono::milliseconds sleepDuration;
+		bool isVirtualModeEnabled;
+		
+		void setSleepDuration(int ms);
+		void setVirtual(bool state) { isVirtualModeEnabled = state; };
+	public:
+		bool isVirtual() { return isVirtualModeEnabled; }
 	};
 };
 

@@ -7,6 +7,7 @@
 
 namespace MM
 {
+	class Tick;
 
 	class Trade
 	{
@@ -27,10 +28,13 @@ namespace MM
 			T_SELL
 		} type;
 
+		QuantLib::Decimal getProfitAtTick(const Tick& tick) const;
+
 		// completes the trade data with saved information
 		std::string getSaveFileName();
 		void load();
 		void save();
+		void removeSaveFile();
 
 		static Trade Buy(std::string currencyPair, QuantLib::Decimal lotSize)
 		{

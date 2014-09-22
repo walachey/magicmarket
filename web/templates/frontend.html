@@ -277,6 +277,9 @@ function addAnnotation(title, msg)
 		text: msg
 	};
 	window.chart.series[1].addPoint(annotation, true, false);
+	
+	window.is_virtual_mode = false;
+	window.first_tick = true;
 }
 
 function onNewData(e)
@@ -286,6 +289,12 @@ function onNewData(e)
 	
 	if (parameters[0] == "tick")
 	{
+		if (!window.first_tick)
+		{
+			window.first_tick = false;
+			if (parameters[1] == "VM")
+				window.is_virtual_mode = true;
+		}
 		if (parameters[2] == "EURUSD")
 		{
 			var timestamp = parseInt(parameters[5]);
@@ -301,9 +310,9 @@ function onNewData(e)
 			}
 			else
 			{
-				//window.data_points.push(point);	
-				var shift = false; //window.chart.series[0].data.length > 20;
-				window.chart.series[0].addPoint([x, mean], true, shift);
+				var shift = window.is_virtual_mode && (window.chart.series[0].data.length > 10);
+				var redraw = !window.is_virtual_mode || (timestamp % 100 == 0);
+				window.chart.series[0].addPoint([x, mean], redraw, shift, false);
 			}
 		}
 	}
@@ -315,9 +324,17 @@ function onNewData(e)
 	}
 	else if (parameters[0] == "orders")
 	{
-		$("#opencontainer").replaceWith('<table id="opencontainer">&nbsp;</table>');
+		$("#opencontainer").empty();
 		var container = $("#opencontainer");
-		var data = JSON.parse(e.data.substring(e.data.indexOf("[")));
+		var string = "";
+		if (window.is_virtual_mode)
+		{
+			var len = e.data.length;
+			var start = e.data.indexOf("[");
+			string = e.data.substring(start, len - 1);
+		}
+		else string = e.data.substring(e.data.indexOf("["));
+		var data = JSON.parse(string);
 
 		var len = data.length;
 		for (var i = 0; i < len; ++i)
@@ -377,6 +394,7 @@ function prepareChart()
 			chart: {
 				renderTo: 'graphcontainer',
 				//defaultSeriesType: 'spline',
+				animation: false
 			},
 
             rangeSelector : {
@@ -392,9 +410,6 @@ function prepareChart()
 				id : 'dataseries',
                 name : 'EURUSD',
                 data : [],
-                tooltip: {
-                    valueDecimals: 2
-                },
 				turboThreshold : 0
             },
 			{

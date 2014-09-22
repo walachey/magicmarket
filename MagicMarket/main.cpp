@@ -26,6 +26,7 @@
 #include <stdint.h>
 
 #include "Market.h"
+#include "VirtualMarket.h"
 #include "Trade.h"
 #include "Stock.h"
 #include "TradingDay.h"
@@ -34,6 +35,8 @@
 int main (int argc, char *argv [])
 {
 	market.init();
+	MM::VirtualMarket::checkInit();
+
 	market.run();
     return 0;
 }

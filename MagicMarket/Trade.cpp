@@ -7,6 +7,8 @@
 #include <filesystem>
 namespace filesystem = std::tr2::sys;
 
+#include "Tick.h"
+
 namespace MM
 {
 
@@ -19,6 +21,16 @@ namespace MM
 	{
 	}
 
+	QuantLib::Decimal Trade::getProfitAtTick(const Tick &tick) const
+	{
+		QuantLib::Decimal profit = 0.0;
+		if (type == Trade::T_BUY)
+			profit = tick.getBid() - orderPrice;
+		else
+			profit = orderPrice - tick.getAsk();
+		return profit;
+	}
+
 	std::string Trade::getSaveFileName()
 	{
 		std::ostringstream os;
@@ -28,6 +40,14 @@ namespace MM
 			filesystem::create_directory(path);
 		os << "/" << ticketID << ".trade";
 		return os.str();
+	}
+
+	void Trade::removeSaveFile()
+	{
+		std::string saveFileName = getSaveFileName();
+		filesystem::path path(saveFileName);
+		if (filesystem::exists(path))
+			filesystem::remove(path);
 	}
 
 	void Trade::save()

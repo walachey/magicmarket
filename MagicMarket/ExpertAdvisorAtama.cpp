@@ -73,7 +73,7 @@ namespace MM
 				std::time_t startTime = mktime(date, startingHour, 0, 0);
 				std::time_t endTime = mktime(date, endingHour, 0, 0);
 				std::time_t currentTime = startTime;
-				TimePeriod currentTimePeriod = TimePeriod(nullptr, currentTime, currentTime + timeWindow);
+				TimePeriod currentTimePeriod = TimePeriod(nullptr, currentTime, currentTime + timeWindow, nullptr);
 
 				bool success = true;
 				for (Stock *&stock : stocks)
@@ -103,7 +103,7 @@ namespace MM
 				else // start a new time period
 				{
 					currentTime = currentTimePeriod.getEndTime() + timeWindow;
-					currentTimePeriod = TimePeriod(nullptr, currentTime, currentTime + timeWindow);
+					currentTimePeriod = TimePeriod(nullptr, currentTime, currentTime + timeWindow, nullptr);
 				}
 			}
 

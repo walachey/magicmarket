@@ -9,7 +9,7 @@
 
 namespace MM
 {
-	TimePeriod::TimePeriod(Stock *stock_, const std::time_t &startTime_, const std::time_t &endTime_, QuantLib::Decimal(Tick::*valueFunction_)()) : stock(nullptr), startTime(0), endTime(0), valueFunction(nullptr)
+	TimePeriod::TimePeriod(Stock *stock_, const std::time_t &startTime_, const std::time_t &endTime_, QuantLib::Decimal((Tick::*valueFunction_)()const)) : stock(nullptr), startTime(0), endTime(0), valueFunction(nullptr)
 	{
 		stock = stock_;
 		startTime = startTime_;
@@ -33,7 +33,7 @@ namespace MM
 	{
 	}
 
-	void TimePeriod::setValueFunction(QuantLib::Decimal(Tick::*fun)())
+	void TimePeriod::setValueFunction(QuantLib::Decimal(Tick::*fun)()const)
 	{
 		valueFunction = fun;
 	}

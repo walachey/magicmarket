@@ -18,13 +18,13 @@ namespace MM
 		Tick();
 		~Tick();
 
-		QuantLib::Decimal getBid() { return bid; }
-		QuantLib::Decimal getAsk() { return ask; }
-		QuantLib::Decimal getMid() { return (bid + ask) / QuantLib::Decimal(2); }
-		QuantLib::Decimal getSpread() { return (ask - bid); }
+		QuantLib::Decimal getBid() const { return bid; }
+		QuantLib::Decimal getAsk() const { return ask; }
+		QuantLib::Decimal getMid() const { return (bid + ask) / QuantLib::Decimal(2); }
+		QuantLib::Decimal getSpread() const { return (ask - bid); }
 
-		QuantLib::Date getDate() { return dateFromTime(time); };
-		std::time_t getTime() { return time; }
+		QuantLib::Date getDate() const { return dateFromTime(time); };
+		std::time_t getTime() const { return time; }
 		std::time_t *getTimeP() { return &time; }
 
 		std::string toString();

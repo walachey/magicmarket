@@ -114,6 +114,7 @@
     <ClCompile Include="TimePeriod.cpp" />
     <ClCompile Include="Trade.cpp" />
     <ClCompile Include="TradingDay.cpp" />
+    <ClCompile Include="VirtualMarket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\deps\lwneuralnetplus\source\iomanage.h" />
@@ -138,6 +139,7 @@
     <ClInclude Include="TimePeriod.h" />
     <ClInclude Include="Trade.h" />
     <ClInclude Include="TradingDay.h" />
+    <ClInclude Include="VirtualMarket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

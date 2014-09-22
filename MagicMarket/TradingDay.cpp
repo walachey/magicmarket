@@ -23,7 +23,11 @@ namespace MM
 		}
 	}
 
-
+	std::string TradingDay::getCurrencyPair()
+	{
+		assert(stock);
+		return stock->getCurrencyPair();
+	}
 
 	TradingDay *TradingDay::getPreviousDay()
 	{
@@ -44,15 +48,19 @@ namespace MM
 			{
 				ticks.back() = tick;
 				// overwrite the old tick in the savefile..
-				getSaveFile().seekp(-tick.getOutputBitSize(), std::ios_base::cur);
-				getSaveFile() << tick << std::flush;
+				if (!market.isVirtual())
+				{
+					getSaveFile().seekp(-tick.getOutputBitSize(), std::ios_base::cur);
+					getSaveFile() << tick << std::flush;
+				}
 				return;
 			}
 		}
 
 		ticks.push_back(tick);
 		// save the tick!
-		getSaveFile() << tick << std::flush;
+		if (!market.isVirtual())
+			getSaveFile() << tick << std::flush;
 	}
 
 	std::string TradingDay::getSaveFileName()
@@ -81,6 +89,7 @@ namespace MM
 
 	std::ostream &TradingDay::getSaveFile()
 	{
+		assert(!market.isVirtual());
 		if (saveFile) return *saveFile;
 
 		std::string filename = getSavePath();

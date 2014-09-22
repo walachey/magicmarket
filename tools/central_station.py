@@ -251,19 +251,8 @@ if __name__ == "__main__":
 			msg = metatrader.getMessage()
 			station.sendMessage(msg)
 			print "<- MT: " + msg
-		if metatrader.isConnected():
-			#metatrader.sendMessage("cmd|David|testuid maek magic")
-			pass
-		faketick = False
-		if faketick:
-			low = 0.75 + random.random()
-			high = low + random.random() / 2
-			msg = "tick David EURUSD " + str(low) + " " + str(high) + " 1409321828"
-			
-			station.sendMessage('tick David EURUSD 1.29497 1.29518 1409960066')
-			station.sendMessage('orders David [{"pair":"EURGBP", "type":"0", "ticket_id":"40564195", "open_price":"0.81645", "take_profit":"0", "stop_loss":"0", "open_time":"1400194678","expire_time":"0", "lots":"0.01", "profit":"-38.39"}, {"pair":"EURUSD", "type":"0", "ticket_id":"40760473", "open_price":"1.37141", "take_profit":"0", "stop_loss":"0", "open_time":"1400669257", "expire_time":"0", "lots":"0.01", "profit":"-76.44"}, {"pair":"EURUSD", "type":"0", "ticket_id":"42929335", "open_price":"1.35437", "take_profit":"0", "stop_loss":"0", "open_time":"1405512967", "expire_time":"0", "lots":"0.01", "profit":"-59.4"}]')
-			time.sleep(4.0)
-		msg = ""
+
+
 		while True:
 			msg = station.getMessage()
 			if not msg: break
@@ -276,6 +265,8 @@ if __name__ == "__main__":
 			
 			# route to all connected things, too
 			station.sendMessage(msg)
-		print ".",
+		#print ".",
 		if not received:
-			time.sleep(0.05)
+			time.sleep(0.01)
+
+			

@@ -20,11 +20,11 @@ namespace MM
 	class TimePeriod
 	{
 	public:
-		TimePeriod(Stock *stock_, const std::time_t &startTime_, const std::time_t &endTime_, QuantLib::Decimal(Tick::*valueFunction_)() = nullptr);
+		TimePeriod(Stock *stock_, const std::time_t &startTime_, const std::time_t &endTime_, QuantLib::Decimal(Tick::*valueFunction_)() const);
 		TimePeriod(const TimePeriod &other);
 		~TimePeriod();
 
-		void setValueFunction(QuantLib::Decimal(Tick::*fun)());
+		void setValueFunction(QuantLib::Decimal(Tick::*fun)()const);
 
 		// manipulation of the time period
 		// seconds can be negative or positive
@@ -50,7 +50,7 @@ namespace MM
 		std::time_t getEndTime() const { return endTime; }
 		std::time_t getDuration() const { return endTime - startTime; }
 	private:
-		QuantLib::Decimal (Tick::*valueFunction)();
+		QuantLib::Decimal(Tick::*valueFunction)() const;
 		Stock *stock;
 		std::time_t startTime;
 		std::time_t endTime;

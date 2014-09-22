@@ -3,7 +3,6 @@
 #include <sstream>
 #include <iostream>
 #include <ctime>
-#include <chrono>
 #include <thread>
 #include <iomanip>
 
@@ -12,6 +11,7 @@ namespace filesystem = std::tr2::sys;
 
 #include <SimpleIni.h>
 
+#include "VirtualMarket.h"
 
 #include "Stock.h"
 #include "Trade.h"
@@ -31,6 +31,7 @@ namespace MM
 
 	Market::Market()
 	{
+		isVirtualModeEnabled = false;
 	}
 
 
@@ -52,6 +53,10 @@ namespace MM
 		accountName = ini.GetValue("Metatrader", "AccountName", "unknown");
 		connectionStringListener = ini.GetValue("Central Station", "Listener", "tcp://127.0.0.1:1985");
 		connectionStringSpeaker = ini.GetValue("Central Station", "Speaker", "tcp://127.0.0.1:1986");
+		int sleepDurationMs;
+		std::istringstream(ini.GetValue("Market", "SleepDuration", "100")) >> sleepDurationMs;
+		sleepDuration = std::chrono::milliseconds(sleepDurationMs);
+
 		std::cout << "..loaded config" << std::endl;
 	}
 
@@ -105,8 +110,6 @@ namespace MM
 
 	void Market::run()
 	{
-		// sleep duration between loops
-		std::chrono::milliseconds sleepDuration(100);
 		// for the experts' execute() callback
 		std::time_t startTime = (0), lastExecutionTime(0);
 		std::time_t lastTickTime = 0;
@@ -165,7 +168,11 @@ namespace MM
 					expert->execute(timePassed, lastTickTime);
 				}
 			}
-			std::this_thread::sleep_for(sleepDuration);
+			if (isVirtual())
+				virtualMarket->execute();
+			
+			if (sleepDuration > std::chrono::milliseconds(0))
+				std::this_thread::sleep_for(sleepDuration);
 		}
 	}
 
@@ -334,6 +341,10 @@ namespace MM
 			std::string jsonString;
 			getline(is, jsonString);
 			jsonString.erase(0, 1);
+
+			// I don't know yet why this is necessary, TODO
+			if (isVirtual()) jsonString = jsonString.substr(0, jsonString.size() - 1);
+
 			std::string errorString;
 			json11::Json jsonData = json11::Json::parse(jsonString, errorString);
 
@@ -363,7 +374,10 @@ namespace MM
 				>> account.margin
 				>> account.marginFree;
 		}
-
+		else if (isVirtual() && (message.substr(0, 3) == "cmd"))
+		{
+			virtualMarket->onReceive(message);
+		}
 	}
 
 	void Market::send(std::string data)
@@ -409,5 +423,10 @@ namespace MM
 		Stock *stock = new Stock(pair);
 		stocks[pair] = stock;
 		return stock;
+	}
+
+	void Market::setSleepDuration(int ms)
+	{
+		sleepDuration = std::chrono::milliseconds(ms);
 	}
 };

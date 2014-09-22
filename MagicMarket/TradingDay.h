@@ -19,6 +19,7 @@ namespace MM
 		TradingDay(QuantLib::Date date, Stock *stock);
 		~TradingDay();
 
+		std::string getCurrencyPair();
 		TradingDay *getPreviousDay();
 		TradingDay *getNextDay();
 
@@ -35,6 +36,7 @@ namespace MM
 		static std::string getSaveFileName(QuantLib::Date forDate);
 	private:
 		QuantLib::Date date;
+		Tick &getTickByIndex(size_t index) { return ticks[index]; }
 		std::vector<Tick> ticks;
 		std::fstream *saveFile;
 		Stock *stock;
@@ -42,6 +44,7 @@ namespace MM
 		std::vector<Tick> & getTicks() { return ticks; }
 
 		friend class TimePeriod;
+		friend class VirtualMarket;
 	};
 
 
