@@ -122,7 +122,11 @@ namespace MM
 			std::string data;
 			do
 			{
-				data = receive();
+				if (isVirtual())
+					data = virtualMarket->proxyReceive();
+				else
+					data = receive();
+
 				if (data.size())
 				{
 					parseMessage(data);
@@ -382,8 +386,19 @@ namespace MM
 		}
 	}
 
-	void Market::send(std::string data)
+	void Market::send(std::string data, int probabilityToSendInVirtualMode)
 	{
+		if (isVirtual())
+		{
+			virtualMarket->proxySend(data);
+			if (probabilityToSendInVirtualMode == 0) return;
+			if (probabilityToSendInVirtualMode < 100)
+			{
+				int randomDraw = rand() % 100;
+				if (randomDraw > probabilityToSendInVirtualMode) return;
+			}
+		}
+
 		zmq_msg_t msg;
 		zmq_msg_init_size(&msg, data.length() + 1);
 		memcpy(zmq_msg_data(&msg), data.c_str(), data.length() + 1);

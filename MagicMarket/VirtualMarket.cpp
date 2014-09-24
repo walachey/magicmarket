@@ -46,6 +46,9 @@ namespace MM
 		sscanf_s(dayString.c_str(), "%d-%d-%d", &year, &month, &day);
 		date = QuantLib::Date(day, (QuantLib::Month)(month), year);
 
+		std::string hourString = ini.GetValue("Virtual Market", "Hours", "0-0");
+		sscanf_s(hourString.c_str(), "%d-%d", &fromHour, &toHour);
+
 		// update market to match settings
 		market.setVirtual(true);
 		market.setSleepDuration(0);
@@ -61,6 +64,30 @@ namespace MM
 			secondaryCurrencies.push_back(new TradingDay(date, market.getStock(pair, true)));
 			secondaryCurrencies.back()->loadFromFile();
 		}
+
+		// fast forward to start of market day
+		if (fromHour > 0)
+		{
+			for (; tickIndex < tradingDay->ticks.size(); ++tickIndex)
+			{
+				Tick &tick = tradingDay->getTickByIndex(tickIndex);
+				std::time_t time = tick.getTime();
+				std::tm *tm = std::gmtime(&time);
+				if (tm->tm_hour < fromHour)
+				{
+					lastTick = &tick;
+					continue;
+				}
+				break;
+			}
+		}
+
+		std::cout << "------------VIRTUAL MARKET SETUP--------(" << fromHour << "-" << toHour << ")" << std::endl;
+		std::cout << "\tTOTAL TICK COUNT\t" << tradingDay->ticks.size() << std::endl;
+		std::cout << "\tSTARTING AT TICK\t" << tickIndex << std::endl;
+		std::cout << "\tFIRST TICK AT\t" << timeToString(tradingDay->ticks.front().getTime()) << std::endl;
+		std::cout << "\tLAST TICK AT\t" << timeToString(tradingDay->ticks.back().getTime()) << std::endl;
+		std::cout << "----------------------------------------------" << std::endl;
 	}
 
 	VirtualMarket::VirtualMarket()
@@ -69,6 +96,7 @@ namespace MM
 		lastTick = nullptr;
 		totalProfitPips = 0.0;
 		wonTrades = lostTrades = 0;
+		fromHour = toHour = 0;
 	}
 
 
@@ -78,7 +106,7 @@ namespace MM
 
 	void VirtualMarket::evaluate()
 	{
-		std::cout << "--------------VIRTUAL MARKET DAY--------------" << std::endl;
+		std::cout << "\n------------VIRTUAL MARKET RESULTS------------" << std::endl;
 		std::cout << "EVALUATION -------------------(profit in pips)" << std::endl;
 		std::cout << "----------------------------------------------" << std::endl;
 		std::cout << "ONLY CLOSED TRADES----------------------------" << std::endl;
@@ -126,6 +154,18 @@ namespace MM
 				if (tick.getTime() <= previousTime) continue;
 				if (tick.getTime() > lastTick->getTime()) break;
 				sendTickMsg(&tick, day);
+			}
+		}
+
+		// check end of market day
+		if ((toHour > 0) && (previousTime != 0))
+		{
+			std::tm *tm = std::gmtime(&previousTime);
+			printf("\r\tCURRENT TIME IS %02d:%02d", tm->tm_hour, tm->tm_min);
+			if (tm->tm_hour > toHour)
+			{
+				// fast forward to end
+				tickIndex = tradingDay->ticks.size();
 			}
 		}
 	}
@@ -178,7 +218,10 @@ namespace MM
 	{
 		std::ostringstream msg;
 		msg << "T VM " << day->getCurrencyPair() << " " << tick->getBid() << " " << tick->getAsk() << " " << tick->getTime();
-		market.send(msg.str());
+
+		int probabilityToSend = 10;
+		if (day != tradingDay) probabilityToSend = 0;
+		market.send(msg.str(), probabilityToSend);
 	}
 
 	void VirtualMarket::onReceive(const std::string &message)
@@ -228,5 +271,18 @@ namespace MM
 		if (profit > 0.0) wonTrades += 1;
 		else if (profit < 0.0) lostTrades += 1;
 		totalProfitPips += profit;
+	}
+
+	void VirtualMarket::proxySend(const std::string &message)
+	{
+		pendingMessages.push(message);
+	}
+
+	std::string VirtualMarket::proxyReceive()
+	{
+		if (pendingMessages.empty()) return "";
+		std::string value = pendingMessages.front();
+		pendingMessages.pop();
+		return value;
 	}
 };

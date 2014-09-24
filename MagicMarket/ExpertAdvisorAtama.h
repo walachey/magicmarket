@@ -31,6 +31,16 @@ namespace MM
 
 	class ExpertAdvisorAtama : public ExpertAdvisor, private iomanage
 	{
+		class TrainingData
+		{
+		public:
+			float *inputValues;
+			float *outputValues;
+
+			TrainingData(int noInput, int noOutput);
+			TrainingData(const TrainingData &other); // undefined
+			~TrainingData();
+		};
 	public:
 		ExpertAdvisorAtama();
 		virtual ~ExpertAdvisorAtama();
@@ -44,12 +54,15 @@ namespace MM
 		virtual void info_from_file(const std::string & filename, int *npatterns, int *ninput, int *noutput);
 		virtual void load_patterns(const std::string & filename, float **inputs, float **targets, int ninput, int noutput, int npatterns);
 
+		static const int inputValuesPerStock;
+
 	private:
+		std::vector<TrainingData*> trainingData;
 		std::vector<std::string> stocksToEvaluate;
 		std::vector<QuantLib::Date> daysForInitialTraining;
 		void prepareTrainingData();
-		std::vector<float> getInputVector(std::vector<Stock*> &stocks, const std::time_t &time);
-		std::vector<float> getInputVectorForStock(Stock *stock, const std::time_t &time);
+		bool getInputVector(std::vector<Stock*> &stocks, const std::time_t &time, TrainingData *trainingData);
+		bool getInputVectorForStock(Stock *stock, const std::time_t &time, float *inputData);
 	};
 
 };

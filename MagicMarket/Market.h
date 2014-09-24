@@ -86,7 +86,7 @@ namespace MM
 
 		void setupConnection();
 		void connectToCentralQueue();
-		void send(std::string);
+		void send(std::string, int probabilityToSendInVirtualMode = 100);
 		std::string receive();
 		void parseMessage(const std::string &message);
 

@@ -6,6 +6,8 @@
 #include "Helpers.h"
 #include "Trade.h"
 
+#include <algorithm>
+
 namespace MM
 {
 
@@ -47,12 +49,14 @@ namespace MM
 		if (expertCount != 0)
 			avgCertainty = certaintySum / (float)expertCount;
 
-		setMood(avgMood, avgCertainty);
+		const float confidenceMargin = 0.6f;
+		float ownCertainty = std::min(1.0f, avgCertainty / confidenceMargin);
+		setMood(avgMood, ownCertainty);
 
 		// okay, now execute whatever shit we need to satisfy our raving bunch of experts
-		const float confidenceMargin = 0.75;
+		
 		const float unanimityMargin = 0.25; // if the experts are very confident but all say different things - nope...
-		if (avgCertainty < confidenceMargin) return;
+		if (avgCertainty < 1.0) return;
 		if (std::abs(avgMood) < unanimityMargin) return;
 		
 		// let's do this shit

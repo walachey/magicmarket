@@ -264,15 +264,15 @@ function addAnnotation(title, msg)
 		last_annotation = window.chart.series[1].data[window.chart.series[1].data.length - 1];
 		console.log ("Try to say-----");
 		console.log (last_annotation.x);
-		console.log (last_point.x);
-		if ((last_annotation.x == last_point.x) && (last_annotation.title == title))
+		console.log (last_point[0]);
+		if ((last_annotation.x == last_point[0]) && (last_annotation.title == title))
 		{
 			last_annotation.text = last_annotation.text + "<br>" + msg;
 			return;
 		}
 	}	
 	var annotation = {
-		x: last_point.x,
+		x: last_point[0],
 		title: title,
 		text: msg
 	};
@@ -313,8 +313,8 @@ function onNewData(e)
 			}
 			else
 			{
-				var shift = window.is_virtual_mode && (window.chart.series[0].data.length > 10);
-				var redraw = !window.is_virtual_mode || (timestamp % 100 == 0);
+				var shift = window.is_virtual_mode && (window.chart.series[0].data.length > 100);
+				var redraw = true;//!window.is_virtual_mode || (timestamp % 100 == 0);
 				window.chart.series[0].addPoint([x, mean], redraw, shift, false);
 			}
 		}

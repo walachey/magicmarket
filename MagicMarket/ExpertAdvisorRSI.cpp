@@ -59,6 +59,7 @@ namespace MM
 			int totalObersvations = derivation.size();
 			if (totalObersvations == 0) continue;
 			if (!winCount && !lossCount) continue;
+			if (winCount + lossCount < totalObersvations / 2) continue;
 
 			QuantLib::Decimal avgWin(winSum / (QuantLib::Decimal)totalObersvations);
 			QuantLib::Decimal avgLoss(lossSum / (QuantLib::Decimal)totalObersvations);
@@ -95,9 +96,9 @@ namespace MM
 		if (validRSIEntries > 0)
 		{
 			if (avgRSI > (100.0 - margin))
-				return setMood(-1.0, (avgRSI - (100.0 - margin)) / margin);
+				return setMood(-1.0, 0.5 + 0.5 * (avgRSI - (100.0 - margin)) / margin);
 			if (avgRSI < (margin))
-				return setMood(+1.0, (1.0 - (avgRSI / margin)));
+				return setMood(+1.0, 0.5 + 0.5 * (1.0 - (avgRSI / margin)));
 		}
 		setMood(0.0, 0.25);
 		

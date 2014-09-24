@@ -6,11 +6,13 @@
 #include <ql/types.hpp>
 
 #include <vector>
+#include <string>
 
 namespace MM
 {
 	QuantLib::Date dateFromTime(std::time_t time);
 	std::time_t mktime(const QuantLib::Date &date, int hour, int minute, int second);
+	std::string timeToString(std::time_t time);
 
 	// constants
 	const QuantLib::Decimal ONEPIP = 0.0001;

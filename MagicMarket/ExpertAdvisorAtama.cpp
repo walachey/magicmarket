@@ -12,6 +12,20 @@
 
 namespace MM
 {
+	const int ExpertAdvisorAtama::inputValuesPerStock = 7 * 2;
+
+	ExpertAdvisorAtama::TrainingData::TrainingData(int noInput, int noOutput)
+	{
+		inputValues = (float*) malloc(noInput * sizeof(float));
+		outputValues = (float*) malloc(noOutput * sizeof(float));
+	}
+
+	ExpertAdvisorAtama::TrainingData::~TrainingData()
+	{
+		free(inputValues);
+		free(outputValues);
+	}
+
 	ExpertAdvisorAtama::ExpertAdvisorAtama()
 	{
 		stocksToEvaluate = { "EURUSD", "USDDKK", "USDCHF", "EURCAD", "EURAUD", "EURJPY", "AUDCHF" };
@@ -32,6 +46,10 @@ namespace MM
 
 	ExpertAdvisorAtama::~ExpertAdvisorAtama()
 	{
+		for (auto &data : trainingData)
+		{
+			delete data;
+		}
 	}
 
 	void ExpertAdvisorAtama::onNewTick(const std::string &currencyPair, const QuantLib::Date &date, const std::time_t &time)
@@ -144,8 +162,13 @@ namespace MM
 				std::time_t duration = period->getDuration();
 				assert(duration > 30 * ONEMINUTE);
 				std::time_t randomSampleTime = std::uniform_int_distribution<int>(30 * ONEMINUTE, duration)(randomEngine);
+				std::time_t evaluationTime = period->getStartTime() + randomSampleTime;
 
 				// now get the input vector for that time & day
+				TrainingData *data = new TrainingData(stocks.size() * inputValuesPerStock, 3);
+				bool result = getInputVector(stocks, evaluationTime, data);
+				assert(result == true);
+				trainingData.push_back(data);
 			}
 
 		}
@@ -166,29 +189,22 @@ namespace MM
 		}
 	}
 
-	std::vector<float> ExpertAdvisorAtama::getInputVector(std::vector<Stock*> &stocks, const std::time_t &time)
+	bool ExpertAdvisorAtama::getInputVector(std::vector<Stock*> &stocks, const std::time_t &time, TrainingData *trainingData)
 	{
-		std::vector<float> results;
-		results.reserve(stocks.size() * 7 * 2);
+		float *current = trainingData->inputValues;
 		for (Stock *&stock : stocks)
 		{
-			std::vector<float> stockResults;
-			stockResults = getInputVectorForStock(stock, time);
-
-			for (float &f : stockResults)
-				results.push_back(f);
+			bool valid = getInputVectorForStock(stock, time, current);
+			if (!valid) return false;
+			
+			current += inputValuesPerStock;
 		}
-		return results;
+		return true;
 	}
 
-	std::vector<float> ExpertAdvisorAtama::getInputVectorForStock(Stock *stock, const std::time_t &time)
+	bool ExpertAdvisorAtama::getInputVectorForStock(Stock *stock, const std::time_t &time, float *inputData)
 	{
 		std::vector<int> timePeriods = { 10 * ONESECOND, 30 * ONESECOND, ONEMINUTE, 5 * ONEMINUTE, 10 * ONEMINUTE, 30 * ONEMINUTE, ONEHOUR };
-		std::vector<float> results;
-		results.resize(timePeriods.size() * 2); // Low / High
-
-		for (size_t i = 0, ii = results.size(); i < ii; ++i)
-			results[i] = 0.0f;
 
 		size_t indexCounter = 0;
 		for (const int &periodDuration : timePeriods)
@@ -198,11 +214,11 @@ namespace MM
 			PossibleDecimal open = period.getOpen();
 			assert(close && open);
 			float delta =  *close - *open;
-			if (delta > 0.0f) results[indexCounter] = delta;
-			else results[indexCounter] = -delta;
+			if (delta > 0.0f) inputData[indexCounter] = delta;
+			else inputData[indexCounter+1] = -delta;
 			indexCounter += 2;
 		}
-		return results;
+		return true;
 	}
 
 	void ExpertAdvisorAtama::info_from_file(const std::string & filename, int *npatterns, int *ninput, int *noutput)

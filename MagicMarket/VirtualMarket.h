@@ -4,6 +4,7 @@
 #include <ql/types.hpp>
 #include <vector>
 #include <string>
+#include <queue>
 
 #include "Trade.h"
 
@@ -25,8 +26,13 @@ namespace MM
 		// called by the market
 		void onReceive(const std::string &message);
 		void execute();
+		// this bypasses the normal central station system
+		void proxySend(const std::string &message);
+		std::string proxyReceive();
 
 	private:
+		std::queue<std::string> pendingMessages;
+
 		void init();
 		void evaluateTrade(const Trade &trade);
 		int tradeCounter;
@@ -47,6 +53,7 @@ namespace MM
 		int wonTrades, lostTrades;
 		// config
 		QuantLib::Date date;
+		int fromHour, toHour;
 	};
 
 

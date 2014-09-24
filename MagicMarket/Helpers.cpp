@@ -28,6 +28,14 @@ namespace MM
 
 		return std::mktime(&timeinfo);
 	}
+	
+	std::string timeToString(std::time_t time)
+	{
+		char BUF[64];
+		size_t val = std::strftime(BUF, 64, "%H:%I:%M", std::gmtime(&time));
+		assert(val != 0);
+		return std::string(BUF);
+	}
 
 	namespace Math
 	{
