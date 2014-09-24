@@ -258,21 +258,19 @@ function addAnnotation(title, msg)
 {
 	if (title[0] == "&") title = htmlDecode(title);
 	var last_point = window.chart.series[0].data[window.chart.series[0].data.length - 1];
-	var last_annotation;
+	/*var last_annotation;
 	if (window.chart.series[1].data.length)
 	{
 		last_annotation = window.chart.series[1].data[window.chart.series[1].data.length - 1];
-		console.log ("Try to say-----");
-		console.log (last_annotation.x);
-		console.log (last_point[0]);
-		if ((last_annotation.x == last_point[0]) && (last_annotation.title == title))
+
+		if ((last_annotation.x == last_point.x) && (last_annotation.title == title))
 		{
 			last_annotation.text = last_annotation.text + "<br>" + msg;
 			return;
 		}
-	}	
+	}*/
 	var annotation = {
-		x: last_point[0],
+		x: last_point.x,
 		title: title,
 		text: msg
 	};

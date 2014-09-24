@@ -56,7 +56,7 @@ namespace MM
 		// okay, now execute whatever shit we need to satisfy our raving bunch of experts
 		
 		const float unanimityMargin = 0.25; // if the experts are very confident but all say different things - nope...
-		if (avgCertainty < 1.0) return;
+		if (ownCertainty < 1.0) return;
 		if (std::abs(avgMood) < unanimityMargin) return;
 		
 		// let's do this shit

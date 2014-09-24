@@ -3,6 +3,8 @@
 #include "Trade.h"
 #include "Stock.h"
 
+#include <algorithm>
+
 const int START_HOUR = 10;
 const int END_HOUR = 20;
 
@@ -43,24 +45,26 @@ namespace MM
 
 		if (!close || !open) return;
 
-		QuantLib::Decimal iOpenCloseDif = *open - *close;
+		QuantLib::Decimal iOpenCloseDif = *close - *open;
 		market.updateParameter("m30D", iOpenCloseDif / ONEPIP);
 
-		if (iOpenCloseDif > 0.00120)
-		{
-			//Trade *trade = market.newTrade(Trade::Sell(currencyPair, 0.015));
-			setMood(-1.0, 0.9);
+		QuantLib::Decimal magicNumber = 12.0 * ONEPIP;
+		QuantLib::Decimal confidenceFactor = iOpenCloseDif / magicNumber;
+		confidenceFactor = std::min(1.0, std::max(-1.0, confidenceFactor));
+
+		float mood = 0.0f;
+		if (confidenceFactor > 0.25)
+			mood = -1.0f;
+		else if (confidenceFactor < -0.25)
+			mood = +1.0f;
+		else
+			confidenceFactor = 0.25f; // for mood = 0.0
+		setMood(mood, std::abs(confidenceFactor));
+
+		if (confidenceFactor >= 1.0f)
 			say("@" + currencyPair + " I just sold.");
-		}
-		else
-		if (iOpenCloseDif < -0.00120)
-		{
-			//Trade *trade = market.newTrade(Trade::Buy(currencyPair, 0.015));
-			setMood(+1.0, 0.9);
+		else if (confidenceFactor <= -1.0f)
 			say("@" + currencyPair + " I just bought.");
-		}
-		else
-			setMood(0.0, 0.25); 
 	}
 
 
