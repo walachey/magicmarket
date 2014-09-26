@@ -13,6 +13,7 @@ namespace MM
 		virtual std::string getName() { return "ajeet"; };
 
 		virtual void onNewTick(const std::string &currencyPair, const QuantLib::Date &date, const std::time_t &time);
+		virtual bool acceptNewTrade(Trade *trade);
 	};
 
 }

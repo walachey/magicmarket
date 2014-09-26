@@ -188,6 +188,15 @@ namespace MM
 	Trade *Market::newTrade(Trade trade)
 	{
 		Trade *accepted = new Trade(trade);
+
+		// allow all experts to fool with the trade
+		for (ExpertAdvisor *&expert : experts)
+		{
+			if (expert->acceptNewTrade(accepted)) continue;
+			delete accepted;
+			return nullptr;
+		}
+
 		//trades.push_back(accepted);
 
 		int tradeType = -1;

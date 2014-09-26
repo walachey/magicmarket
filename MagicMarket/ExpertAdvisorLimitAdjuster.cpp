@@ -97,4 +97,30 @@ namespace MM
 			say(message);
 	}
 
+	bool ExpertAdvisorLimitAdjuster::acceptNewTrade(Trade *newTrade) 
+	{
+		// close all trades on the same symbol in the opposite direction
+		std::vector<Trade*> toClose;
+		for (Trade *&trade : market.getOpenTrades())
+		{
+			if (newTrade->currencyPair != trade->currencyPair) continue;
+			if (newTrade->type == trade->type) continue;
+
+			toClose.push_back(trade);
+		}
+
+		for (Trade *&trade : toClose)
+		{
+			market.closeTrade(trade);
+		}
+
+		if (!toClose.empty())
+		{
+			std::ostringstream os; os << "I closed " << toClose.size() << " fail trade" << ((toClose.size() == 1) ? "" : "s") << "!";
+			say(os.str());
+		}
+
+		return true;
+	}
+
 }; // namespace MM
