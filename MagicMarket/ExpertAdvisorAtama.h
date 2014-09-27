@@ -57,12 +57,25 @@ namespace MM
 		static const int inputValuesPerStock;
 
 	private:
+		enum State
+		{
+			NONE,
+			LOADING,
+			DEEP_PHASE1,
+			DEEP_PHASE2,
+			TRAINING,
+			READY
+		} currentState;
+		network *ANN;
 		std::vector<TrainingData*> trainingData;
 		std::vector<std::string> stocksToEvaluate;
+		std::vector<Stock*> stocks;
 		std::vector<QuantLib::Date> daysForInitialTraining;
 		void prepareTrainingData();
+		void executeTraining();
 		bool getInputVector(std::vector<Stock*> &stocks, const std::time_t &time, TrainingData *trainingData);
 		bool getInputVectorForStock(Stock *stock, const std::time_t &time, float *inputData);
+		bool getOutputVector(Stock *stock, const std::time_t &time, TrainingData *trainingData);
 	};
 
 };

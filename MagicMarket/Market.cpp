@@ -21,6 +21,7 @@ namespace filesystem = std::tr2::sys;
 #include "ExpertAdvisorRSI.h"
 #include "ExpertAdvisorBroker.h"
 #include "ExpertAdvisorDumbo.h"
+#include "ExpertAdvisorAtama.h"
 
 #include "thirdparty/json11.hpp"
 
@@ -104,6 +105,7 @@ namespace MM
 
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorDumbo()));
+		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorAtama()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorLimitAdjuster()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorBroker()));
 	}
@@ -354,7 +356,8 @@ namespace MM
 			jsonString.erase(0, 1);
 
 			// I don't know yet why this is necessary, TODO
-			if (isVirtual()) jsonString = jsonString.substr(0, jsonString.size() - 1);
+			if (jsonString[jsonString.length()-1] == '\0') // seems to happen only in virtual mode on debug
+				jsonString = jsonString.substr(0, jsonString.size() - 1);
 
 			std::string errorString;
 			json11::Json jsonData = json11::Json::parse(jsonString, errorString);

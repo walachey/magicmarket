@@ -219,7 +219,7 @@ namespace MM
 		std::ostringstream msg;
 		msg << "T VM " << day->getCurrencyPair() << " " << tick->getBid() << " " << tick->getAsk() << " " << tick->getTime();
 
-		int probabilityToSend = 10;
+		int probabilityToSend = 1;
 		if (day != tradingDay) probabilityToSend = 0;
 		market.send(msg.str(), probabilityToSend);
 	}
@@ -230,7 +230,7 @@ namespace MM
 
 		std::istringstream is(message);
 		std::string accountInfo, command;
-		is >> accountInfo >> command;
+		is >> accountInfo >> accountInfo >> command;
 
 		if (command == "set")
 		{

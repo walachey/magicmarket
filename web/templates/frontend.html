@@ -258,17 +258,20 @@ function addAnnotation(title, msg)
 {
 	if (title[0] == "&") title = htmlDecode(title);
 	var last_point = window.chart.series[0].data[window.chart.series[0].data.length - 1];
-	/*var last_annotation;
-	if (window.chart.series[1].data.length)
+	if (false)
 	{
-		last_annotation = window.chart.series[1].data[window.chart.series[1].data.length - 1];
-
-		if ((last_annotation.x == last_point.x) && (last_annotation.title == title))
+		var last_annotation;
+		if (window.chart.series[1].data.length)
 		{
-			last_annotation.text = last_annotation.text + "<br>" + msg;
-			return;
+			last_annotation = window.chart.series[1].data[window.chart.series[1].data.length - 1];
+
+			if ((last_annotation.x == last_point.x) && (last_annotation.title == title))
+			{
+				last_annotation.text = last_annotation.text + "<br>" + msg;
+				return;
+			}
 		}
-	}*/
+	}
 	var annotation = {
 		x: last_point.x,
 		title: title,
@@ -296,13 +299,13 @@ function onNewData(e)
 			if (parameters[1] == "VM")
 				window.is_virtual_mode = true;
 		}
-		if (parameters[2] == "EURUSD")
+		if (window.is_virtual_mode || (parameters[2] == "EURUSD"))
 		{
 			var timestamp = parseInt(parameters[5]);
 			var date = new Date(timestamp*1000);
 			var mean = (parseFloat(parameters[3]) + parseFloat(parameters[4])) / 2.0;
-			var lowhigh = [parseFloat(parameters[3]), parseFloat(parameters[4])];
-			var point = mean;
+			//var lowhigh = [parseFloat(parameters[3]), parseFloat(parameters[4])];
+			//var point = mean;
 			var x = date.getTime();
 			var last_point = window.chart.series[0].data[window.chart.series[0].data.length - 1];
 			if (last_point && (last_point.x == x))
@@ -311,9 +314,9 @@ function onNewData(e)
 			}
 			else
 			{
-				var shift = window.is_virtual_mode && (window.chart.series[0].data.length > 100);
-				var redraw = true;//!window.is_virtual_mode || (timestamp % 100 == 0);
-				window.chart.series[0].addPoint([x, mean], redraw, shift, false);
+				//var shift = false;//window.is_virtual_mode && (window.chart.series[0].data.length > 100);
+				//var redraw = !window.is_virtual_mode || (timestamp % 100 == 0);
+				window.chart.series[0].addPoint([x, mean], true, false, false);
 			}
 		}
 	}
@@ -378,6 +381,7 @@ function onNewData(e)
 		$("#accountdata").html(message);
 	}
 	else // if not processed, just add to ticker
+	if (!window.is_virtual_mode)
 	{
 		$(window.eventOutputContainer).prepend(
 		'<div class="tick">' + 

@@ -149,15 +149,18 @@ namespace MM
 	{
 		assert(dateFromTime(startTime) == dateFromTime(endTime)); // for now, assume we are always evaluating one single day
 		TradingDay *day = stock->getTradingDay(dateFromTime(endTime));
-		if (day == nullptr) return 0;
+		if (day == nullptr) return -1;
 
-		int max = 0;
+		int max = -1;
 
 		std::vector<Tick> &ticks = day->getTicks();
 		for (size_t i = 1, len = ticks.size(); i < len; ++i)		
 		{
 			Tick &current = ticks[i];
 			Tick &last = ticks[i - 1];
+
+			if (current.getTime() < startTime || current.getTime() > endTime) continue;
+
 			int timespan = current.getTime() - last.getTime();
 
 			if (timespan > max) max = timespan;
