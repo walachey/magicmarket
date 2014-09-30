@@ -33,6 +33,7 @@ namespace MM
 	Market::Market()
 	{
 		isVirtualModeEnabled = false;
+		lastTickTime = 0;
 	}
 
 
@@ -114,7 +115,7 @@ namespace MM
 	{
 		// for the experts' execute() callback
 		std::time_t startTime = (0), lastExecutionTime(0);
-		std::time_t lastTickTime = 0;
+
 		// for debugging & testing
 		bool onlyOnce = false;
 		
@@ -260,6 +261,7 @@ namespace MM
 	{
 		std::ostringstream os;
 		os << "! " << name
+			<< " " << getLastTickTime()
 			<< " " << msg;
 		send(os.str());
 	}
@@ -409,6 +411,8 @@ namespace MM
 				int randomDraw = rand() % 100;
 				if (randomDraw > probabilityToSendInVirtualMode) return;
 			}
+
+			if (virtualMarket->isSilent) return;
 		}
 
 		zmq_msg_t msg;

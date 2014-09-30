@@ -106,6 +106,7 @@ string Name()
 {
 	string acc_name = AccountName();
 	acc_name = StringSubstr(acc_name, 0, StringFind(acc_name, " "));
+	if (acc_name == 0 || acc_name == "") acc_name = "ERROR";
 	return acc_name;
 }
 
@@ -480,17 +481,23 @@ int executeCommands()
          }
       }
       
-      Print(trade_settings[0] + " " + trade_settings[1] + ", Open: " + trade_settings[2] + ", TP: " + trade_settings[3] + ", SL: " + trade_settings[4] + ", Lots: " + trade_settings[5]);
+      double takeprofit = NormalizeDouble(StrToDouble(trade_settings[3]), Digits);
+      double stoploss = NormalizeDouble(StrToDouble(trade_settings[4]), Digits);
+      double lots = NormalizeDouble(StrToDouble(trade_settings[5]), Digits);
+      double open = NormalizeDouble(StrToDouble(trade_settings[2]), Digits);
+      int type = StrToInteger(trade_settings[0]);
+      string pair = StringTrimLeft(trade_settings[1]);
+      Print("" + type + " '" + pair + "', Open: " + open + ", TP: " + takeprofit + ", SL: " + stoploss + ", Lots: " + lots);
       
       // Open trade.
       Print(NormalizeDouble(StrToDouble(trade_settings[3]), Digits));
-      ticket = OrderSend(StringTrimLeft(trade_settings[1]),
-                                       StrToInteger(trade_settings[0]), 
-                                       NormalizeDouble(StrToDouble(trade_settings[5]), Digits),
-                                       NormalizeDouble(StrToDouble(trade_settings[2]), Digits),
+      ticket = OrderSend(pair,
+                                       type, 
+                                       lots,
+                                       open,
                                        3,
-                                       NormalizeDouble(StrToDouble(trade_settings[4]), Digits),
-                                       NormalizeDouble(StrToDouble(trade_settings[3]), Digits),
+                                       stoploss,
+                                       takeprofit,
                                        NULL,
                                        0,
                                        TimeCurrent() + 3600,

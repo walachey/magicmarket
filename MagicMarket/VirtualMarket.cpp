@@ -8,6 +8,8 @@
 #include "Trade.h"
 #include "Tick.h"
 #include "TradingDay.h"
+#include "Stock.h"
+#include "ExpertAdvisor.h"
 
 MM::VirtualMarket *virtualMarket = nullptr;
 
@@ -48,6 +50,8 @@ namespace MM
 
 		std::string hourString = ini.GetValue("Virtual Market", "Hours", "0-0");
 		sscanf_s(hourString.c_str(), "%d-%d", &fromHour, &toHour);
+
+		isSilent = ini.GetValue("Virtual Market", "Silent", "0") == std::string("1");
 
 		// update market to match settings
 		market.setVirtual(true);
@@ -124,6 +128,8 @@ namespace MM
 		std::cout << "\tTRADES LOST\t" << lostTrades << std::endl;
 		std::cout << "\tTOTAL PROFIT\t" << totalProfitPips << std::endl;
 
+		evaluateMood();
+
 		getchar();
 		exit(1);
 	}
@@ -168,6 +174,8 @@ namespace MM
 				tickIndex = tradingDay->ticks.size();
 			}
 		}
+
+		takeMoodSnapshot();
 	}
 
 	void VirtualMarket::publishGeneralInfo()
@@ -284,5 +292,79 @@ namespace MM
 		std::string value = pendingMessages.front();
 		pendingMessages.pop();
 		return value;
+	}
+
+	void VirtualMarket::takeMoodSnapshot()
+	{
+		if (!lastTick) return;
+
+		std::time_t time = lastTick->getTime();
+		Stock *stock = tradingDay->stock;
+
+		int lookaheadTime = ONEHOUR;
+		std::time_t endTime = time + lookaheadTime;
+		if (endTime > tradingDay->ticks.back().getTime()) return;
+
+		TimePeriod period = stock->getTimePeriod(time, endTime);
+
+		PossibleDecimal open, high, low;
+		open = period.getOpen();
+		high = period.getHigh();
+		low = period.getLow();
+		if (!open) return;
+		assert(open && high && low);
+
+		QuantLib::Decimal highDiff = *high - *open;
+		QuantLib::Decimal lowDiff = *open - *low;
+
+		const QuantLib::Decimal optimumValue = 20.0 * ONEPIP;
+		moodFunctions["BUY"].push_back(std::min(highDiff / optimumValue, 1.0));
+		moodFunctions["SELL"].push_back(-std::min(lowDiff / optimumValue, 1.0));
+
+		// now assess all experts, too
+		for (ExpertAdvisor *&expert : market.getExperts())
+		{
+			moodFunctions[expert->getName()].push_back(expert->getLastCertainty() * expert->getLastMood());
+		}
+	}
+
+	void VirtualMarket::evaluateMood()
+	{
+		std::vector<double> &BUY = moodFunctions["BUY"];
+		std::vector<double> &SELL = moodFunctions["SELL"];
+
+		const double stddevBuy = Math::stddev(BUY);
+		const double stddevSell = Math::stddev(SELL);
+
+		std::cout << "\nMOOD EVALUATION-------------------------------" << std::endl;
+		for (auto iter = moodFunctions.begin(); iter != moodFunctions.end(); ++iter)
+		{
+			const std::string &name = iter->first;
+			const std::vector<double> &values = iter->second;
+			
+			std::vector<double> buySide = Math::covarVec(values, BUY);
+			std::vector<double> sellSide = Math::covarVec(values, SELL);
+			std::vector<double> total =  Math::max(buySide, sellSide);
+
+			
+			double stddev = Math::stddev(values);
+			double var = std::pow(Math::stddev(values), 2.0);
+
+			double buySideCovar = Math::sum(buySide) / (double)(buySide.size() - 1);
+			double buySideCorr = buySideCovar / (stddev * stddevBuy);
+			
+			double sellSideCovar = Math::sum(sellSide) / (double)(sellSide.size() - 1);
+			double sellSideCorr = sellSideCovar / (stddev * stddevSell);
+
+			if (!isnormal(buySideCovar)) continue;
+
+			double accuracy = Math::accuracy(values, BUY, SELL);
+
+			printf_s("* %s\tBUY %+4d%%\tSELL %+4d%%\tACCU %+4d%%\n", name.c_str(), int(100.0 * buySideCorr + 0.5), int(100.0 * sellSideCorr + 0.5), int(100.0 * accuracy + 0.5));
+			//std::cout << "\t\tstdbuy " << stddevBuy << "\tstdsell " << stddevSell << "\tstdsignal " << stddev << std::endl;
+		}
+
+		// save for python evaluation
+		Debug::serialize(moodFunctions, "saves/moodfun.json");
 	}
 };

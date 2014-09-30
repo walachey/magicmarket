@@ -76,7 +76,7 @@ namespace MM
 		{
 			ANN = new network(saveFilename.c_str(), false);
 			
-			// training = false;			
+			training = false;			
 		}
 		
 		if (training)
@@ -105,7 +105,13 @@ namespace MM
 		if (currentState != State::READY) return;
 
 		TrainingData data(stocks.size() * inputValuesPerStock, 3);
-		getInputVector(stocks, time, &data);
+		bool success = getInputVector(stocks, time, &data);
+		if (!success)
+		{
+			say("@There is a problem with stock data.");
+			return;
+		}
+
 		ANN->compute(data.inputValues, data.outputValues);
 
 		float sum = 0.0f;
@@ -361,6 +367,7 @@ namespace MM
 		std::vector<int> timePeriods = { 10 * ONESECOND, 30 * ONESECOND, ONEMINUTE, 5 * ONEMINUTE, 10 * ONEMINUTE, 30 * ONEMINUTE, ONEHOUR };
 
 		size_t indexCounter = 0;
+		float maximum = 0.0;
 		for (const int &periodDuration : timePeriods)
 		{
 			inputData[indexCounter] = 0.0f;
@@ -374,8 +381,14 @@ namespace MM
 			float delta =  *close - *open;
 			if (delta > 0.0f) inputData[indexCounter] = delta;
 			else inputData[indexCounter+1] = -delta;
+
+			if (std::abs(delta) > maximum) maximum = std::abs(delta);
 			indexCounter += 2;
 		}
+		if (maximum == 0.0f) return false;
+
+		for (size_t i = 0; i < indexCounter - 2; ++i)
+			inputData[i] /= maximum;
 		return true;
 	}
 

@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <queue>
+#include <map>
 
 #include "Trade.h"
 
@@ -30,6 +31,8 @@ namespace MM
 		void proxySend(const std::string &message);
 		std::string proxyReceive();
 
+		// config
+		bool isSilent;
 	private:
 		std::queue<std::string> pendingMessages;
 
@@ -48,12 +51,17 @@ namespace MM
 		// the secondary currencies follow the timing of the primary one
 		std::vector<TradingDay*> secondaryCurrencies;
 
-
-		QuantLib::Decimal totalProfitPips;
-		int wonTrades, lostTrades;
 		// config
 		QuantLib::Date date;
 		int fromHour, toHour;
+		
+
+		// evaluation and statistics
+		QuantLib::Decimal totalProfitPips;
+		int wonTrades, lostTrades;
+		void takeMoodSnapshot();
+		void evaluateMood();
+		std::map<std::string, std::vector<double>> moodFunctions;
 	};
 
 

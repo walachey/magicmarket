@@ -51,13 +51,15 @@ namespace MM
 
 		const float confidenceMargin = 0.6f;
 		float ownCertainty = std::min(1.0f, avgCertainty / confidenceMargin);
-		setMood(avgMood, ownCertainty);
+		const float unanimityMargin = 0.25; // if the experts are very confident but all say different things - nope...
+		float ownMood = 0.0f;
+		if (avgMood <= -unanimityMargin) ownMood = -1.0f;
+		else if (avgMood >= +unanimityMargin) ownMood = +1.0f;
+		setMood(ownMood, ownCertainty);
 
 		// okay, now execute whatever shit we need to satisfy our raving bunch of experts
-		
-		const float unanimityMargin = 0.25; // if the experts are very confident but all say different things - nope...
 		if (ownCertainty < 1.0) return;
-		if (std::abs(avgMood) < unanimityMargin) return;
+		if (ownMood == 0.0f) return;
 		
 		// let's do this shit
 		Trade::Type type = (avgMood > 0.0f) ? Trade::T_BUY : Trade::T_SELL;

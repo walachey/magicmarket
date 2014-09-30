@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 namespace MM
 {
@@ -25,5 +26,18 @@ namespace MM
 	{
 		template<typename T> std::vector<T> derive(const std::vector<T> &values);
 		template<typename T> T sum(const std::vector<T> &values);
+		template<typename T> T avg(const std::vector<T> &values);
+		template<typename T> T stddev(const std::vector<T> &values);
+		template<typename T> void normalize(const std::vector<T> &values);
+		template<typename T> std::vector<T> max(const std::vector<T> &values1, const std::vector<T> &values2);
+		template<typename T> std::vector<T> mult(const std::vector<T> &values1, const std::vector<T> &values2);
+		template<typename T> std::vector<T> covarVec(const std::vector<T> &values1, const std::vector<T> &values2);
+		template<typename T> T covarFac(const std::vector<T> &values1, const std::vector<T> &values2);
+		template<typename T> T accuracy(const std::vector<T> &values, const std::vector<T> &upper, const std::vector<T> &lower);
+	};
+
+	namespace Debug
+	{
+		void serialize(const std::map<std::string, std::vector<double>> &series, std::string filename);
 	};
 };

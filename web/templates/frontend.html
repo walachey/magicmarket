@@ -170,6 +170,9 @@ $(document).ready(function()
 	addExpert("atama", ["&#x1f64b;", "&#128582;", "&#128581;", "&#x1f647;"]);	
 	addExpert("lika", ["&#x1f4b1;", "&#x1f4c8;", "&#x1f4c9;", "&#x1f4a4;"]);	
 	addExpert("dumbo", ["&#x1f4b8;", "&#x1f44d;", "&#x1f44e;", "&#x1f440;"]); // x1f4b8, x1f445
+	
+	window.is_virtual_mode = false;
+	window.first_tick = true;
 });
 
 function updateParameter(par, value)
@@ -196,7 +199,7 @@ function getExpert(name)
 	return null;
 }
 
-function expertSay(name, text)
+function expertSay(name, timestamp, text)
 {
 	var expert = getExpert(name);
 	var bubble = expert.element.children(".expertbubble");
@@ -206,7 +209,7 @@ function expertSay(name, text)
 	bubble.append("<div>" + text + "</div>");
 	
 	if (text[0] == "@")
-		addAnnotation(expert.faces[0], text);
+		addAnnotation(expert.faces[0], timestamp, text);
 }
 
 function updateExpert(name, opinion, certainty)
@@ -254,10 +257,21 @@ function addExpert(name, faces)
 	window.experts.push(expert);
 }
 
-function addAnnotation(title, msg)
+function addAnnotation(title, timestamp, msg)
 {
 	if (title[0] == "&") title = htmlDecode(title);
-	var last_point = window.chart.series[0].data[window.chart.series[0].data.length - 1];
+	var x = 0;
+	if (timestamp)
+	{
+		var date = new Date(timestamp*1000);
+		x = date.getTime();
+	}
+	else
+	{
+		var last_point = window.chart.series[0].data[window.chart.series[0].data.length - 1];
+		if (last_point)
+			x = last_point.x;
+	}
 	if (false)
 	{
 		var last_annotation;
@@ -265,7 +279,7 @@ function addAnnotation(title, msg)
 		{
 			last_annotation = window.chart.series[1].data[window.chart.series[1].data.length - 1];
 
-			if ((last_annotation.x == last_point.x) && (last_annotation.title == title))
+			if ((last_annotation.x == x) && (last_annotation.title == title))
 			{
 				last_annotation.text = last_annotation.text + "<br>" + msg;
 				return;
@@ -273,14 +287,11 @@ function addAnnotation(title, msg)
 		}
 	}
 	var annotation = {
-		x: last_point.x,
+		x: x,
 		title: title,
 		text: msg
 	};
 	window.chart.series[1].addPoint(annotation, true, false);
-	
-	window.is_virtual_mode = false;
-	window.first_tick = true;
 }
 
 function onNewData(e)
@@ -293,11 +304,14 @@ function onNewData(e)
 	{
 		var parameters = e.data.split(" ");
 
-		if (!window.first_tick)
+		if (window.first_tick)
 		{
 			window.first_tick = false;
 			if (parameters[1] == "VM")
+			{
 				window.is_virtual_mode = true;
+				$(".graph").css("border", "10px solid #500050");
+			}
 		}
 		if (window.is_virtual_mode || (parameters[2] == "EURUSD"))
 		{
@@ -373,8 +387,8 @@ function onNewData(e)
 	else if (messageType == "!")
 	{
 		var parameters = e.data.split(" ");
-		var len = parameters[0].length + parameters[1].length + 2;
-		expertSay(parameters[1], e.data.substring(len));
+		var len = parameters[0].length + parameters[1].length + parameters[2].length + 3;
+		expertSay(parameters[1], parseInt(parameters[2]), e.data.substring(len));
 	}
 	else if (messageType == "A")
 	{
@@ -449,6 +463,20 @@ function prepareChartGRAPHAEL()
 	});
 }
 
+function showMoodgraph()
+{
+	if ($("#moodimg").length)
+	{
+		$("#moodimg").attr("src", "/moodgraph.png?" + Math.random());
+		$("#moodgraph").effect("shake");
+	}
+	else
+	{
+		$("#moodgraph").html('<img id="moodimg" src="/moodgraph.png" style="max-width:100%; height: auto;">');
+		$("#moodgraph").show();
+	}
+}
+
 </script>
 # endblock
 
@@ -462,18 +490,20 @@ function prepareChartGRAPHAEL()
 </div>
 
 <div id="experts" class="col-xs-6 col-md-2 infocontainer col-md-push-8">
+<span class="btn btn-default" onclick="showMoodgraph();">mood chart &#x1f4ca;</span>
 <div class="heading"><h3>Experts</h3></div>
 <hr>
 <table id="expertcontainer">&nbsp;</table>
 </div>
 
-<div class="col-xs-12 col-md-8 col-md-pull-2">
+<div class="col-xs-12 col-md-8 col-md-pull-2" id="centerdiv">
 <h1 style="width:100%">Real Time Overview<small id="accountdata" class="pull-right"></small></h1>
 <h2 class="lead">Overview over money.<small> And making more money.</small></h2>
 <div id="parameters"><strong>Parameters: </strong></div>
 <div class="graph" id="graphcontainer">
 graph goes here
 </div>
+<div class="graph" id="moodgraph" style="display:none;min-height:0px;">&nbsp;</div>
 <hr>
 <div class="infocontainer">
 	<div class="heading">

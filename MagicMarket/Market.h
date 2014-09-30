@@ -62,7 +62,9 @@ namespace MM
 		std::string getSaveFolderName() { return "saves"; }
 
 		void addEvent(const Event &e);
-		std::vector<ExpertAdvisor*> &getExperts() { return experts; };
+		std::vector<ExpertAdvisor*> &getExperts() { return experts; }
+		
+		std::time_t getLastTickTime() { return lastTickTime; }
 	private:
 		Account account;
 
@@ -75,6 +77,7 @@ namespace MM
 
 		// to notify agents
 		std::vector<Event> events;
+		std::time_t lastTickTime;
 
 		// for the communication protocol
 		void *zmqContext;
