@@ -74,9 +74,10 @@ namespace MM
 
 		for (int i = 9; i >= 7; i--)
 			sum += v.at(i) - v.at(i - 1);
-		market.updateParameter("MA", sum);
+		market.updateParameter("MA", sum / ONEPIP);
+		double maMargin = 30.0 * ONEPIP;
 		//this is where the magic happens - dif between last 3 ma's > 50?
-		if (sum > 0.0050)
+		if (sum > maMargin)
 		{
 			setMood(1.0, 0.95);
 			if (buyCount == 0)
@@ -85,7 +86,7 @@ namespace MM
 				say("New trade: I just bought " + currencyPair);
 			}
 		}
-		else if (sum < -0.0050)
+		else if (sum < -maMargin)
 		{
 			setMood(-1.0, 0.95);
 			if (sellCount == 0)

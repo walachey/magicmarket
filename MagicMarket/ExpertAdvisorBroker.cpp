@@ -31,6 +31,7 @@ namespace MM
 		std::vector<ExpertAdvisor*> &experts = market.getExperts();
 		float avgMood = 0.0f;
 		float certaintySum = 0.0f;
+		float avgCertaintyNormalized = 0.0f;
 		int expertCount = 0;
 
 		for (ExpertAdvisor *& expert : experts)
@@ -39,6 +40,7 @@ namespace MM
 			if (expert->getLastCertainty() == 0.0f) continue;
 
 			avgMood += expert->getLastCertainty() * expert->getLastMood();
+			avgCertaintyNormalized += expert->getLastCertainty() * expert->getLastMood();
 			certaintySum += expert->getLastCertainty();
 			expertCount += 1;
 		}
@@ -47,9 +49,11 @@ namespace MM
 			avgMood /= certaintySum;
 		float avgCertainty = 0.0f;
 		if (expertCount != 0)
-			avgCertainty = certaintySum / (float)expertCount;
+		{
+			avgCertainty = std::abs(avgCertaintyNormalized) / (float)expertCount;
+		}
 
-		const float confidenceMargin = 0.6f;
+		const float confidenceMargin = 0.4f;
 		float ownCertainty = std::min(1.0f, avgCertainty / confidenceMargin);
 		const float unanimityMargin = 0.25; // if the experts are very confident but all say different things - nope...
 		float ownMood = 0.0f;
