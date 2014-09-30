@@ -104,5 +104,5 @@ if __name__ == "__main__":
 	app.jinja_env.line_statement_prefix = '#'
 	app.jinja_env.line_comment_prefix = '##'
 
-	app.run("", 5000, threaded=True)
+	app.run(host="0.0.0.0", port=5000, threaded=True)
 	# server.serve_forever()

@@ -11,6 +11,7 @@ namespace MM
 {
 	ExpertAdvisorMAAnalyser::ExpertAdvisorMAAnalyser()
 	{
+		lastMASave = 0;
 	}
 
 
@@ -20,7 +21,7 @@ namespace MM
 
 
 
-	void ExpertAdvisorMAAnalyser::execute(const std::time_t &secondsSinceStart, const QuantLib::Date &date, const std::time_t &time)
+	void ExpertAdvisorMAAnalyser::execute(const std::time_t &secondsSinceStart, const std::time_t &time)
 	{
 		std::string currencyPair = "EURUSD";
 		std::tm *tm = std::gmtime(&time);
@@ -32,16 +33,22 @@ namespace MM
 		float mv = 0;
 		for (int i = 0; i < COUNT; i++)
 		{
-			mv += *(stock->getTimePeriod(time - PERIOD * (i + 1), time - PERIOD * i).getClose());
+			PossibleDecimal close = stock->getTimePeriod(time - PERIOD * (i + 1), time - PERIOD * i).getClose();
+			if (!close) return;
+			mv += *close;
 		}
 
-		if (secondsSinceStart % (60 * PERIOD) == 0)
+		std::time_t currentTime = secondsSinceStart / (60 * PERIOD);
+		bool saveNewValue = currentTime > lastMASave;
+		float value = mv / (float)COUNT;
+		if (saveNewValue)
 		{
-			v.push_back(mv / COUNT);
+			lastMASave = currentTime;
+			v.push_back(value);
 		}
-		else
+		else if (!v.empty())
 		{
-			v.back() = mv / COUNT;
+			v.back() = value;
 		}
 
 		if (v.size() < 10)
@@ -65,13 +72,13 @@ namespace MM
 
 		float sum = 0;
 
-		for (int i = 9; i > 7; i++)
+		for (int i = 9; i >= 7; i--)
 			sum += v.at(i) - v.at(i - 1);
-			
+		market.updateParameter("MA", sum);
 		//this is where the magic happens - dif between last 3 ma's > 50?
 		if (sum > 0.0050)
 		{
-			setMood(1, 95);
+			setMood(1.0, 0.95);
 			if (buyCount == 0)
 			{
 				Trade *trade = market.newTrade(Trade::Buy(currencyPair, 0.01));
@@ -80,7 +87,7 @@ namespace MM
 		}
 		else if (sum < -0.0050)
 		{
-			setMood(-1, 95);
+			setMood(-1.0, 0.95);
 			if (sellCount == 0)
 			{
 				Trade *trade = market.newTrade(Trade::Sell(currencyPair, 0.01));
@@ -89,7 +96,7 @@ namespace MM
 
 		}
 		else
-			setMood(0, 0);
+			setMood(0, 0.20);
 
 	}
 

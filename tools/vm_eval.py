@@ -25,7 +25,8 @@ def evalMood():
 		"dumbo" : "#00aaaa",
 		"karl" : "#009999",
 		"ajeet" : "w",
-		"atama" : "#aa99aa"
+		"atama" : "#aa99aa",
+		"bob" : "#660066"
 	}
 	for AI in data:
 		if not x_values:
