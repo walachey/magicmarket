@@ -85,6 +85,9 @@
     <ClCompile Include="VirtualMarket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ExpertAdvisorMAAnalyser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -122,9 +125,8 @@
     </ClInclude>
     <ClInclude Include="ExpertAdvisorRSI.h" />
     <ClInclude Include="ExpertAdvisorBroker.h" />
-    <ClInclude Include="ExpertAdvisorDumbo.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="VirtualMarket.h" />
+    <ClInclude Include="ExpertAdvisorDumbo.h" />
+    <ClInclude Include="ExpertAdvisorMAAnalyser.h" />
   </ItemGroup>
 </Project>
