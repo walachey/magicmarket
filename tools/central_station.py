@@ -95,17 +95,24 @@ class MetaTraderBridge:
 	def flushMessages(self):
 		assert self.metatraders
 		error_traders = []
+		_, ready_traders, _ = select.select([], self.metatraders, [], 0.01)
+		if not ready_traders:
+			return
+			
 		try:
 			while not self.messages_out.empty():
 				msg = self.messages_out.get(block=False)
 				if not msg:
 					return
-				print "@MT\t" + msg
+				#print "@MT\t" + msg
 				# always make sure to null-terminate messages
 				msg = msg + '\00'
-				for metatrader in self.metatraders:
+				for metatrader in ready_traders:
 					try:
-						metatrader.sendall(msg)					
+						metatrader.sendall(msg)
+					except socket.timeout:
+						# that's allrighty
+						continue
 					except:
 						error_traders.append(metatrader)
 						traceback.print_exc()
@@ -122,8 +129,12 @@ class MetaTraderBridge:
 			self.current_messages_in[et] = None
 			try:
 				self.metatraders.remove(et)
-			except:
+				et.shutdown(socket.SHUT_RDWR)
+				et.close()
+			except Exception as e:
 				print "ERROR when removing Metatrader from list!"
+				print str(e)
+				traceback.print_exc()
 		print "Metatrader disconnected. Now " + str(len(self.metatraders))
 	
 	def isReadyToReceive(self):
@@ -139,32 +150,33 @@ class MetaTraderBridge:
 		readers, writers, errors = select.select(self.metatraders, [], self.metatraders, 0.05)
 		if errors:
 			self.onConnectionError(errors)
-		buffer_size = 1
+		buffer_size = 256
 		error_traders = []
 		for metatrader in readers:
 			current_msg = self.current_messages_in[metatrader]
 			try:
-				while True: # allow for a stream of data
+				if True: # allow for a stream of data
 					data = metatrader.recv(buffer_size)
 					if not data: # I don't know how this can happen
+						print "\thow can this happen"
 						self.onConnectionError([metatrader])
 						return
-
-					# check if this terminates a message
-					terminating_position = data.find('\00')
-					old_message_len = len(current_msg)
 					
 					current_msg += data
 					
-					# new complete message?
-					if terminating_position != -1:
-						truncation_position = old_message_len + terminating_position
-						complete_message = current_msg[:truncation_position]
-						current_msg = current_msg[truncation_position+1:]
+					while True:
+						# check if this terminates a message
+						terminating_position = current_msg.find('\00',0)
+						if terminating_position == -1:
+							break
+						# new complete message?
+						complete_message = current_msg[:terminating_position]
+						current_msg = current_msg[terminating_position+1:]
 						# add the new message to the queue
 						self.messages_in.put(complete_message)
 
 			except socket.timeout:
+				print "timeout, but ignoring.."
 				# that's alright
 				continue
 			except:
@@ -261,7 +273,7 @@ if __name__ == "__main__":
 			
 			# pipe to metatrader
 			metatrader.sendMessage(msg)
-			print "-> MT: " + msg
+			#print "-> MT: " + msg
 			
 			# route to all connected things, too
 			station.sendMessage(msg)

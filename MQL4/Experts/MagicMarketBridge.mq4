@@ -79,6 +79,7 @@ string socketReceive()
 int socketSend(string message)
 {
 	if (bridgeSocket == -1) return -1;
+	if (message == 0 || message == "") return 0;
 	
 	int ret = sock_send(bridgeSocket, message);
 	
@@ -642,9 +643,11 @@ string lookup_open_orders()
    
    // Look up the total number of open orders.
    int total_orders = OrdersTotal();
+   int max_transmit = total_orders;
+   if (max_transmit > 10) max_transmit = 10;
 
    // Build a json-like string for each order and add it to eh current_orders return string.  
-   for(int position=0; position < total_orders; position++)
+   for(int position=0; position < max_transmit; position++)
    {
       if(OrderSelect(position,SELECT_BY_POS)==false) continue;
       if (position > 0)

@@ -82,8 +82,8 @@ namespace MM
 			setMood(1.0, 0.95);
 			if (buyCount == 0)
 			{
-				Trade *trade = market.newTrade(Trade::Buy(currencyPair, 0.01));
-				say("New trade: I just bought " + currencyPair);
+				//Trade *trade = market.newTrade(Trade::Buy(currencyPair, 0.01));
+				say("I just bought " + currencyPair);
 			}
 		}
 		else if (sum < -maMargin)
@@ -91,8 +91,8 @@ namespace MM
 			setMood(-1.0, 0.95);
 			if (sellCount == 0)
 			{
-				Trade *trade = market.newTrade(Trade::Sell(currencyPair, 0.01));
-				say("New trade: I just sold " + currencyPair);
+				//Trade *trade = market.newTrade(Trade::Sell(currencyPair, 0.01));
+				say("I just sold " + currencyPair);
 			}
 
 		}

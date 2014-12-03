@@ -116,7 +116,7 @@ namespace MM
 
 		if (!toClose.empty())
 		{
-			std::ostringstream os; os << "I closed " << toClose.size() << " fail trade" << ((toClose.size() == 1) ? "" : "s") << "!";
+			std::ostringstream os; os << "@I closed " << toClose.size() << " fail trade" << ((toClose.size() == 1) ? "" : "s") << "!";
 			say(os.str());
 		}
 

@@ -62,9 +62,9 @@ namespace MM
 		setMood(mood, std::abs(confidenceFactor));
 
 		if (confidenceFactor >= 1.0f)
-			say("@" + currencyPair + " I just sold.");
+			say("" + currencyPair + " I just sold.");
 		else if (confidenceFactor <= -1.0f)
-			say("@" + currencyPair + " I just bought.");
+			say("" + currencyPair + " I just bought.");
 	}
 
 

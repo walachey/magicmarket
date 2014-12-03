@@ -17,7 +17,8 @@ namespace MM
 
 	void ExpertAdvisor::say(std::string message)
 	{
-		if (message == lastMessage) return;
+		if (message.empty()) return;
+		if (message[0] != '@' && message == lastMessage) return;
 		lastMessage = message;
 
 		market.chat(getName(), message);

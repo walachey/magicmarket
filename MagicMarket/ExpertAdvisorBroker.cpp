@@ -70,16 +70,18 @@ namespace MM
 		std::string action = (type == Trade::T_BUY) ? "buy" : "sell";
 		// but only if we don't already have 2 trades of that type pending
 		int existingTradeCount = 0;
+		int otherTypeTradeCount = 0;
 		std::vector<Trade*> &currentTrades = market.getOpenTrades();
 
 		for (Trade *& trade : currentTrades)
 		{
 			if (trade->currencyPair != currencyPair) continue;
-			if (trade->type != type) continue;
-			++existingTradeCount;
+			if (trade->type != type)
+				++otherTypeTradeCount;
+			else ++existingTradeCount;
 		}
 
-		if (existingTradeCount >= 2)
+		if (existingTradeCount >= 2 && otherTypeTradeCount == 0)
 		{
 			
 			std::ostringstream os; os << "Would " << action << " but there are already " << existingTradeCount << " trades.";

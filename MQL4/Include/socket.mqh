@@ -91,11 +91,14 @@ int sock_receive(int msgsock, int buffer_size, string &outString) {
           
 int sock_send(int msgsock, string response) {
    int SendBuffer[];
-   ArrayResize(SendBuffer,StringLen(response)+1); 
+   StringAdd(response, CharToStr(0));
+   //StringAdd(response, "#");
+   int messageSize = StringLen(response);
+   ArrayResize(SendBuffer,messageSize); 
    str2struct(SendBuffer,ArraySize(SendBuffer)<<18,response);
-   SendBuffer[StringLen(response)] = 0;
-   int ret = send(msgsock,SendBuffer,ArraySize(SendBuffer),0);
-   if (ret == SOCKET_ERROR) {
+   //SendBuffer[messageSize] = 0; // terminate with NULL
+   int ret = send(msgsock,SendBuffer, messageSize,0);
+   if (ret <= 0) {
       Print("Server: send() failed: error "+WSAGetLastError());
       err(ret);
    } else {
