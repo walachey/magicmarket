@@ -108,7 +108,7 @@ namespace MM
 		bool success = getInputVector(stocks, time, &data);
 		if (!success)
 		{
-			say("@There is a problem with stock data.");
+			say("There is a problem with stock data.");
 			return;
 		}
 

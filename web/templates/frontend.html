@@ -215,7 +215,7 @@ function expertSay(name, timestamp, text)
 
 function updateExpert(name, opinion, certainty)
 {
-	var what = "lol";
+	var what = "...";
 	if (opinion < 0.0) what = "sell";
 	else if (opinion > 0.0) what = "buy";
 	
@@ -244,7 +244,7 @@ function addExpert(name, faces)
 	div = div + '<div class="expertbubble"><span>This is my good opinön:</span></div>';
 	div = div + '<span>' + name + '</span>';
 	div = div + '<div class="face">' + faces[0] + '</div>';
-	div = div + '<div class="opinion">idk lol</div>';
+	div = div + '<div class="opinion">idk ...</div>';
 	div = div + '</div>';
 	$("#expertcontainer").append(div);
 	var expert = 
