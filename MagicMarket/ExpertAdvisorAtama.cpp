@@ -2,6 +2,10 @@
 
 #include <ql/time/date.hpp>
 
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <fstream>
 #include <random>
 #include <algorithm>
 
@@ -16,6 +20,8 @@ namespace filesystem = std::tr2::sys;
 
 namespace MM
 {
+	namespace std = ::std;
+
 	const int ExpertAdvisorAtama::inputValuesPerStock = 7 * 2;
 
 	ExpertAdvisorAtama::TrainingData::TrainingData(int noInput, int noOutput)
@@ -74,7 +80,7 @@ namespace MM
 
 		if (filesystem::exists(savePath))
 		{
-			ANN = new network(saveFilename.c_str(), false);
+			ANN = new ANN::network(saveFilename.c_str(), false);
 			
 			training = false;			
 		}
@@ -148,7 +154,7 @@ namespace MM
 
 		if (!ANN)
 		{
-			ANN = new network(network::LOGISTIC, 4,
+			ANN = new ANN::network(ANN::network::LOGISTIC, 4,
 				stocksToEvaluate.size() * inputValuesPerStock,
 				stocksToEvaluate.size() * (inputValuesPerStock - 2),
 				stocksToEvaluate.size() * (inputValuesPerStock - 4),
@@ -156,7 +162,7 @@ namespace MM
 			ANN->randomize(0.5);
 		}
 
-		trainer ANNTrainer(ANN, "saves/ANN_error.log", "saves/ANN_accuracy.log");
+		ANN::trainer ANNTrainer(ANN, "saves/ANN_error.log", "saves/ANN_accuracy.log");
 		ANNTrainer.set_iomanager(this);
 		ANNTrainer.set_max_epochs(2500);
 		ANNTrainer.set_min_error(0.1);

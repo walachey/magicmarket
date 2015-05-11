@@ -1,11 +1,9 @@
 #pragma once
 #include "ExpertAdvisor.h"
 
-// for some fucking stupid reason the following two files use /using namespace std;/
-//namespace ANN {
-#include <network.h>
-#include <iomanage.h>
-//};
+#include <vector>
+
+#include <lwneuralnetplus\all.h>
 
 /*
 	Setup of the neural networks:
@@ -29,7 +27,7 @@ namespace MM
 {
 	class Stock;
 
-	class ExpertAdvisorAtama : public ExpertAdvisor, private iomanage
+	class ExpertAdvisorAtama : public ExpertAdvisor, private ANN::iomanage
 	{
 		class TrainingData
 		{
@@ -66,7 +64,7 @@ namespace MM
 			TRAINING,
 			READY
 		} currentState;
-		network *ANN;
+		ANN::network *ANN;
 		std::vector<TrainingData*> trainingData;
 		std::vector<std::string> stocksToEvaluate;
 		std::vector<Stock*> stocks;
