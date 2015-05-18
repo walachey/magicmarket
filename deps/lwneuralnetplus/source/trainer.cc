@@ -840,14 +840,14 @@ namespace ANN
 		printf("Average error : %.3f\n", avg_error);
 		if (accuracy_mode > 0) {
 			float perc = 100.0 * wrong / npatterns;
-			printf("\nErrors: %i out of %i (%.3f\%)\n", wrong, npatterns, perc);
+			printf("\nErrors: %i out of %i (%.3f%%)\n", wrong, npatterns, perc);
 			if (accuracy_mode == 1) {
 				printf("Binary Acc: ");
 			}
 			else {
 				printf("Max Guess Acc: ");
 			}
-			printf("%.3f\%\n", 100.0 - perc);
+			printf("%.3f%%\n", 100.0 - perc);
 		}
 		free(output);
 		return avg_error;

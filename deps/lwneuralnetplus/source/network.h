@@ -156,6 +156,14 @@ namespace ANN
 		 */
 		float get_weight(int l, int nl, int nu) const;
 
+		/*!\brief Set a weight of a network.
+		* \param l Number of lower layer.
+		* \param nl Number of neuron in the lower layer.
+		* \param nu Number of neuron in the next layer.
+		* \param weight New weight of the affected neuron.
+		*/
+		void set_weight(int l, int nl, int nu, float weight);
+
 
 		/*!\brief Retrieve the number of patterns in batch training
 		 * \return number of patterns

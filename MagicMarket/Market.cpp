@@ -26,6 +26,8 @@ namespace filesystem = std::tr2::sys;
 
 #include "thirdparty/json11.hpp"
 
+#include "DeepLearningTest.h"
+
 MM::Market market;
 
 namespace MM
@@ -142,6 +144,10 @@ namespace MM
 			{
 				//newTrade(MM::Trade::Sell("EURUSD", 0.01));
 				onlyOnce = true;
+
+				DeepLearningTest test;
+				test.run();
+				exit(1);
 			}
 
 			// if new things happened, notify the experts

@@ -161,7 +161,7 @@ namespace MM
 
 			if (current.getTime() < startTime || current.getTime() > endTime) continue;
 
-			int timespan = current.getTime() - last.getTime();
+			int timespan = static_cast<int>(current.getTime() - last.getTime());
 
 			if (timespan > max) max = timespan;
 		}

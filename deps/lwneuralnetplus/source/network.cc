@@ -440,6 +440,23 @@ network::get_weight (int l, int nl, int nu) const
   return layer[l].neuron[nu].weight[nl];
 }
 
+void
+network::set_weight(int l, int nl, int nu, float weight)
+{
+	if ((l <= 0) || (l >= no_of_layers)) {
+		return;
+	}
+	if ((nu<0) || (nu >= layer[l].no_of_neurons)) {
+		return;
+	}
+
+	if ((nl<0) || (nl >= layer[l - 1].no_of_neurons)) {
+		return;
+	}
+
+	layer[l].neuron[nu].weight[nl] = weight;
+}
+
 /*!\brief Set activation function of the network.
  * \param num_func Number of function (network::LOGISTIC | network::TANH)
  */

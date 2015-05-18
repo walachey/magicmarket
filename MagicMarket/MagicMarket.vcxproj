@@ -51,13 +51,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <PreprocessorDefinitions>ZMQ_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FANN_NO_DLL;ZMQ_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BufferSecurityCheck>true</BufferSecurityCheck>
     </ClCompile>
     <Link>
@@ -90,6 +90,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\deps\fann\floatfann.c" />
     <ClCompile Include="..\deps\lwneuralnetplus\source\iomanage.cc" />
     <ClCompile Include="..\deps\lwneuralnetplus\source\iomanagebinary.cc" />
     <ClCompile Include="..\deps\lwneuralnetplus\source\iomanagelwnnfann.cc" />
@@ -98,6 +99,8 @@
     <ClCompile Include="..\deps\lwneuralnetplus\source\sigmoidal.cc" />
     <ClCompile Include="..\deps\lwneuralnetplus\source\trainer.cc" />
     <ClCompile Include="Account.cpp" />
+    <ClCompile Include="DeepLearningNetwork.cpp" />
+    <ClCompile Include="DeepLearningTest.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="ExpertAdvisor.cpp" />
     <ClCompile Include="ExpertAdvisorAtama.cpp" />
@@ -118,6 +121,7 @@
     <ClCompile Include="VirtualMarket.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\deps\lwneuralnetplus\all.h" />
     <ClInclude Include="..\deps\lwneuralnetplus\source\iomanage.h" />
     <ClInclude Include="..\deps\lwneuralnetplus\source\iomanagebinary.h" />
     <ClInclude Include="..\deps\lwneuralnetplus\source\iomanagelwnnfann.h" />
@@ -125,6 +129,8 @@
     <ClInclude Include="..\deps\lwneuralnetplus\source\shuffle.h" />
     <ClInclude Include="..\deps\lwneuralnetplus\source\trainer.h" />
     <ClInclude Include="Account.h" />
+    <ClInclude Include="DeepLearningNetwork.h" />
+    <ClInclude Include="DeepLearningTest.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="ExpertAdvisor.h" />
     <ClInclude Include="ExpertAdvisorAtama.h" />
@@ -135,6 +141,7 @@
     <ClInclude Include="ExpertAdvisorRSI.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Market.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Stock.h" />
     <ClInclude Include="thirdparty\json11.hpp" />
     <ClInclude Include="Tick.h" />
@@ -142,6 +149,9 @@
     <ClInclude Include="Trade.h" />
     <ClInclude Include="TradingDay.h" />
     <ClInclude Include="VirtualMarket.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MagicMarket.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -87,19 +87,20 @@ namespace MM
 			return std::sqrt(sum / (T)(values.size() - 1));
 		}
 
-		template<typename T> void normalize(const std::vector<T> &values)
+		template<typename T> void normalize(std::vector<T> &values)
 		{
 			T max = 0.0;
 			for (auto &val : values)
 			{
-				if (val > max) max = val;
+				const T absValue = std::abs(val);
+				if (absValue > max) max = absValue;
 			}
 			if (max == 0.0) return; // nothing to do
 
 			for (auto &val : values)
 			{
 				val /= max;
-				assert(val >= (T)0.0 && val <= (T)1.0);
+				assert(val >= (T)-1.0 && val <= (T)1.0);
 			}
 		}
 
@@ -169,12 +170,24 @@ namespace MM
 		template QuantLib::Decimal sum<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
 		template QuantLib::Decimal avg<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
 		template QuantLib::Decimal stddev<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
+		template float stddev<float>(const std::vector<float> &values);
+		template void normalize<double>(std::vector<double> &values);
 		template std::vector<QuantLib::Decimal> max<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values1, const std::vector<QuantLib::Decimal> &values2);
 		template std::vector<QuantLib::Decimal> mult<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values1, const std::vector<QuantLib::Decimal> &values2);
 		template std::vector<QuantLib::Decimal> covarVec<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values1, const std::vector<QuantLib::Decimal> &values2);
 		template QuantLib::Decimal covarFac<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values1, const std::vector<QuantLib::Decimal> &values2);
 		template QuantLib::Decimal accuracy<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values, const std::vector<QuantLib::Decimal> &upper, const std::vector<QuantLib::Decimal> &lower);
 	};
+
+	template<typename T> std::vector<float> toFloatVector(const std::vector<T> &values)
+	{
+		std::vector<float> results;
+		results.reserve(values.size());
+		for (auto & const value : values)
+			results.push_back(value);
+		return results;
+	}
+	template std::vector<float> toFloatVector<double>(const std::vector<double> &values);
 
 	namespace Debug
 	{

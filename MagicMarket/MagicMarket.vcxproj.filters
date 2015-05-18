@@ -8,6 +8,12 @@
     <Filter Include="Source Files\lwneuralnetplus">
       <UniqueIdentifier>{113de003-8b04-4d32-abb3-e26753541a37}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Deep Learning">
+      <UniqueIdentifier>{3430d860-ae40-49a3-90fe-7fc817b0a3ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\thirdparty">
+      <UniqueIdentifier>{1ce2965a-bb2a-4859-9923-ff21983c730f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Market.cpp">
@@ -88,6 +94,15 @@
     <ClCompile Include="ExpertAdvisorMAAnalyser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DeepLearningNetwork.cpp">
+      <Filter>Deep Learning</Filter>
+    </ClCompile>
+    <ClCompile Include="DeepLearningTest.cpp">
+      <Filter>Deep Learning</Filter>
+    </ClCompile>
+    <ClCompile Include="..\deps\fann\floatfann.c">
+      <Filter>Source Files\thirdparty</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -128,5 +143,18 @@
     <ClInclude Include="VirtualMarket.h" />
     <ClInclude Include="ExpertAdvisorDumbo.h" />
     <ClInclude Include="ExpertAdvisorMAAnalyser.h" />
+    <ClInclude Include="DeepLearningNetwork.h">
+      <Filter>Deep Learning</Filter>
+    </ClInclude>
+    <ClInclude Include="DeepLearningTest.h">
+      <Filter>Deep Learning</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="..\deps\lwneuralnetplus\all.h">
+      <Filter>Source Files\lwneuralnetplus</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MagicMarket.rc" />
   </ItemGroup>
 </Project>
