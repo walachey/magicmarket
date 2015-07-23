@@ -42,7 +42,7 @@ namespace MM
 		PossibleDecimal getHigh();
 		PossibleDecimal getLow();
 		PossibleDecimal getAverage();
-		int getMaximumSecondsBetweenTicks();
+		int getMaximumSecondsBetweenTicks(int *totalTicks = nullptr, int *totalChanges = nullptr);
 
 		std::vector<double> toVector(int secondsInterval);
 

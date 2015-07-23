@@ -3,25 +3,33 @@
 #include <string>
 #include <vector>
 
-#include <lwneuralnetplus\all.h>
+struct fann_train_data;
+struct fann;
+
+namespace CAPIWrapper
+{
+	void getOneTrainingDataSet(unsigned int num, unsigned int numInput, unsigned int numOutput, float *input, float *output);
+};
 
 namespace AI
 {
-	class DeepLearningNetwork : private ANN::iomanage
+	class DeepLearningNetwork
 	{
+		friend void ::CAPIWrapper::getOneTrainingDataSet(unsigned int num, unsigned int numInput, unsigned int numOutput, float *input, float *output);
+
 	public:
 		DeepLearningNetwork();
 		virtual ~DeepLearningNetwork();
-		/*
-			iomanage: must always present the current layer.
-		*/
-		// implement methods to server as a trainer for the neural networks
-		virtual void info_from_file(const std::string & filename, int *npatterns, int *ninput, int *noutput);
-		virtual void load_patterns(const std::string & filename, float **inputs, float **targets, int ninput, int noutput, int npatterns);
 
 		void setLayerSetup(std::vector<int> setup) { layerSetup = setup; }
-		void setTrainingInput(std::vector<std::vector<float>> &input) { trainingInput = input; };
+		void setTrainingInput(std::vector<std::vector<float>> &input) 
+		{
+			if (trainingInputForLayers.size() < 2) trainingInputForLayers.resize(2);
+			trainingInputForLayers[1] = input;
+		}
 		void train() { executeTraining();  }
+		::fann_train_data *getTrainingDataForLayer(int layer);
+		
 	private:
 		void executeLayerTraining();
 		void executeTraining();
@@ -29,9 +37,9 @@ namespace AI
 		// The number of neurons in each of the hidden layers. Excluding the output layers.
 		std::vector<int> layerSetup;
 		// For training, save all the networks.
-		std::vector<ANN::network*> layers;
+		std::vector<::fann*> layers;
 		// Also in an encoder version.
-		std::vector<ANN::network*> encoders;
+		std::vector<::fann*> encoders;
 		// The current layer that is to be trained.
 		int currentLayer;
 
@@ -44,7 +52,8 @@ namespace AI
 		std::vector<std::vector<float>> encoderWeights;
 		std::vector<std::vector<float>> decoderWeights;
 		// For training the first layer. Other input will be derived.
-		std::vector<std::vector<float>> trainingInput;
+		std::vector<std::vector<std::vector<float>>> trainingInputForLayers;
+		std::vector<::fann_train_data*> trainingDatasetsForLayers;
 	};
 
 };

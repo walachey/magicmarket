@@ -145,25 +145,35 @@ namespace MM
 		return PossibleDecimal(new QuantLib::Decimal(sum / QuantLib::Decimal(count)));
 	}
 
-	int TimePeriod::getMaximumSecondsBetweenTicks()
+	int TimePeriod::getMaximumSecondsBetweenTicks(int *totalTicks, int *totalChanges)
 	{
 		assert(dateFromTime(startTime) == dateFromTime(endTime)); // for now, assume we are always evaluating one single day
 		TradingDay *day = stock->getTradingDay(dateFromTime(endTime));
 		if (day == nullptr) return -1;
 
-		int max = -1;
-
 		std::vector<Tick> &ticks = day->getTicks();
+
+		// initialize max time by last/first tick margin to start/end time
+		const int startingGap = static_cast<int>(std::max(0ll, ticks[0].getTime() - startTime));
+		const int endingGap   = static_cast<int>(std::max(0ll, endTime - ticks.back().getTime()));
+		int max = std::max(startingGap, endingGap);
+
+		if (totalTicks != nullptr) *totalTicks = 0;
+		if (totalChanges != nullptr) *totalChanges = 0;
+
 		for (size_t i = 1, len = ticks.size(); i < len; ++i)		
 		{
 			Tick &current = ticks[i];
 			Tick &last = ticks[i - 1];
 
 			if (current.getTime() < startTime || current.getTime() > endTime) continue;
-
+			if (last.getTime() < startTime || last.getTime() > endTime) continue;
+			
 			int timespan = static_cast<int>(current.getTime() - last.getTime());
 
 			if (timespan > max) max = timespan;
+			if (totalTicks != nullptr) ++(*totalTicks);
+			if (totalChanges != nullptr && (current.getAsk() != last.getAsk())) ++(*totalChanges);
 		}
 		return max;
 	}
@@ -174,7 +184,7 @@ namespace MM
 		TradingDay *day = stock->getTradingDay(dateFromTime(endTime));
 		if (day == nullptr) return std::vector<double>();
 
-		int totalEntries = (endTime - startTime) / secondsInterval + 1;
+		const int totalEntries = (endTime - startTime) / secondsInterval + 1;
 		std::vector<double> values;
 		values.reserve(totalEntries);
 
@@ -186,9 +196,10 @@ namespace MM
 			// search right tick for time
 			while ((currentIndex < ticks.size()) && (ticks[currentIndex].getTime() < currentTime))
 				++currentIndex;
-			size_t index = (size_t)std::max((int)currentIndex - 1, 0);
+			const size_t index = (size_t)std::max((int)currentIndex - 1, 0);
 			assert((int)index >= 0 && index < ticks.size());
 			Tick &tick = ticks[index];
+			assert(tick.getTime() < currentTime);
 			values.push_back((tick.*valueFunction)());
 			currentTime += secondsInterval;
 		}

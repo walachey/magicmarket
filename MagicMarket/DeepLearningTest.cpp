@@ -1,6 +1,6 @@
 #include "DeepLearningTest.h"
 #include "DeepLearningNetwork.h"
-
+#include <fstream>
 #include <iostream>
 /*
 	HACK for csv.h to work with VS without snprintf...
@@ -62,11 +62,11 @@ namespace MM
 		std::vector<QuantLib::Date> daysForInitialTraining = {
 			QuantLib::Date(11, (QuantLib::Month)(9), 2014),
 			QuantLib::Date(12, (QuantLib::Month)(9), 2014),
-			/*QuantLib::Date(15, (QuantLib::Month)(9), 2014),
+			QuantLib::Date(15, (QuantLib::Month)(9), 2014),
 			QuantLib::Date(16, (QuantLib::Month)(9), 2014),
 			QuantLib::Date(17, (QuantLib::Month)(9), 2014),
 			QuantLib::Date(18, (QuantLib::Month)(9), 2014),
-			QuantLib::Date(22, (QuantLib::Month)(9), 2014),*/
+			QuantLib::Date(22, (QuantLib::Month)(9), 2014),
 			QuantLib::Date(23, (QuantLib::Month)(9), 2014)
 
 		};
@@ -75,7 +75,9 @@ namespace MM
 		const int windowCount = ONEMINUTE * 30 / timeWindow;
 		Stock *stock = market.getStock("EURUSD");
 
+		std::fstream sampleOutput("saves/deeplearning/samples.tsv", std::ios_base::out);
 		int goodTrainingSamples(0), badTrainingSamples(0);
+		int totalTicks, totalChanges;
 
 		// Load data
 		std::vector<std::vector<float>> trainingData;
@@ -91,7 +93,10 @@ namespace MM
 			{
 				// Check validity of period
 				TimePeriod currentTimePeriod = TimePeriod(stock, currentTime, currentTime + timeWindow * windowCount, nullptr);
-				if (currentTimePeriod.getMaximumSecondsBetweenTicks() > 15 * ONESECOND)
+				const int maxSeconds = currentTimePeriod.getMaximumSecondsBetweenTicks(&totalTicks, &totalChanges);
+				sampleOutput << maxSeconds << "\t" << totalTicks << "\t" << totalChanges << std::endl;
+
+				if (maxSeconds > 15 * ONESECOND || totalTicks < 5 || totalChanges < 5)
 				{
 					badTrainingSamples += 1;
 					continue;
@@ -99,18 +104,21 @@ namespace MM
 
 				goodTrainingSamples += 1;
 
-				if (goodTrainingSamples % 100 == 0)
+				if ((goodTrainingSamples + badTrainingSamples) % 100 == 0)
 				{
 					std::cout << "GOOD SAMPLES:\t" << goodTrainingSamples << "\t\t" << "BAD SAMPLES:\t" << badTrainingSamples << "\t\r";
 				}
 
 				std::vector<double> data = currentTimePeriod.toVector(timeWindow);
+				const int maxSeconds2 = currentTimePeriod.getMaximumSecondsBetweenTicks(&totalTicks, &totalChanges);
 				assert(data.size() == windowCount + 1);
-				data = Math::derive(data);
-				Math::normalize(data);
-				trainingData.push_back(toFloatVector(data));
+				auto dataDerivate = Math::derive(data);
+				Math::normalize(dataDerivate);
+				trainingData.push_back(toFloatVector(dataDerivate));
+				assert(Math::stddev(trainingData.back()) > 0.0);
 			}
 		}
+		sampleOutput.close();
 		std::cout << std::endl << "DONE LOADING DATA---------------------------" << std::endl;
 		std::cout << "TRAINING DATA-----------------------------" << std::endl;
 		std::cout << "Samples\t\t\t" << goodTrainingSamples << std::endl;
