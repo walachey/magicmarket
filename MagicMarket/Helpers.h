@@ -34,6 +34,8 @@ namespace MM
 		template<typename T> std::vector<T> covarVec(const std::vector<T> &values1, const std::vector<T> &values2);
 		template<typename T> T covarFac(const std::vector<T> &values1, const std::vector<T> &values2);
 		template<typename T> T accuracy(const std::vector<T> &values, const std::vector<T> &upper, const std::vector<T> &lower);
+		// moving average
+		template<typename T> T MA(const T &oldValue, const T &newValue, const int &history);
 	};
 
 	template<typename T> std::vector<float> toFloatVector(const std::vector<T> &values);

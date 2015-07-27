@@ -166,6 +166,12 @@ namespace MM
 			return sum / possibleSum;
 		}
 
+		template<typename T> T MA(const T &oldValue, const T &newValue, const int &history)
+		{
+			const double historyDouble = static_cast<double>(history);
+			return ((historyDouble - 1.0) * oldValue + newValue) / historyDouble;
+		}
+
 		template std::vector<QuantLib::Decimal> derive<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
 		template QuantLib::Decimal sum<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
 		template QuantLib::Decimal avg<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
@@ -177,6 +183,8 @@ namespace MM
 		template std::vector<QuantLib::Decimal> covarVec<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values1, const std::vector<QuantLib::Decimal> &values2);
 		template QuantLib::Decimal covarFac<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values1, const std::vector<QuantLib::Decimal> &values2);
 		template QuantLib::Decimal accuracy<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values, const std::vector<QuantLib::Decimal> &upper, const std::vector<QuantLib::Decimal> &lower);
+
+		template<double> double MA(const double &oldValue, const double &newValue, const int &history);
 	};
 
 	template<typename T> std::vector<float> toFloatVector(const std::vector<T> &values)

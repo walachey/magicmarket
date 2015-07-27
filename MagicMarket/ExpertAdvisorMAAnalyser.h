@@ -1,12 +1,10 @@
 #pragma once
-#include "ExpertAdvisor.h"
-
-#include "ExpertAdvisor.h"
+#include "ExpertAdvisorTechnical.h"
 
 namespace MM
 {
 
-	class ExpertAdvisorMAAnalyser : public ExpertAdvisor
+	class ExpertAdvisorMAAnalyser : public ExpertAdvisorTechnical
 	{
 	public:
 		ExpertAdvisorMAAnalyser();

@@ -13,6 +13,7 @@
 
 #include "Account.h"
 #include "Event.h"
+#include "Indicators/Base.h"
 
 class zmq_msg_buf
 {
@@ -65,12 +66,15 @@ namespace MM
 		std::vector<ExpertAdvisor*> &getExperts() { return experts; }
 		
 		std::time_t getLastTickTime() { return lastTickTime; }
+
+		std::vector<Indicators::Base*> &getIndicators() { return indicators; }
 	private:
 		Account account;
 
 		std::map<std::string, Stock*> stocks;
 		std::vector<Trade*> trades;
 		std::vector<ExpertAdvisor*> experts;
+		std::vector<Indicators::Base*> indicators;
 		void loadConfig();
 
 		friend class Stock;

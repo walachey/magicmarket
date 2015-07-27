@@ -51,7 +51,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -72,7 +72,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <WarningLevel>Level3</WarningLevel>
@@ -109,7 +109,12 @@
     <ClCompile Include="ExpertAdvisorLimitAdjuster.cpp" />
     <ClCompile Include="ExpertAdvisorMAAnalyser.cpp" />
     <ClCompile Include="ExpertAdvisorRSI.cpp" />
+    <ClCompile Include="ExpertAdvisorTechnical.cpp" />
     <ClCompile Include="Helpers.cpp" />
+    <ClCompile Include="Indicators\ADX.cpp" />
+    <ClCompile Include="Indicators\ATR.cpp" />
+    <ClCompile Include="Indicators\Base.cpp" />
+    <ClCompile Include="Indicators\Moves.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Market.cpp" />
     <ClCompile Include="Stock.cpp" />
@@ -139,7 +144,12 @@
     <ClInclude Include="ExpertAdvisorLimitAdjuster.h" />
     <ClInclude Include="ExpertAdvisorMAAnalyser.h" />
     <ClInclude Include="ExpertAdvisorRSI.h" />
+    <ClInclude Include="ExpertAdvisorTechnical.h" />
     <ClInclude Include="Helpers.h" />
+    <ClInclude Include="Indicators\ADX.h" />
+    <ClInclude Include="Indicators\ATR.h" />
+    <ClInclude Include="Indicators\Base.h" />
+    <ClInclude Include="Indicators\Moves.h" />
     <ClInclude Include="Market.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stock.h" />

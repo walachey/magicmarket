@@ -22,6 +22,8 @@ namespace MM
 		virtual void onNewTick(const std::string &currencyPair, const QuantLib::Date &date, const std::time_t &time) = 0;
 		virtual bool acceptNewTrade(Trade *trade) { return true; }
 
+		virtual bool isTechnicalAgent() { return false; }
+
 		void say(std::string);
 		// >0 -> buy; <0 -> sell
 		void setMood(float mood, float certainty);

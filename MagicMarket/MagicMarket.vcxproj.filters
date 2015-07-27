@@ -14,48 +14,33 @@
     <Filter Include="Source Files\thirdparty">
       <UniqueIdentifier>{1ce2965a-bb2a-4859-9923-ff21983c730f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Experts">
+      <UniqueIdentifier>{432133c2-0433-44ea-adbb-42eed1384077}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Experts\Technical">
+      <UniqueIdentifier>{7c01b1ae-5852-477b-874e-7ab40c817c96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Experts\Supervisors">
+      <UniqueIdentifier>{a3608e88-17d7-493f-bf82-c213ec4d596f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{b8953f1d-a782-4e09-b0e8-9755648beeac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Evaluation">
+      <UniqueIdentifier>{1e762179-6baa-449b-9c86-d3f68c311017}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Indicators">
+      <UniqueIdentifier>{ae6d120c-6eca-4100-86c7-94bc532e099c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Market.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpertAdvisor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TradingDay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Trade.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Stock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Account.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tick.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Event.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TimePeriod.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpertAdvisorLimitAdjuster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="thirdparty\json11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Helpers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpertAdvisorAtama.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\deps\lwneuralnetplus\source\iomanage.cc">
@@ -79,21 +64,6 @@
     <ClCompile Include="..\deps\lwneuralnetplus\source\trainer.cc">
       <Filter>Source Files\lwneuralnetplus</Filter>
     </ClCompile>
-    <ClCompile Include="ExpertAdvisorRSI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpertAdvisorBroker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpertAdvisorDumbo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VirtualMarket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpertAdvisorMAAnalyser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DeepLearningNetwork.cpp">
       <Filter>Deep Learning</Filter>
     </ClCompile>
@@ -102,6 +72,69 @@
     </ClCompile>
     <ClCompile Include="..\deps\fann\floatfann.c">
       <Filter>Source Files\thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpertAdvisor.cpp">
+      <Filter>Source Files\Experts</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpertAdvisorAtama.cpp">
+      <Filter>Source Files\Experts</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpertAdvisorDumbo.cpp">
+      <Filter>Source Files\Experts</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpertAdvisorMAAnalyser.cpp">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpertAdvisorRSI.cpp">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpertAdvisorBroker.cpp">
+      <Filter>Source Files\Experts\Supervisors</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpertAdvisorLimitAdjuster.cpp">
+      <Filter>Source Files\Experts\Supervisors</Filter>
+    </ClCompile>
+    <ClCompile Include="Market.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Stock.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TimePeriod.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Trade.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TradingDay.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Account.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Event.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Tick.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualMarket.cpp">
+      <Filter>Source Files\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpertAdvisorTechnical.cpp">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClCompile>
+    <ClCompile Include="Indicators\ATR.cpp">
+      <Filter>Source Files\Indicators</Filter>
+    </ClCompile>
+    <ClCompile Include="Indicators\Base.cpp">
+      <Filter>Source Files\Indicators</Filter>
+    </ClCompile>
+    <ClCompile Include="Indicators\Moves.cpp">
+      <Filter>Source Files\Indicators</Filter>
+    </ClCompile>
+    <ClCompile Include="Indicators\ADX.cpp">
+      <Filter>Source Files\Indicators</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +185,19 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="..\deps\lwneuralnetplus\all.h">
       <Filter>Source Files\lwneuralnetplus</Filter>
+    </ClInclude>
+    <ClInclude Include="ExpertAdvisorTechnical.h" />
+    <ClInclude Include="Indicators\ATR.h">
+      <Filter>Source Files\Indicators</Filter>
+    </ClInclude>
+    <ClInclude Include="Indicators\Base.h">
+      <Filter>Source Files\Indicators</Filter>
+    </ClInclude>
+    <ClInclude Include="Indicators\Moves.h">
+      <Filter>Source Files\Indicators</Filter>
+    </ClInclude>
+    <ClInclude Include="Indicators\ADX.h">
+      <Filter>Source Files\Indicators</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

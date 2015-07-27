@@ -42,6 +42,17 @@ namespace MM
 
 	Market::~Market()
 	{
+		for (Indicators::Base *&indicator : indicators)
+		{
+			free(indicator);
+		}
+		indicators.clear();
+
+		for (ExpertAdvisor *&expert : experts)
+		{
+			delete expert;
+		}
+		experts.clear();
 	}
 
 	void Market::loadConfig()
@@ -178,6 +189,13 @@ namespace MM
 			if ((timePassed != lastExecutionTime) && (lastTickTime != 0))
 			{
 				lastExecutionTime = timePassed;
+
+				// update indicators first
+				for (Indicators::Base *&indicator : indicators)
+				{
+					indicator->execute(timePassed, lastTickTime);
+				}
+
 				for (ExpertAdvisor *&expert : experts)
 				{
 					expert->execute(timePassed, lastTickTime);
