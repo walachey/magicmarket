@@ -31,7 +31,9 @@ namespace MM
 			// for RSI
 			double getUpMA()   { return upMA; }
 			double getDownMA() { return downMA; }
-
+			// for TSI
+			double getMomentumMA() { return momentumMA; }
+			double getAbsoluteMomentumMA() { return momentumAbsMA; }
 		private:
 			std::string currencyPair;
 			int seconds;
@@ -42,6 +44,9 @@ namespace MM
 
 			double upMA;
 			double downMA;
+
+			double momentumMA;
+			double momentumAbsMA;
 		};
 
 	};

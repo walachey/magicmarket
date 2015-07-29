@@ -9,33 +9,34 @@ namespace MM
 
 	namespace Indicators
 	{
-		class SMA : public Base
+		class Moves;
+
+		// https://en.wikipedia.org/wiki/Relative_strength_index
+		class TSI : public Base
 		{
 		public:
-			SMA(std::string currencyPair, int history, int seconds);
-			virtual ~SMA();
+			TSI(std::string currencyPair, int history, int seconds);
+			virtual ~TSI() {}
 
 			virtual void declareExports() const;
 			virtual void update(const std::time_t &secondsSinceStart, const std::time_t &time) override;
 			virtual bool operator== (const Base &otherBase) const
 			{
-				const SMA* other = dynamic_cast<const SMA*>(&otherBase);
+				const TSI* other = dynamic_cast<const TSI*>(&otherBase);
 				if (other == nullptr) return false;
 				return (other->history == history) && (other->seconds == seconds) && (other->currencyPair == currencyPair);
 			}
 
-			double getSMA() { return sma; }
-			// slightly faster falloff
-			double getSMA2() { return sma2; }
-			// MA of absolute value, faster falloff
-			double getSMA2Abs() { return sma2abs; }
+			double getTSI() { return tsi; }
+
 		private:
 			std::string currencyPair;
 			int history;
 			int seconds;
-			double sma;
-			double sma2;
-			double sma2abs;
+			double tsi;
+			double momentumDoubleMA;
+			double absMomentumDoubleMA;
+			Moves *moves;
 		};
 
 	};

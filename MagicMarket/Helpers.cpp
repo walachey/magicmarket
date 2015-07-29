@@ -173,6 +173,13 @@ namespace MM
 			return ((historyDouble - 1.0) * oldValue + newValue) / historyDouble;
 		}
 
+		template<typename T> T MA2(const T &oldValue, const T &newValue, const int &history)
+		{
+			if (std::isnan(oldValue)) return newValue;
+			const double historyDouble = static_cast<double>(history);
+			return ((historyDouble - 1.0) * oldValue + 2.0 * newValue) / (historyDouble + 1.0);
+		}
+
 		template std::vector<QuantLib::Decimal> derive<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
 		template QuantLib::Decimal sum<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
 		template QuantLib::Decimal avg<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);

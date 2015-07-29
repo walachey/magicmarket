@@ -13,7 +13,9 @@ namespace MM
 			history(history),
 			seconds(seconds)
 		{
-			sma = std::numeric_limits<double>::quiet_NaN();
+			sma     = std::numeric_limits<double>::quiet_NaN();
+			sma2    = std::numeric_limits<double>::quiet_NaN();
+			sma2abs = std::numeric_limits<double>::quiet_NaN();
 		}
 
 
@@ -24,6 +26,8 @@ namespace MM
 		void SMA::declareExports() const
 		{
 			exportVariable("SMA", getSMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("SMA2", getSMA2, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("SMA2Abs", getSMA2Abs, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
 		}
 
 		void SMA::update(const std::time_t &secondsSinceStart, const std::time_t &time)
@@ -34,7 +38,9 @@ namespace MM
 			const PossibleDecimal price = now.getClose();
 			if (!price.get()) return;
 
-			sma = Math::MA(sma, *price.get(), history);
+			sma     = Math::MA (sma, *price, history);
+			sma2    = Math::MA2(sma2, *price, history);
+			sma2abs = Math::MA2(sma2abs, std::abs(*price), history);
 		}
 	};
 };

@@ -17,6 +17,9 @@ namespace MM
 			minusDMMA = std::numeric_limits<double>::quiet_NaN();
 			upMA   = std::numeric_limits<double>::quiet_NaN();
 			downMA = std::numeric_limits<double>::quiet_NaN();
+
+			momentumMA    = std::numeric_limits<double>::quiet_NaN();
+			momentumAbsMA = std::numeric_limits<double>::quiet_NaN();
 		}
 
 		Moves::~Moves()
@@ -30,6 +33,9 @@ namespace MM
 
 			exportVariable("upMA", getUpMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
 			exportVariable("downMA", getDownMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+
+			exportVariable("momentumMA", getMomentumMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("momentumMAAbs", getAbsoluteMomentumMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
 		}
 
 		void Moves::update(const std::time_t &secondsSinceStart, const std::time_t &time)
@@ -72,6 +78,10 @@ namespace MM
 
 			upMA   = Math::MA(upMA, U, history);
 			downMA = Math::MA(downMA, D, history);
+
+			/* smoothed momentum for TSI */
+			momentumMA    = Math::MA2(momentumMA, move, history);
+			momentumAbsMA = Math::MA2(momentumAbsMA, move, history);
 		}
 	};
 };
