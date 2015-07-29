@@ -12,6 +12,7 @@ namespace filesystem = std::tr2::sys;
 #include <SimpleIni.h>
 
 #include "VirtualMarket.h"
+#include "Statistics.h"
 
 #include "Stock.h"
 #include "Trade.h"
@@ -55,27 +56,6 @@ namespace MM
 		experts.clear();
 	}
 
-	void Market::loadConfig()
-	{
-		CSimpleIniA ini;
-		ini.LoadFile("market.ini");
-
-		if (ini.IsEmpty())
-		{
-			std::cout << "ERROR: Could not load configuration!" << std::endl;
-		}
-
-		uid = ini.GetValue("Metatrader", "UserID", "unknown");
-		accountName = ini.GetValue("Metatrader", "AccountName", "unknown");
-		connectionStringListener = ini.GetValue("Central Station", "Listener", "tcp://127.0.0.1:1985");
-		connectionStringSpeaker = ini.GetValue("Central Station", "Speaker", "tcp://127.0.0.1:1986");
-		int sleepDurationMs;
-		std::istringstream(ini.GetValue("Market", "SleepDuration", "100")) >> sleepDurationMs;
-		sleepDuration = std::chrono::milliseconds(sleepDurationMs);
-
-		std::cout << "..loaded config" << std::endl;
-	}
-
 	void Market::setupConnection()
 	{
 		int errorValue;
@@ -113,9 +93,17 @@ namespace MM
 		events.push_back(e);
 	}
 
-	void Market::init()
+	void Market::init(const CSimpleIniA &ini)
 	{
-		loadConfig();
+		uid = ini.GetValue("Metatrader", "UserID", "unknown");
+		accountName = ini.GetValue("Metatrader", "AccountName", "unknown");
+		connectionStringListener = ini.GetValue("Central Station", "Listener", "tcp://127.0.0.1:1985");
+		connectionStringSpeaker = ini.GetValue("Central Station", "Speaker", "tcp://127.0.0.1:1986");
+		int sleepDurationMs;
+		std::istringstream(ini.GetValue("Market", "SleepDuration", "100")) >> sleepDurationMs;
+		sleepDuration = std::chrono::milliseconds(sleepDurationMs);
+		std::cout << "..loaded config" << std::endl;
+
 		setupConnection();
 
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRSI()));

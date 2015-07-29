@@ -2,6 +2,7 @@
 
 #include <string>
 #include <ctime>
+#include <functional>
 
 #include <ql/types.hpp>
 #include <ql/time/date.hpp>
@@ -9,6 +10,7 @@
 namespace MM
 {
 	class Trade;
+	class Variable;
 
 	class ExpertAdvisor
 	{
@@ -29,6 +31,8 @@ namespace MM
 		void setMood(float mood, float certainty);
 		float getLastMood() { return lastMood; };
 		float getLastCertainty() { return lastCertainty; };
+
+		void exportVariable(std::string name, std::function<double ()> accessor, std::string description);
 	private:
 		std::string lastMessage;
 		float lastMood, lastCertainty;

@@ -26,15 +26,21 @@
 #include <stdint.h>
 
 #include "Market.h"
+#include "Statistics.h"
 #include "VirtualMarket.h"
 #include "Trade.h"
 #include "Stock.h"
 #include "TradingDay.h"
 
+#include <SimpleIni.h>
 
 int main (int argc, char *argv [])
 {
-	market.init();
+	CSimpleIniA ini;
+	ini.LoadFile("market.ini");
+
+	market.init(ini);
+	statistics.init(ini);
 	MM::VirtualMarket::checkInit();
 
 	market.run();

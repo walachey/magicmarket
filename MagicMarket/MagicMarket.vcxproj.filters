@@ -136,6 +136,9 @@
     <ClCompile Include="Indicators\ADX.cpp">
       <Filter>Source Files\Indicators</Filter>
     </ClCompile>
+    <ClCompile Include="Statistics.cpp">
+      <Filter>Source Files\Evaluation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -198,6 +201,9 @@
     </ClInclude>
     <ClInclude Include="Indicators\ADX.h">
       <Filter>Source Files\Indicators</Filter>
+    </ClInclude>
+    <ClInclude Include="Statistics.h">
+      <Filter>Source Files\Evaluation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

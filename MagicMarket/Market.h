@@ -15,6 +15,8 @@
 #include "Event.h"
 #include "Indicators/Base.h"
 
+class CSimpleIniA;
+
 class zmq_msg_buf
 {
 public:
@@ -55,7 +57,7 @@ namespace MM
 		void updateMood(std::string name, float mood, float certainty);
 		void updateParameter(std::string name, double value);
 
-		void init();
+		void init(const CSimpleIniA &ini);
 		void run();
 
 		const Account& getAccount() { return account; }
@@ -68,6 +70,7 @@ namespace MM
 		std::time_t getLastTickTime() { return lastTickTime; }
 
 		std::vector<Indicators::Base*> &getIndicators() { return indicators; }
+
 	private:
 		Account account;
 
@@ -75,7 +78,6 @@ namespace MM
 		std::vector<Trade*> trades;
 		std::vector<ExpertAdvisor*> experts;
 		std::vector<Indicators::Base*> indicators;
-		void loadConfig();
 
 		friend class Stock;
 
