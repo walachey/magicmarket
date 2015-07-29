@@ -15,12 +15,13 @@ namespace MM
 	struct Variable
 	{
 		Variable(std::string name, std::function<double()> accessor, std::string description) : 
-			name(name), accessor(accessor), description(description) {}
+			name(name), originalName(name), accessor(accessor), description(description) {}
 		Variable(std::string name, double *source, std::string description) : 
 			Variable(name, std::bind([&] { return *source; }), description) {};
 
 		double get() const { return accessor(); }
 		std::string name;
+		std::string originalName;
 		std::string description;
 	private:
 		std::function<double()> accessor;

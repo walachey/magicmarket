@@ -16,6 +16,7 @@ namespace MM
 			Moves(std::string currencyPair, int history, int seconds);
 			virtual ~Moves();
 
+			virtual void declareExports() const override;
 			virtual void update(const std::time_t &secondsSinceStart, const std::time_t &time) override;
 			virtual bool operator== (const Base &otherBase) const
 			{
@@ -24,8 +25,12 @@ namespace MM
 				return (other->history == history) && (other->seconds == seconds) && (other->currencyPair == currencyPair);
 			}
 
+			// for ADX
 			double getPlusDMMA()  { return plusDMMA; }
 			double getMinusDMMA() { return minusDMMA; }
+			// for RSI
+			double getUpMA()   { return upMA; }
+			double getDownMA() { return downMA; }
 
 		private:
 			std::string currencyPair;
@@ -34,6 +39,9 @@ namespace MM
 
 			double plusDMMA;
 			double minusDMMA;
+
+			double upMA;
+			double downMA;
 		};
 
 	};

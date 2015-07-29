@@ -10,38 +10,32 @@ namespace MM
 	namespace Indicators
 	{
 		class Moves;
-		class ATR;
 
-		// https://en.wikipedia.org/wiki/Average_directional_movement_index
-		class ADX : public Base
+		// https://en.wikipedia.org/wiki/Relative_strength_index
+		class RSI : public Base
 		{
 		public:
-			ADX(std::string currencyPair, int history, int seconds);
-			virtual ~ADX();
+			RSI(std::string currencyPair, int history, int seconds);
+			virtual ~RSI();
 
-			virtual void declareExports() const override;
+			virtual void declareExports() const;
 			virtual void update(const std::time_t &secondsSinceStart, const std::time_t &time) override;
 			virtual bool operator== (const Base &otherBase) const
 			{
-				const ADX* other = dynamic_cast<const ADX*>(&otherBase);
+				const RSI* other = dynamic_cast<const RSI*>(&otherBase);
 				if (other == nullptr) return false;
 				return (other->history == history) && (other->seconds == seconds) && (other->currencyPair == currencyPair);
 			}
 
-			double getpDIMA() { return pDIMA; }
-			double getmDIMA() { return mDIMA; }
-			double getADX() { return adx; }
+			double getRSI() { return rsi; }
 
 		private:
 			std::string currencyPair;
 			int history;
 			int seconds;
-			double pDIMA;
-			double mDIMA;
-			double adx;
+			double rsi;
 
 			Moves *moves;
-			ATR *atr;
 		};
 
 	};

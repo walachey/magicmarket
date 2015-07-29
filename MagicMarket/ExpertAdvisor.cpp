@@ -35,7 +35,7 @@ namespace MM
 		market.updateMood(getName(), mood, certainty);
 	}
 
-	void ExpertAdvisor::exportVariable(std::string name, std::function<double()> accessor, std::string description)
+	void ExpertAdvisor::exportVariable(std::string name, std::function<double()> accessor, std::string description) const
 	{
 		statistics.addVariable(Variable(name, accessor, description));
 	}

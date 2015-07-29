@@ -168,6 +168,7 @@ namespace MM
 
 		template<typename T> T MA(const T &oldValue, const T &newValue, const int &history)
 		{
+			if (std::isnan(oldValue)) return newValue;
 			const double historyDouble = static_cast<double>(history);
 			return ((historyDouble - 1.0) * oldValue + newValue) / historyDouble;
 		}

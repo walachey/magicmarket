@@ -21,6 +21,11 @@ namespace MM
 		{
 		}
 
+		void ATR::declareExports() const
+		{
+			exportVariable("ATR", getATRMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+		}
+
 		double ATR::getTrueRange(MM::Stock *stock, const std::time_t &time, const int &duration)
 		{
 			MM::TimePeriod period = stock->getTimePeriod(time - duration, time);

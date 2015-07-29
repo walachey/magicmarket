@@ -80,6 +80,7 @@ namespace MM
 
 	void Market::addEvent(const Event &e)
 	{
+		// todo: check logic? Shouldn't only same-type events be replaced?
 		for (size_t i = 0, ii = events.size(); i < ii; ++i)
 		{
 			if (events[i] == e) return;
@@ -112,6 +113,11 @@ namespace MM
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorAtama()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorLimitAdjuster()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorBroker()));
+
+		for (ExpertAdvisor * const & indicator : indicators)
+			indicator->declareExports();
+		for (ExpertAdvisor * const & expert : experts)
+			expert->declareExports();
 	}
 
 	void Market::run()

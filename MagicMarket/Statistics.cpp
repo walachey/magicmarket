@@ -26,7 +26,7 @@ namespace MM
 
 	void Statistics::addVariable(const Variable &var)
 	{
-		const int duplicateCount = std::count_if(variables.begin(), variables.end(), [&](const Variable &other) { return other.name == var.name; }); 
+		const int duplicateCount = std::count_if(variables.begin(), variables.end(), [&](const Variable &other) { return other.originalName == var.name; }); 
 
 		variables.push_back(var);
 

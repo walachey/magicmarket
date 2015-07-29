@@ -16,6 +16,7 @@ namespace MM
 			ATR(std::string currencyPair, int history, int seconds);
 			virtual ~ATR();
 
+			virtual void declareExports() const;
 			virtual void update(const std::time_t &secondsSinceStart, const std::time_t &time) override;
 			virtual bool operator== (const Base &otherBase) const
 			{

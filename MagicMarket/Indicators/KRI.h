@@ -9,39 +9,33 @@ namespace MM
 
 	namespace Indicators
 	{
-		class Moves;
-		class ATR;
+		class SMA;
 
-		// https://en.wikipedia.org/wiki/Average_directional_movement_index
-		class ADX : public Base
+		// http://fxcodebase.com/wiki/index.php/Kairi_Relative_Index_%28KRI%29
+		class KRI : public Base
 		{
 		public:
-			ADX(std::string currencyPair, int history, int seconds);
-			virtual ~ADX();
+			KRI(std::string currencyPair, int history, int seconds);
+			virtual ~KRI();
 
-			virtual void declareExports() const override;
+			virtual void declareExports() const;
 			virtual void update(const std::time_t &secondsSinceStart, const std::time_t &time) override;
 			virtual bool operator== (const Base &otherBase) const
 			{
-				const ADX* other = dynamic_cast<const ADX*>(&otherBase);
+				const KRI* other = dynamic_cast<const KRI*>(&otherBase);
 				if (other == nullptr) return false;
 				return (other->history == history) && (other->seconds == seconds) && (other->currencyPair == currencyPair);
 			}
 
-			double getpDIMA() { return pDIMA; }
-			double getmDIMA() { return mDIMA; }
-			double getADX() { return adx; }
+			double getKRI() { return kri; }
 
 		private:
 			std::string currencyPair;
 			int history;
 			int seconds;
-			double pDIMA;
-			double mDIMA;
-			double adx;
+			double kri;
 
-			Moves *moves;
-			ATR *atr;
+			SMA *sma;
 		};
 
 	};

@@ -32,7 +32,8 @@ namespace MM
 		float getLastMood() { return lastMood; };
 		float getLastCertainty() { return lastCertainty; };
 
-		void exportVariable(std::string name, std::function<double ()> accessor, std::string description);
+		void exportVariable(std::string name, std::function<double ()> accessor, std::string description) const;
+		virtual void declareExports() const {}
 	private:
 		std::string lastMessage;
 		float lastMood, lastCertainty;
