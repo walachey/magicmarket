@@ -24,6 +24,7 @@ namespace MM
 
 	namespace Math
 	{
+		template<typename T> T clamp(T value, T lower, T upper);
 		template<typename T> std::vector<T> derive(const std::vector<T> &values);
 		template<typename T> T sum(const std::vector<T> &values);
 		template<typename T> T avg(const std::vector<T> &values);

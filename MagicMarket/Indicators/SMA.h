@@ -24,11 +24,11 @@ namespace MM
 				return (other->history == history) && (other->seconds == seconds) && (other->currencyPair == currencyPair);
 			}
 
-			double getSMA() { return sma; }
+			double getSMA() const { return sma; }
 			// slightly faster falloff
-			double getSMA2() { return sma2; }
+			double getSMA2() const { return sma2; }
 			// MA of absolute value, faster falloff
-			double getSMA2Abs() { return sma2abs; }
+			double getSMA2Abs() const { return sma2abs; }
 		private:
 			std::string currencyPair;
 			int history;

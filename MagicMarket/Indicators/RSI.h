@@ -27,7 +27,7 @@ namespace MM
 				return (other->history == history) && (other->seconds == seconds) && (other->currencyPair == currencyPair);
 			}
 
-			double getRSI() { return rsi; }
+			double getRSI() const { return rsi; }
 
 		private:
 			std::string currencyPair;

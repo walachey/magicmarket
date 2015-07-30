@@ -12,8 +12,8 @@ namespace MM
 {
 	ExpertAdvisorRSI::ExpertAdvisorRSI()
 	{
-		rsiShort = static_cast<Indicators::RSI*>(Indicators::RSI("EURUSD", 28, ONEMINUTE).init());
-		rsiLong  = static_cast<Indicators::RSI*>(Indicators::RSI("EURUSD", 14, 5 * ONEMINUTE).init());
+		rsiShort = Indicators::get<Indicators::RSI>("EURUSD", 28, ONEMINUTE);
+		rsiLong  = Indicators::get<Indicators::RSI>("EURUSD", 15, 5 * ONEMINUTE);
 	}
 
 
@@ -38,6 +38,7 @@ namespace MM
 			return setMood(-1.0, 0.5 + 0.5 * (avgRSI - (100.0 - margin)) / margin);
 		if (avgRSI < (margin))
 			return setMood(+1.0, 0.5 + 0.5 * (1.0 - (avgRSI / margin)));
+		setMood(0.0, 0.25);
 	}
 
 };

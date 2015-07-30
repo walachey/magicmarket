@@ -1,4 +1,5 @@
 #include "Statistics.h"
+
 #include <SimpleIni.h>
 
 #include <sstream>
@@ -17,11 +18,16 @@ namespace MM
 	{
 	}
 
-	void Statistics::init(const CSimpleIniA &ini)
+	void Statistics::init(void *_ini)
 	{
+		const CSimpleIniA &ini = *(CSimpleIniA*)_ini;
 		loggingActive = ini.GetBoolValue("Statistics", "Enabled", true);
 		config.outputFilename = ini.GetValue("Statistics", "OutputFilename", "saves/variables.csv");
 		config.delimiter = ini.GetValue("Statistics", "Delimiter", "\t");
+		if (config.delimiter == "tab")
+			config.delimiter = "\t";
+		else if (config.delimiter == "space")
+			config.delimiter = " ";
 	}
 
 	void Statistics::addVariable(const Variable &var)
@@ -74,6 +80,6 @@ namespace MM
 			print(variables[i], i == 0);
 		}
 		// flush file to allow killing the application without losses
-		outputStream << std::flush;
+		outputStream << std::endl << std::flush;
 	}
 };

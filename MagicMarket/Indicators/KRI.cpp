@@ -15,7 +15,7 @@ namespace MM
 			seconds(seconds)
 		{
 			kri = std::numeric_limits<double>::quiet_NaN();
-			sma = static_cast<SMA*>  (SMA(currencyPair, history, seconds).init());
+			sma = Indicators::get<SMA>(currencyPair, history, seconds);
 		}
 
 
@@ -25,7 +25,7 @@ namespace MM
 
 		void KRI::declareExports() const
 		{
-			exportVariable("KRI", getKRI, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("KRI", std::bind(&KRI::getKRI, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
 		}
 
 		void KRI::update(const std::time_t &secondsSinceStart, const std::time_t &time)

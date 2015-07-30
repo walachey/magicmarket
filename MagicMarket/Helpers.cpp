@@ -42,6 +42,13 @@ namespace MM
 
 	namespace Math
 	{
+		template<typename T> T clamp(T value, T lower, T upper)
+		{
+			if (value < lower) return lower;
+			if (value > upper) return upper;
+			return value;
+		}
+
 		template<typename T> std::vector<T> derive(const std::vector<T> &values)
 		{
 			std::vector<T> returnValues;
@@ -179,7 +186,7 @@ namespace MM
 			const double historyDouble = static_cast<double>(history);
 			return ((historyDouble - 1.0) * oldValue + 2.0 * newValue) / (historyDouble + 1.0);
 		}
-
+		template QuantLib::Decimal clamp<QuantLib::Decimal>(QuantLib::Decimal value, QuantLib::Decimal lower, QuantLib::Decimal upper);
 		template std::vector<QuantLib::Decimal> derive<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
 		template QuantLib::Decimal sum<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
 		template QuantLib::Decimal avg<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
@@ -192,7 +199,8 @@ namespace MM
 		template QuantLib::Decimal covarFac<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values1, const std::vector<QuantLib::Decimal> &values2);
 		template QuantLib::Decimal accuracy<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values, const std::vector<QuantLib::Decimal> &upper, const std::vector<QuantLib::Decimal> &lower);
 
-		template<double> double MA(const double &oldValue, const double &newValue, const int &history);
+		template double MA<double>(const double &oldValue, const double &newValue, const int &history);
+		template double MA2<double>(const double &oldValue, const double &newValue, const int &history);
 	};
 
 	template<typename T> std::vector<float> toFloatVector(const std::vector<T> &values)

@@ -27,7 +27,7 @@ namespace MM
 
 			static double getTrueRange(MM::Stock *stock, const std::time_t &time, const int &duration);
 
-			double getATRMA() { return value; }
+			double getATRMA() const { return value; }
 
 		private:
 			std::string currencyPair;

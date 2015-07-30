@@ -22,20 +22,22 @@ def evalMood():
 		"BUY" : "b",
 		"SELL" : "r",
 		"lika" : "#00ff00",
-		"dumbo" : "#00aaaa",
-		"karl" : "#009999",
+		"dumbo" : "#00ffff",
+		"TA_RSI" : "#009999",
+		"TA_TSI" : "#999999",
 		"ajeet" : "w",
 		"atama" : "#aa99aa",
 		"bob" : "#660066"
 	}
+
 	for AI in data:
 		if not x_values:
 			x_values = range(len(data[AI]))
 		linewidth = 1.0
 		if AI in ["BUY", "SELL", "lika"]:
 			linewidth = 2.0
-		color = colors[AI] if AI in colors else None
-		plt.plot(x_values, data[AI], color, label=AI, linewidth=linewidth)
+		color = colors[AI] if AI in colors else "k"
+		plt.plot(x_values, data[AI], color=color, label=AI, linewidth=linewidth)
 		
 		if AI == "lika":
 			markers_xbuy = []
@@ -63,6 +65,6 @@ def evalMood():
 	
 if __name__ == "__main__":
 	data = evalMood()
-	import Image
+	from PIL import Image
 	im = Image.open(data)
 	im.save("VM_mood.png")

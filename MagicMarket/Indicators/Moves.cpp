@@ -28,14 +28,14 @@ namespace MM
 
 		void Moves::declareExports() const
 		{
-			exportVariable("pDMMA", getPlusDMMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
-			exportVariable("mDMMA", getMinusDMMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("pDMMA", std::bind(&Moves::getPlusDMMA, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("mDMMA", std::bind(&Moves::getMinusDMMA, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
 
-			exportVariable("upMA", getUpMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
-			exportVariable("downMA", getDownMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("upMA", std::bind(&Moves::getUpMA, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("downMA", std::bind(&Moves::getDownMA, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
 
-			exportVariable("momentumMA", getMomentumMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
-			exportVariable("momentumMAAbs", getAbsoluteMomentumMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("momentumMA", std::bind(&Moves::getMomentumMA, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("momentumMAAbs", std::bind(&Moves::getAbsoluteMomentumMA, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
 		}
 
 		void Moves::update(const std::time_t &secondsSinceStart, const std::time_t &time)
@@ -74,7 +74,7 @@ namespace MM
 			const double move = *close - *oldClose;
 			double U(0.0), D(0.0);
 			if (move > 0.0) U = move;
-			else if (move < 0.0) D = move;
+			else if (move < 0.0) D = -move;
 
 			upMA   = Math::MA(upMA, U, history);
 			downMA = Math::MA(downMA, D, history);

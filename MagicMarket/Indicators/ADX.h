@@ -28,9 +28,9 @@ namespace MM
 				return (other->history == history) && (other->seconds == seconds) && (other->currencyPair == currencyPair);
 			}
 
-			double getpDIMA() { return pDIMA; }
-			double getmDIMA() { return mDIMA; }
-			double getADX() { return adx; }
+			double getpDIMA() const { return pDIMA; }
+			double getmDIMA() const { return mDIMA; }
+			double getADX() const { return adx; }
 
 		private:
 			std::string currencyPair;

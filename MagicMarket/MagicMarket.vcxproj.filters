@@ -73,27 +73,6 @@
     <ClCompile Include="..\deps\fann\floatfann.c">
       <Filter>Source Files\thirdparty</Filter>
     </ClCompile>
-    <ClCompile Include="ExpertAdvisor.cpp">
-      <Filter>Source Files\Experts</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpertAdvisorAtama.cpp">
-      <Filter>Source Files\Experts</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpertAdvisorDumbo.cpp">
-      <Filter>Source Files\Experts</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpertAdvisorMAAnalyser.cpp">
-      <Filter>Source Files\Experts\Technical</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpertAdvisorRSI.cpp">
-      <Filter>Source Files\Experts\Technical</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpertAdvisorBroker.cpp">
-      <Filter>Source Files\Experts\Supervisors</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpertAdvisorLimitAdjuster.cpp">
-      <Filter>Source Files\Experts\Supervisors</Filter>
-    </ClCompile>
     <ClCompile Include="Market.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -121,9 +100,6 @@
     <ClCompile Include="VirtualMarket.cpp">
       <Filter>Source Files\Evaluation</Filter>
     </ClCompile>
-    <ClCompile Include="ExpertAdvisorTechnical.cpp">
-      <Filter>Source Files\Experts\Technical</Filter>
-    </ClCompile>
     <ClCompile Include="Indicators\ATR.cpp">
       <Filter>Source Files\Indicators</Filter>
     </ClCompile>
@@ -139,10 +115,48 @@
     <ClCompile Include="Statistics.cpp">
       <Filter>Source Files\Evaluation</Filter>
     </ClCompile>
+    <ClCompile Include="Indicators\KRI.cpp">
+      <Filter>Source Files\Indicators</Filter>
+    </ClCompile>
+    <ClCompile Include="Indicators\SMA.cpp">
+      <Filter>Source Files\Indicators</Filter>
+    </ClCompile>
+    <ClCompile Include="Indicators\RSI.cpp">
+      <Filter>Source Files\Indicators</Filter>
+    </ClCompile>
+    <ClCompile Include="Indicators\TSI.cpp">
+      <Filter>Source Files\Indicators</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\ExpertAdvisorMAAnalyser.cpp">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\ExpertAdvisorRSI.cpp">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\ExpertAdvisorTechnical.cpp">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\ExpertAdvisorBroker.cpp">
+      <Filter>Source Files\Experts\Supervisors</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\ExpertAdvisorLimitAdjuster.cpp">
+      <Filter>Source Files\Experts\Supervisors</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\ExpertAdvisor.cpp">
+      <Filter>Source Files\Experts</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\ExpertAdvisorAtama.cpp">
+      <Filter>Source Files\Experts</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\ExpertAdvisorDumbo.cpp">
+      <Filter>Source Files\Experts</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\ExpertAdvisorTSI.cpp">
+      <Filter>Source Files\Experts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
-    <ClInclude Include="ExpertAdvisor.h" />
     <ClInclude Include="TradingDay.h" />
     <ClInclude Include="Trade.h" />
     <ClInclude Include="Stock.h" />
@@ -150,12 +164,10 @@
     <ClInclude Include="Tick.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="TimePeriod.h" />
-    <ClInclude Include="ExpertAdvisorLimitAdjuster.h" />
     <ClInclude Include="thirdparty\json11.hpp" />
     <ClInclude Include="Helpers.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="ExpertAdvisorAtama.h" />
     <ClInclude Include="..\deps\lwneuralnetplus\source\iomanage.h">
       <Filter>Source Files\lwneuralnetplus</Filter>
     </ClInclude>
@@ -174,11 +186,7 @@
     <ClInclude Include="..\deps\lwneuralnetplus\source\trainer.h">
       <Filter>Source Files\lwneuralnetplus</Filter>
     </ClInclude>
-    <ClInclude Include="ExpertAdvisorRSI.h" />
-    <ClInclude Include="ExpertAdvisorBroker.h" />
     <ClInclude Include="VirtualMarket.h" />
-    <ClInclude Include="ExpertAdvisorDumbo.h" />
-    <ClInclude Include="ExpertAdvisorMAAnalyser.h" />
     <ClInclude Include="DeepLearningNetwork.h">
       <Filter>Deep Learning</Filter>
     </ClInclude>
@@ -189,7 +197,6 @@
     <ClInclude Include="..\deps\lwneuralnetplus\all.h">
       <Filter>Source Files\lwneuralnetplus</Filter>
     </ClInclude>
-    <ClInclude Include="ExpertAdvisorTechnical.h" />
     <ClInclude Include="Indicators\ATR.h">
       <Filter>Source Files\Indicators</Filter>
     </ClInclude>
@@ -204,6 +211,45 @@
     </ClInclude>
     <ClInclude Include="Statistics.h">
       <Filter>Source Files\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="Indicators\KRI.h">
+      <Filter>Source Files\Indicators</Filter>
+    </ClInclude>
+    <ClInclude Include="Indicators\SMA.h">
+      <Filter>Source Files\Indicators</Filter>
+    </ClInclude>
+    <ClInclude Include="Indicators\RSI.h">
+      <Filter>Source Files\Indicators</Filter>
+    </ClInclude>
+    <ClInclude Include="Indicators\TSI.h">
+      <Filter>Source Files\Indicators</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\ExpertAdvisorMAAnalyser.h">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\ExpertAdvisorRSI.h">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\ExpertAdvisorTechnical.h">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\ExpertAdvisorBroker.h">
+      <Filter>Source Files\Experts\Supervisors</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\ExpertAdvisorLimitAdjuster.h">
+      <Filter>Source Files\Experts\Supervisors</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\ExpertAdvisor.h">
+      <Filter>Source Files\Experts</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\ExpertAdvisorAtama.h">
+      <Filter>Source Files\Experts</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\ExpertAdvisorDumbo.h">
+      <Filter>Source Files\Experts</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\ExpertAdvisorTSI.h">
+      <Filter>Source Files\Experts\Technical</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

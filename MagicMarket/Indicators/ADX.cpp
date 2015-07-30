@@ -22,8 +22,8 @@ namespace MM
 			mDIMA = std::numeric_limits<double>::quiet_NaN();
 			adx = std::numeric_limits<double>::quiet_NaN();
 
-			moves = static_cast<Moves*>(Moves(currencyPair, history, seconds).init());
-			atr   = static_cast<ATR*>  (ATR(currencyPair, history, seconds).init());
+			moves = Indicators::get<Moves>(currencyPair, history, seconds);
+			atr   = Indicators::get<ATR>(currencyPair, history, seconds);
 		}
 
 
@@ -33,9 +33,9 @@ namespace MM
 
 		void ADX::declareExports() const
 		{
-			exportVariable("pDIMA", getpDIMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
-			exportVariable("mDIMA", getmDIMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
-			exportVariable("ADX", getADX, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("pDIMA", std::bind(&ADX::getpDIMA, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("mDIMA", std::bind(&ADX::getmDIMA, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("ADX", std::bind(&ADX::getADX, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
 		}
 
 		void ADX::update(const std::time_t &secondsSinceStart, const std::time_t &time)

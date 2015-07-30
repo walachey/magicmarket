@@ -7,8 +7,6 @@
 #include <functional>
 #include <fstream>
 
-class CSimpleIniA;
-
 namespace MM
 {
 
@@ -36,13 +34,13 @@ namespace MM
 
 		void enableLogging(bool enable = true) { loggingActive = enable; }
 		void log();
-		void init(const CSimpleIniA &ini);
+		void init(void *ini);
 	private:
 		std::vector<Variable> variables;
 		bool loggingActive;
 		std::fstream outputStream;
 
-		struct {
+		struct c_{
 			std::string outputFilename;
 			std::string delimiter;
 		} config;

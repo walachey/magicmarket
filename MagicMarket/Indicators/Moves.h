@@ -26,14 +26,14 @@ namespace MM
 			}
 
 			// for ADX
-			double getPlusDMMA()  { return plusDMMA; }
-			double getMinusDMMA() { return minusDMMA; }
+			double getPlusDMMA()  const { return plusDMMA; }
+			double getMinusDMMA() const { return minusDMMA; }
 			// for RSI
-			double getUpMA()   { return upMA; }
-			double getDownMA() { return downMA; }
+			double getUpMA()   const { return upMA; }
+			double getDownMA() const { return downMA; }
 			// for TSI
-			double getMomentumMA() { return momentumMA; }
-			double getAbsoluteMomentumMA() { return momentumAbsMA; }
+			double getMomentumMA() const { return momentumMA; }
+			double getAbsoluteMomentumMA() const { return momentumAbsMA; }
 		private:
 			std::string currencyPair;
 			int seconds;

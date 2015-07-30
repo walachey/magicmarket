@@ -15,8 +15,6 @@
 #include "Event.h"
 #include "Indicators/Base.h"
 
-class CSimpleIniA;
-
 class zmq_msg_buf
 {
 public:
@@ -57,7 +55,7 @@ namespace MM
 		void updateMood(std::string name, float mood, float certainty);
 		void updateParameter(std::string name, double value);
 
-		void init(const CSimpleIniA &ini);
+		void init(void *ini);
 		void run();
 
 		const Account& getAccount() { return account; }

@@ -10,7 +10,7 @@
 namespace MM
 {
 	class Trade;
-	class Variable;
+	struct Variable;
 
 	class ExpertAdvisor
 	{
@@ -21,7 +21,7 @@ namespace MM
 		virtual std::string getName() = 0;
 
 		virtual void execute(const std::time_t &secondsSinceStart, const std::time_t &time) {};
-		virtual void onNewTick(const std::string &currencyPair, const QuantLib::Date &date, const std::time_t &time) = 0;
+		virtual void onNewTick(const std::string &currencyPair, const QuantLib::Date &date, const std::time_t &time) {};
 		virtual bool acceptNewTrade(Trade *trade) { return true; }
 
 		virtual bool isTechnicalAgent() { return false; }

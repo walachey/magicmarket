@@ -1,6 +1,7 @@
 #include "VirtualMarket.h"
 
 #include <WinSock2.h>
+
 #include <SimpleIni.h>
 
 #include "Helpers.h"
@@ -360,7 +361,7 @@ namespace MM
 
 			double accuracy = Math::accuracy(values, BUY, SELL);
 
-			printf_s("* %s\tBUY %+4d%%\tSELL %+4d%%\tACCU %+4d%%\n", name.c_str(), int(100.0 * buySideCorr + 0.5), int(100.0 * sellSideCorr + 0.5), int(100.0 * accuracy + 0.5));
+			printf_s("* %-7s\tBUY %+4d%%\tSELL %+4d%%\tACCU %+4d%%\n", name.c_str(), int(100.0 * buySideCorr + 0.5), int(100.0 * sellSideCorr + 0.5), int(100.0 * accuracy + 0.5));
 			//std::cout << "\t\tstdbuy " << stddevBuy << "\tstdsell " << stddevSell << "\tstdsignal " << stddev << std::endl;
 		}
 

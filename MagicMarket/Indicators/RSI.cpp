@@ -15,7 +15,7 @@ namespace MM
 			seconds(seconds)
 		{
 			rsi   = std::numeric_limits<double>::quiet_NaN();
-			moves = static_cast<Moves*>(Moves(currencyPair, history, seconds).init());
+			moves = Indicators::get<Moves>(currencyPair, history, seconds);
 		}
 
 
@@ -25,7 +25,7 @@ namespace MM
 
 		void RSI::declareExports() const
 		{
-			exportVariable("RSI", getRSI, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("RSI", std::bind(&RSI::getRSI, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
 		}
 
 		void RSI::update(const std::time_t &secondsSinceStart, const std::time_t &time)
@@ -45,6 +45,9 @@ namespace MM
 
 			const double RS = UMA / DMA;
 			rsi = 100.0 - 100.0 / (1.0 + RS);
+			assert(rsi >= -1.0);
+			assert(rsi <= 101.0);
+			rsi = Math::clamp(rsi, 0.0, 100.0);
 		}
 	};
 };

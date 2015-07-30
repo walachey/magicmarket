@@ -20,6 +20,7 @@ namespace filesystem = std::tr2::sys;
 #include "ExpertAdvisor.h"
 #include "ExpertAdvisorLimitAdjuster.h"
 #include "ExpertAdvisorRSI.h"
+#include "ExpertAdvisorTSI.h"
 #include "ExpertAdvisorBroker.h"
 #include "ExpertAdvisorDumbo.h"
 #include "ExpertAdvisorAtama.h"
@@ -45,7 +46,7 @@ namespace MM
 	{
 		for (Indicators::Base *&indicator : indicators)
 		{
-			free(indicator);
+			delete indicator;
 		}
 		indicators.clear();
 
@@ -94,8 +95,9 @@ namespace MM
 		events.push_back(e);
 	}
 
-	void Market::init(const CSimpleIniA &ini)
+	void Market::init(void *_ini)
 	{
+		const CSimpleIniA &ini = *(CSimpleIniA*)_ini;
 		uid = ini.GetValue("Metatrader", "UserID", "unknown");
 		accountName = ini.GetValue("Metatrader", "AccountName", "unknown");
 		connectionStringListener = ini.GetValue("Central Station", "Listener", "tcp://127.0.0.1:1985");
@@ -108,6 +110,7 @@ namespace MM
 		setupConnection();
 
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRSI()));
+		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorTSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorDumbo()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorMAAnalyser()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorAtama()));
@@ -149,10 +152,11 @@ namespace MM
 			{
 				//newTrade(MM::Trade::Sell("EURUSD", 0.01));
 				onlyOnce = true;
-
+				/*
 				DeepLearningTest test;
 				test.run();
 				exit(1);
+				*/
 			}
 
 			// if new things happened, notify the experts
@@ -194,6 +198,8 @@ namespace MM
 				{
 					expert->execute(timePassed, lastTickTime);
 				}
+
+				statistics.log();
 			}
 			if (isVirtual())
 				virtualMarket->execute();

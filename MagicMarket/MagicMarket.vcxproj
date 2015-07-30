@@ -51,7 +51,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -72,12 +72,12 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PreprocessorDefinitions>ZMQ_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FANN_NO_DLL;ZMQ_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <OutputFile>$(TargetPath)</OutputFile>
@@ -102,19 +102,24 @@
     <ClCompile Include="DeepLearningNetwork.cpp" />
     <ClCompile Include="DeepLearningTest.cpp" />
     <ClCompile Include="Event.cpp" />
-    <ClCompile Include="ExpertAdvisor.cpp" />
-    <ClCompile Include="ExpertAdvisorAtama.cpp" />
-    <ClCompile Include="ExpertAdvisorBroker.cpp" />
-    <ClCompile Include="ExpertAdvisorDumbo.cpp" />
-    <ClCompile Include="ExpertAdvisorLimitAdjuster.cpp" />
-    <ClCompile Include="ExpertAdvisorMAAnalyser.cpp" />
-    <ClCompile Include="ExpertAdvisorRSI.cpp" />
-    <ClCompile Include="ExpertAdvisorTechnical.cpp" />
+    <ClCompile Include="Experts\ExpertAdvisor.cpp" />
+    <ClCompile Include="Experts\ExpertAdvisorAtama.cpp" />
+    <ClCompile Include="Experts\ExpertAdvisorBroker.cpp" />
+    <ClCompile Include="Experts\ExpertAdvisorDumbo.cpp" />
+    <ClCompile Include="Experts\ExpertAdvisorLimitAdjuster.cpp" />
+    <ClCompile Include="Experts\ExpertAdvisorMAAnalyser.cpp" />
+    <ClCompile Include="Experts\ExpertAdvisorRSI.cpp" />
+    <ClCompile Include="Experts\ExpertAdvisorTechnical.cpp" />
+    <ClCompile Include="Experts\ExpertAdvisorTSI.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Indicators\ADX.cpp" />
     <ClCompile Include="Indicators\ATR.cpp" />
     <ClCompile Include="Indicators\Base.cpp" />
+    <ClCompile Include="Indicators\KRI.cpp" />
     <ClCompile Include="Indicators\Moves.cpp" />
+    <ClCompile Include="Indicators\RSI.cpp" />
+    <ClCompile Include="Indicators\SMA.cpp" />
+    <ClCompile Include="Indicators\TSI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Market.cpp" />
     <ClCompile Include="Statistics.cpp" />
@@ -138,19 +143,24 @@
     <ClInclude Include="DeepLearningNetwork.h" />
     <ClInclude Include="DeepLearningTest.h" />
     <ClInclude Include="Event.h" />
-    <ClInclude Include="ExpertAdvisor.h" />
-    <ClInclude Include="ExpertAdvisorAtama.h" />
-    <ClInclude Include="ExpertAdvisorBroker.h" />
-    <ClInclude Include="ExpertAdvisorDumbo.h" />
-    <ClInclude Include="ExpertAdvisorLimitAdjuster.h" />
-    <ClInclude Include="ExpertAdvisorMAAnalyser.h" />
-    <ClInclude Include="ExpertAdvisorRSI.h" />
-    <ClInclude Include="ExpertAdvisorTechnical.h" />
+    <ClInclude Include="Experts\ExpertAdvisor.h" />
+    <ClInclude Include="Experts\ExpertAdvisorAtama.h" />
+    <ClInclude Include="Experts\ExpertAdvisorBroker.h" />
+    <ClInclude Include="Experts\ExpertAdvisorDumbo.h" />
+    <ClInclude Include="Experts\ExpertAdvisorLimitAdjuster.h" />
+    <ClInclude Include="Experts\ExpertAdvisorMAAnalyser.h" />
+    <ClInclude Include="Experts\ExpertAdvisorRSI.h" />
+    <ClInclude Include="Experts\ExpertAdvisorTechnical.h" />
+    <ClInclude Include="Experts\ExpertAdvisorTSI.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Indicators\ADX.h" />
     <ClInclude Include="Indicators\ATR.h" />
     <ClInclude Include="Indicators\Base.h" />
+    <ClInclude Include="Indicators\KRI.h" />
     <ClInclude Include="Indicators\Moves.h" />
+    <ClInclude Include="Indicators\RSI.h" />
+    <ClInclude Include="Indicators\SMA.h" />
+    <ClInclude Include="Indicators\TSI.h" />
     <ClInclude Include="Market.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Statistics.h" />

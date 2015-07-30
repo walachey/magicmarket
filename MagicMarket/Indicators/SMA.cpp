@@ -25,9 +25,9 @@ namespace MM
 
 		void SMA::declareExports() const
 		{
-			exportVariable("SMA", getSMA, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
-			exportVariable("SMA2", getSMA2, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
-			exportVariable("SMA2Abs", getSMA2Abs, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("SMA", std::bind(&SMA::getSMA, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("SMA2", std::bind(&SMA::getSMA2, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("SMA2Abs", std::bind(&SMA::getSMA2Abs, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
 		}
 
 		void SMA::update(const std::time_t &secondsSinceStart, const std::time_t &time)

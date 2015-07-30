@@ -39,8 +39,8 @@ int main (int argc, char *argv [])
 	CSimpleIniA ini;
 	ini.LoadFile("market.ini");
 
-	market.init(ini);
-	statistics.init(ini);
+	market.init(&ini);
+	statistics.init(&ini);
 	MM::VirtualMarket::checkInit();
 
 	market.run();

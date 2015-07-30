@@ -18,12 +18,12 @@ namespace MM
 			tsi = std::numeric_limits<double>::quiet_NaN();
 			momentumDoubleMA    = std::numeric_limits<double>::quiet_NaN();
 			absMomentumDoubleMA = std::numeric_limits<double>::quiet_NaN();
-			moves = static_cast<Moves*>(Moves(currencyPair, 2 * history, seconds).init());
+			moves = Indicators::get<Moves>(currencyPair, 2 * history, seconds);
 		}
 
 		void TSI::declareExports() const
 		{
-			exportVariable("TSI", getTSI, "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("TSI", std::bind(&TSI::getTSI, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
 		}
 
 		void TSI::update(const std::time_t &secondsSinceStart, const std::time_t &time)
@@ -36,6 +36,9 @@ namespace MM
 			absMomentumDoubleMA = Math::MA2(absMomentumDoubleMA, absMomentumMA, history);
 			
 			tsi = 100.0 * momentumDoubleMA / absMomentumDoubleMA;
+			assert(tsi >= -101.0);
+			assert(tsi <= 101.0);
+			tsi = Math::clamp(tsi, -100.0, 100.0);
 		}
 	};
 };
