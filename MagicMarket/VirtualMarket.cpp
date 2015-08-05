@@ -41,6 +41,8 @@ namespace MM
 
 	void VirtualMarket::init()
 	{
+		snapshotIndex = -1;
+
 		CSimpleIniA ini;
 		ini.LoadFile("market.ini");
 
@@ -130,6 +132,7 @@ namespace MM
 		std::cout << "\tTOTAL PROFIT\t" << totalProfitPips << std::endl;
 
 		evaluateMood();
+		evaluateTrades();
 
 		getchar();
 		exit(1);
@@ -154,13 +157,31 @@ namespace MM
 		sendTickMsg(lastTick, tradingDay);
 		
 		// send all ticks of secondary currencies up to the time of the leading currency
-		for (TradingDay *&day : secondaryCurrencies)
+		if (secondaryCurrenciesIterators.empty())
 		{
-			for (Tick &tick : day->ticks)
+			for (TradingDay *&day : secondaryCurrencies)
 			{
-				if (tick.getTime() <= previousTime) continue;
+				secondaryCurrenciesIterators.push_back(day->ticks.begin());
+			}
+		}
+		
+		for (size_t secondaryIndex = 0; secondaryIndex < secondaryCurrencies.size(); ++secondaryIndex)
+		{
+			TradingDay *&day = secondaryCurrencies[secondaryIndex];
+			std::vector<Tick>::iterator &iter = secondaryCurrenciesIterators[secondaryIndex];
+			while (iter != day->ticks.end())
+			{
+				const Tick &tick = *iter;
+				// fast forward?
+				if (tick.getTime() <= previousTime)
+				{
+					++iter;
+					continue;
+				}
+				// too far..?
 				if (tick.getTime() > lastTick->getTime()) break;
 				sendTickMsg(&tick, day);
+				++iter;
 			}
 		}
 
@@ -201,8 +222,8 @@ namespace MM
 #define OrderType ((trade.type == Trade::T_BUY) ? 0 : 1)
 #define OrderTicket trade.ticketID
 #define OrderOpenPrice trade.orderPrice
-#define OrderTakeProfit trade.takeProfitPrice
-#define OrderStopLoss trade.stopLossPrice
+#define OrderTakeProfit trade.getTakeProfitPrice()
+#define OrderStopLoss trade.getStopLossPrice()
 #define OrderOpenTime 0
 #define OrderExpiration 0
 #define OrderLots trade.lotSize
@@ -223,7 +244,7 @@ namespace MM
 		market.send(std::string("O VM [") + orderString.str() + "]");
 	}
 
-	void VirtualMarket::sendTickMsg(Tick *tick, TradingDay *day)
+	void VirtualMarket::sendTickMsg(const Tick *tick, TradingDay *day)
 	{
 		std::ostringstream msg;
 		msg << "T VM " << day->getCurrencyPair() << " " << tick->getBid() << " " << tick->getAsk() << " " << tick->getTime();
@@ -246,12 +267,14 @@ namespace MM
 			int tradeType;
 			std::string pair;
 			Trade trade;
-			is >> tradeType >> trade.currencyPair >> trade.orderPrice >> trade.stopLossPrice >> trade.takeProfitPrice >> trade.lotSize;
+			is >> tradeType >> trade.currencyPair >> trade.orderPrice >> trade.getStopLossPrice() >> trade.getTakeProfitPrice() >> trade.lotSize;
 			
 			trade.type = (tradeType == 0) ? Trade::T_BUY : Trade::T_SELL;
 			trade.ticketID = ++tradeCounter;
 			trade.removeSaveFile();
 			trades.push_back(trade);
+
+			tradesMetaInfo.emplace(trade.ticketID, VirtualTradeMetaInfo(trade.type, market.getLastTickTime(), snapshotIndex));
 		}
 		else if (command == "unset")
 		{
@@ -280,6 +303,8 @@ namespace MM
 		if (profit > 0.0) wonTrades += 1;
 		else if (profit < 0.0) lostTrades += 1;
 		totalProfitPips += profit;
+
+		tradesMetaInfo.at(trade.ticketID).setClosed(profit, market.getLastTickTime(), snapshotIndex);
 	}
 
 	void VirtualMarket::proxySend(const std::string &message)
@@ -302,31 +327,45 @@ namespace MM
 		std::time_t time = lastTick->getTime();
 		Stock *stock = tradingDay->stock;
 
-		int lookaheadTime = ONEHOUR;
+		int lookaheadTime = 30 * ONEMINUTE;
 		std::time_t endTime = time + lookaheadTime;
 		if (endTime > tradingDay->ticks.back().getTime()) return;
 
 		TimePeriod period = stock->getTimePeriod(time, endTime);
+		const std::vector<QuantLib::Decimal> price = period.toVector(5 * ONEMINUTE);
 
-		PossibleDecimal open, high, low;
+		auto assesPrice = [&](QuantLib::Decimal direction)
+		{
+			const QuantLib::Decimal optimumValue = 5.0 * ONEPIP;
+
+			QuantLib::Decimal total = 0.0;
+			for (size_t i = 1; i < price.size(); ++i)
+			{
+				QuantLib::Decimal difference = direction * (price[i] - price[i - 1]);
+				total += difference;
+				if (total < 0.0) break;
+			}
+			total -= 2.0 * ONEPIP;
+			return direction * std::min(std::max(total, 0.0) / optimumValue, 1.0);
+		};
+
+		PossibleDecimal open;
 		open = period.getOpen();
-		high = period.getHigh();
-		low = period.getLow();
 		if (!open) return;
-		assert(open && high && low);
 
-		QuantLib::Decimal highDiff = *high - *open;
-		QuantLib::Decimal lowDiff = *open - *low;
-
-		const QuantLib::Decimal optimumValue = 20.0 * ONEPIP;
-		moodFunctions["BUY"].push_back(std::min(highDiff / optimumValue, 1.0));
-		moodFunctions["SELL"].push_back(-std::min(lowDiff / optimumValue, 1.0));
+		const QuantLib::Decimal buyEstimation = assesPrice(+1.0);
+		const QuantLib::Decimal sellEstimation = assesPrice(-1.0);
+		
+		moodFunctions["BUY"].push_back(buyEstimation);
+		moodFunctions["SELL"].push_back(sellEstimation);
 
 		// now assess all experts, too
 		for (ExpertAdvisor *&expert : market.getExperts())
 		{
 			moodFunctions[expert->getName()].push_back(expert->getLastCertainty() * expert->getLastMood());
 		}
+
+		++snapshotIndex;
 	}
 
 	void VirtualMarket::evaluateMood()
@@ -367,5 +406,27 @@ namespace MM
 
 		// save for python evaluation
 		Debug::serialize(moodFunctions, "saves/moodfun.json");
+	}
+
+	void VirtualMarket::evaluateTrades()
+	{
+		std::fstream output("saves/trades.tsv", std::ios_base::out | std::ios_base::trunc);
+		output << "Trade ID\tOpening Time\tSnapshot Index\tType\tProfit\tClosing Time\tClosing Snapshot Index" << std::endl;
+
+		for (auto &data : tradesMetaInfo)
+		{
+			int32_t ID = data.first;
+			VirtualTradeMetaInfo &metaData = data.second;
+
+			output
+				<< ID << "\t"
+				<< metaData.openingTime << "\t"
+				<< metaData.snapshotIndex << "\t"
+				<< metaData.type << "\t"
+				<< metaData.profit
+				<< "\t" << metaData.closingTime
+				<< "\t" << metaData.closingSnapshotIndex
+				<< std::endl;
+		}
 	}
 };
