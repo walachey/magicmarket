@@ -60,6 +60,9 @@ namespace MM
 
 		// config
 		bool isSilent;
+
+		// for easier merging of data sets
+		int getLastSnapshotIndex() { return snapshotIndex; }
 	private:
 		std::queue<std::string> pendingMessages;
 

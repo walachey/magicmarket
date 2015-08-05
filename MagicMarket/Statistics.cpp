@@ -2,6 +2,7 @@
 
 #include "Market.h"
 #include <SimpleIni.h>
+#include "VirtualMarket.h"
 
 #include <sstream>
 
@@ -59,7 +60,7 @@ namespace MM
 			if (!outputStream.good()) return;
 
 			// print header row
-			outputStream << "time";
+			outputStream << "time" << config.delimiter << "snapshot index";
 			for (const Variable &var : variables)
 			{
 				outputStream << config.delimiter << var.name;
@@ -69,7 +70,10 @@ namespace MM
 		}
 
 		// get all observations and log them
-		outputStream << market.getLastTickTime();
+		int lastVirtualMarketSnapshotIndex = -1;
+		if (market.isVirtual())
+			lastVirtualMarketSnapshotIndex = virtualMarket->getLastSnapshotIndex();
+		outputStream << market.getLastTickTime() << config.delimiter << lastVirtualMarketSnapshotIndex;
 
 		for (const Variable &var : variables)
 		{
