@@ -81,7 +81,7 @@ namespace MM
 
 			/* smoothed momentum for TSI */
 			momentumMA    = Math::MA2(momentumMA, move, history);
-			momentumAbsMA = Math::MA2(momentumAbsMA, move, history);
+			momentumAbsMA = Math::MA2(momentumAbsMA, std::abs(move), history);
 		}
 	};
 };

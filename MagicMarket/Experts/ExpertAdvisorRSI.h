@@ -6,6 +6,7 @@ namespace MM
 	namespace Indicators 
 	{
 		class RSI;
+		class SMA;
 	};
 
 	class ExpertAdvisorRSI : public ExpertAdvisorTechnical
@@ -20,6 +21,9 @@ namespace MM
 	private:
 		Indicators::RSI *rsiShort;
 		Indicators::RSI *rsiLong;
+
+		Indicators::SMA* rsiShortMA;
+		Indicators::SMA* rsiLongMA;
 	};
 
 };

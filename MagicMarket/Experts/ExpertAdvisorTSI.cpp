@@ -35,7 +35,7 @@ namespace MM
 		if (tsiValue > margin)
 			return setMood(-1.0, 0.5 + 0.5 * certainty);
 		if (tsiValue < -margin)
-			return setMood(-1.0, 0.5 + 0.5 * certainty);
+			return setMood(+1.0, 0.5 + 0.5 * certainty);
 		setMood(0.0, 0.25);
 	}
 
