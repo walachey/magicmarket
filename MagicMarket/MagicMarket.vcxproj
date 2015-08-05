@@ -120,6 +120,7 @@
     <ClCompile Include="Indicators\RSI.cpp" />
     <ClCompile Include="Indicators\SMA.cpp" />
     <ClCompile Include="Indicators\TSI.cpp" />
+    <ClCompile Include="IO\KeyValueDB.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Market.cpp" />
     <ClCompile Include="Statistics.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Indicators\RSI.h" />
     <ClInclude Include="Indicators\SMA.h" />
     <ClInclude Include="Indicators\TSI.h" />
+    <ClInclude Include="IO\KeyValueDB.h" />
     <ClInclude Include="Market.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Statistics.h" />

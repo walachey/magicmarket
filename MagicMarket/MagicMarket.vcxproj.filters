@@ -32,6 +32,9 @@
     <Filter Include="Source Files\Indicators">
       <UniqueIdentifier>{ae6d120c-6eca-4100-86c7-94bc532e099c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\IO">
+      <UniqueIdentifier>{44141a74-0d40-4366-b6a6-a889ece41d2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -154,6 +157,9 @@
     <ClCompile Include="Experts\ExpertAdvisorTSI.cpp">
       <Filter>Source Files\Experts\Technical</Filter>
     </ClCompile>
+    <ClCompile Include="IO\KeyValueDB.cpp">
+      <Filter>Source Files\IO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -250,6 +256,9 @@
     </ClInclude>
     <ClInclude Include="Experts\ExpertAdvisorTSI.h">
       <Filter>Source Files\Experts\Technical</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\KeyValueDB.h">
+      <Filter>Source Files\IO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
