@@ -8,10 +8,11 @@ namespace MM
 	namespace Indicators
 	{
 
-		SMA::SMA(std::string currencyPair, int history, int seconds) :
+		SMA::SMA(std::string currencyPair, int history, int seconds, std::function<double()> valueProvider) :
 			currencyPair(currencyPair),
 			history(history),
-			seconds(seconds)
+			seconds(seconds),
+			valueProvider(valueProvider)
 		{
 			sma     = std::numeric_limits<double>::quiet_NaN();
 			sma2    = std::numeric_limits<double>::quiet_NaN();
@@ -32,15 +33,24 @@ namespace MM
 
 		void SMA::update(const std::time_t &secondsSinceStart, const std::time_t &time)
 		{
-			Stock *stock = market.getStock(currencyPair);
-			if (stock == nullptr) return;
-			MM::TimePeriod now = stock->getTimePeriod(time - seconds, time);
-			const PossibleDecimal price = now.getClose();
-			if (!price.get()) return;
+			double value;
+			if (valueProvider == nullptr)
+			{
+				Stock *stock = market.getStock(currencyPair);
+				if (stock == nullptr) return;
+				MM::TimePeriod now = stock->getTimePeriod(time - seconds, time);
+				const PossibleDecimal price = now.getClose();
+				if (!price.get()) return;
+				value = *price;
+			}
+			else
+				value = valueProvider();
 
-			sma     = Math::MA (sma, *price, history);
-			sma2    = Math::MA2(sma2, *price, history);
-			sma2abs = Math::MA2(sma2abs, std::abs(*price), history);
+			if (std::isnan(value)) return;
+
+			sma     = Math::MA (sma, value, history);
+			sma2    = Math::MA2(sma2, value, history);
+			sma2abs = Math::MA2(sma2abs, std::abs(value), history);
 		}
 	};
 };

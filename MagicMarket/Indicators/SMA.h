@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include <string>
+#include <functional>
 
 namespace MM
 {
@@ -12,7 +13,7 @@ namespace MM
 		class SMA : public Base
 		{
 		public:
-			SMA(std::string currencyPair, int history, int seconds);
+			SMA(std::string currencyPair, int history, int seconds, std::function<double()>valueProvider = nullptr);
 			virtual ~SMA();
 
 			virtual void declareExports() const;
@@ -21,7 +22,7 @@ namespace MM
 			{
 				const SMA* other = dynamic_cast<const SMA*>(&otherBase);
 				if (other == nullptr) return false;
-				return (other->history == history) && (other->seconds == seconds) && (other->currencyPair == currencyPair);
+				return (other->history == history) && (other->seconds == seconds) && (other->currencyPair == currencyPair) && (!currencyPair.empty());
 			}
 
 			double getSMA() const { return sma; }
@@ -31,6 +32,7 @@ namespace MM
 			double getSMA2Abs() const { return sma2abs; }
 		private:
 			std::string currencyPair;
+			std::function<double()> valueProvider;
 			int history;
 			int seconds;
 			double sma;
