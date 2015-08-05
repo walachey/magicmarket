@@ -152,7 +152,7 @@
       <Filter>Source Files\Experts</Filter>
     </ClCompile>
     <ClCompile Include="Experts\ExpertAdvisorTSI.cpp">
-      <Filter>Source Files\Experts</Filter>
+      <Filter>Source Files\Experts\Technical</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -52,11 +52,11 @@ namespace MM
 		QuantLib::Decimal confidenceFactor = iOpenCloseDif / magicNumber;
 		confidenceFactor = std::min(1.0, std::max(-1.0, confidenceFactor));
 
-		float mood = 0.0f;
+		double mood = 0.0;
 		if (confidenceFactor > 0.25)
-			mood = -1.0f;
+			mood = -1.0;
 		else if (confidenceFactor < -0.25)
-			mood = +1.0f;
+			mood = +1.0;
 		else
 			confidenceFactor = 0.25f; // for mood = 0.0
 		setMood(mood, std::abs(confidenceFactor));

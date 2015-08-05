@@ -29,6 +29,10 @@ namespace MM
 		void say(std::string);
 		// >0 -> buy; <0 -> sell
 		void setMood(float mood, float certainty);
+		void setMood(double mood, double certainty)
+		{
+			return setMood(static_cast<float>(mood), static_cast<float>(certainty));
+		};
 		float getLastMood() { return lastMood; };
 		float getLastCertainty() { return lastCertainty; };
 

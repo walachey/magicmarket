@@ -199,7 +199,7 @@ namespace MM
 			const size_t index = (size_t)std::max((int)currentIndex - 1, 0);
 			assert((int)index >= 0 && index < ticks.size());
 			Tick &tick = ticks[index];
-			assert(tick.getTime() < currentTime);
+			assert(tick.getTime() < currentTime || market.isVirtual());
 			values.push_back((tick.*valueFunction)());
 			currentTime += secondsInterval;
 		}

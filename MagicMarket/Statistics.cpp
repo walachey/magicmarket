@@ -1,5 +1,6 @@
 #include "Statistics.h"
 
+#include "Market.h"
 #include <SimpleIni.h>
 
 #include <sstream>
@@ -58,26 +59,21 @@ namespace MM
 			if (!outputStream.good()) return;
 
 			// print header row
-			bool isFirst = true;
+			outputStream << "time";
 			for (const Variable &var : variables)
 			{
-				if (!isFirst) outputStream << config.delimiter;
-				else isFirst = false;
-				outputStream << var.name;
+				outputStream << config.delimiter << var.name;
 
 				descriptionStream << var.name << config.delimiter << var.description << std::endl;
 			}
 		}
 
 		// get all observations and log them
-		auto print = [&](const Variable &var, bool isFirst)
+		outputStream << market.getLastTickTime();
+
+		for (const Variable &var : variables)
 		{
-			if (!isFirst) outputStream << config.delimiter;
-			outputStream << var.get();
-		};
-		for (size_t i = 0; i < variables.size(); ++i)
-		{
-			print(variables[i], i == 0);
+			outputStream << config.delimiter << var.get();
 		}
 		// flush file to allow killing the application without losses
 		outputStream << std::endl << std::flush;
