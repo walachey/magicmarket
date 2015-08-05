@@ -17,8 +17,7 @@ namespace MM
 
 		std::string currencyPair;
 		QuantLib::Decimal orderPrice;
-		QuantLib::Decimal takeProfitPrice;
-		QuantLib::Decimal stopLossPrice;
+
 		QuantLib::Decimal lotSize;
 
 		int32_t ticketID;
@@ -33,7 +32,7 @@ namespace MM
 		// completes the trade data with saved information
 		std::string getSaveFileName();
 		void load();
-		void save();
+		void save(bool enforce = false);
 		void removeSaveFile();
 
 		static Trade Buy(std::string currencyPair, QuantLib::Decimal lotSize)
@@ -51,6 +50,17 @@ namespace MM
 			trade.type = T_SELL;
 			return trade;
 		}
+
+		QuantLib::Decimal &getTakeProfitPrice() { return takeProfitPrice; }
+		QuantLib::Decimal &getStopLossPrice()  { return stopLossPrice; }
+
+		void setTakeProfitPrice(QuantLib::Decimal to);
+		void setStopLossPrice(QuantLib::Decimal to);
+
+	private:
+		bool dirty; // save on next opportunity
+		QuantLib::Decimal takeProfitPrice;
+		QuantLib::Decimal stopLossPrice;
 	};
 
 };

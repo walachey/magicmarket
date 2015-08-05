@@ -52,13 +52,13 @@ namespace MM
 				QuantLib::Decimal stopLoss = trade->orderPrice + difference;
 				if (trade->type == Trade::T_SELL) stopLoss = trade->orderPrice - difference;
 
-				bool improvement = trade->stopLossPrice == 0.0 || (
-					((trade->type == Trade::T_BUY) && (trade->stopLossPrice < stopLoss))
-					|| ((trade->type == Trade::T_SELL) && (trade->stopLossPrice > stopLoss)));
+				bool improvement = trade->getStopLossPrice() == 0.0 || (
+					((trade->type == Trade::T_BUY) && (trade->getStopLossPrice() < stopLoss))
+					|| ((trade->type == Trade::T_SELL) && (trade->getStopLossPrice() > stopLoss)));
 				
 				if (improvement)
 				{
-					trade->stopLossPrice = stopLoss;
+					trade->setStopLossPrice(stopLoss);
 					market.updateTrade(trade);
 					std::ostringstream os; os << "@" << trade->currencyPair << "/" << *closePos << " set SL/" << stopLoss;
 					say(os.str());
@@ -70,12 +70,12 @@ namespace MM
 			// now check enforcement of current limits
 			bool closeTrade = false;
 			if (trade->type == Trade::T_SELL && 
-				(((trade->stopLossPrice != 0.0) && ((*closePos - ONEPIP) > trade->stopLossPrice))
-				|| ((trade->takeProfitPrice != 0.0) && ((*closePos + ONEPIP) < trade->takeProfitPrice))))
+				(((trade->getStopLossPrice() != 0.0) && ((*closePos - ONEPIP) > trade->getStopLossPrice()))
+				|| ((trade->getTakeProfitPrice() != 0.0) && ((*closePos + ONEPIP) < trade->getTakeProfitPrice()))))
 				closeTrade = true;
 			if (trade->type == Trade::T_BUY && 
-				(((trade->stopLossPrice != 0.0) && ((*closePos + ONEPIP) < trade->stopLossPrice))
-				|| ((trade->takeProfitPrice != 0.0) && ((*closePos - ONEPIP) > trade->takeProfitPrice))))
+				(((trade->getStopLossPrice() != 0.0) && ((*closePos + ONEPIP) < trade->getStopLossPrice()))
+				|| ((trade->getTakeProfitPrice() != 0.0) && ((*closePos - ONEPIP) > trade->getTakeProfitPrice()))))
 				closeTrade = true;
 
 			if (closeTrade)
@@ -120,6 +120,10 @@ namespace MM
 			say(os.str());
 		}
 
+		// only accept new trades in good market hours
+		std::time_t timestamp = market.getLastTickTime();
+		std::tm *time = std::gmtime(&timestamp);
+		if (time->tm_hour < 11 || time->tm_hour > 15) return false;
 		return true;
 	}
 

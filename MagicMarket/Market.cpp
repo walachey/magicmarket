@@ -113,7 +113,7 @@ namespace MM
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorTSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorDumbo()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorMAAnalyser()));
-		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorAtama()));
+		//experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorAtama()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorLimitAdjuster()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorBroker()));
 
@@ -241,8 +241,8 @@ namespace MM
 			" set " << tradeType << 
 			" " << accepted->currencyPair << 
 			" " << accepted->orderPrice << 
-			" " << accepted->takeProfitPrice << 
-			" " << accepted->stopLossPrice << 
+			" " << accepted->getTakeProfitPrice() << 
+			" " << accepted->getStopLossPrice() << 
 			" " << accepted->lotSize;
 		send(os.str());
 
@@ -256,8 +256,8 @@ namespace MM
 		std::ostringstream os;
 		os << getCommandPrefix() <<
 			" reset " << trade->ticketID <<
-			" " << trade->takeProfitPrice <<
-			" " << trade->stopLossPrice;
+			" " << trade->getTakeProfitPrice() <<
+			" " << trade->getStopLossPrice();
 		send(os.str());
 	}
 
@@ -396,8 +396,8 @@ namespace MM
 				trade->currencyPair = order["pair"].string_value();
 				trade->lotSize = order["lots"].number_value();
 				trade->orderPrice = order["open_price"].number_value();
-				trade->stopLossPrice = order["stop_loss"].number_value();
-				trade->takeProfitPrice = order["take_profit"].number_value();
+				trade->setStopLossPrice(order["stop_loss"].number_value());
+				trade->setTakeProfitPrice(order["take_profit"].number_value());
 				trade->ticketID = order["ticket_id"].int_value();
 
 				if (order["type"].int_value() == 0) trade->type = Trade::T_BUY;

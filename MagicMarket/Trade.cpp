@@ -12,13 +12,27 @@ namespace filesystem = std::tr2::sys;
 namespace MM
 {
 
-	Trade::Trade() : ticketID(-1), orderPrice(0.0), takeProfitPrice(0.0), stopLossPrice(0.0), lotSize(0.0)
+	Trade::Trade() : ticketID(-1), orderPrice(0.0), takeProfitPrice(0.0), stopLossPrice(0.0), lotSize(0.0), dirty(true)
 	{
 	}
 
 
 	Trade::~Trade()
 	{
+	}
+
+	void Trade::setTakeProfitPrice(QuantLib::Decimal to)
+	{
+		if (to == takeProfitPrice) return;
+		takeProfitPrice = to;
+		dirty = true;
+	}
+
+	void Trade::setStopLossPrice(QuantLib::Decimal to)
+	{
+		if (to == stopLossPrice) return;
+		stopLossPrice = to;
+		dirty = true;
 	}
 
 	QuantLib::Decimal Trade::getProfitAtTick(const Tick &tick) const
@@ -50,8 +64,10 @@ namespace MM
 			filesystem::remove(path);
 	}
 
-	void Trade::save()
+	void Trade::save(bool enforce)
 	{
+		if (!enforce && !dirty) return;
+
 		std::fstream file(getSaveFileName().c_str(), std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
 		if (!file.good()) return;
 
@@ -63,7 +79,6 @@ namespace MM
 
 	void Trade::load()
 	{
-		
 		std::fstream file(getSaveFileName().c_str(), std::ios_base::in | std::ios_base::binary);
 		if (!file.good()) return;
 
@@ -98,5 +113,6 @@ namespace MM
 			else takeProfitPrice = std::max(tp, takeProfitPrice);
 		}
 		
+		dirty = false;
 	}
 };
