@@ -55,12 +55,14 @@ namespace MM
 
 		std::string KeyValueDB::get(std::string key)
 		{
+			assertLoaded();
 			if (!entries.count(key)) return "";
 			return entries.at(key).data;
 		}
 
 		void KeyValueDB::put(std::string key, std::string value)
 		{
+			assertLoaded();
 			std::fstream out(filename.c_str(), std::ios_base::out | std::ios_base::app);
 			if (!out.good())
 			{
@@ -82,7 +84,7 @@ namespace MM
 			{
 				// update entry
 				Entry &entry = entries.at(key);
-				const bool lengthChanged = entry.data.size() == value.size();
+				const bool lengthChanged = entry.data.size() != value.size();
 				entry.data = value;
 
 				out.seekp(entry.offset, std::ios_base::beg);
@@ -95,18 +97,19 @@ namespace MM
 				else // .. write all entries anew
 				{
 					auto iter = entries.begin();
-					while (
-						(iter = std::find_if(iter, entries.end(), [&entry](const std::pair<std::string, Entry>& candidate)
+					do
+					{
+						iter = std::find_if(iter, entries.end(), [&entry](const std::pair<std::string, Entry>& candidate)
 							{
 								return candidate.second.offset >= entry.offset;
-							})
-						) != entries.end())
-					{
+						});
+						if (iter == entries.end()) break;
+
 						Entry &entry = iter->second;
 						entry.offset = out.tellp();
 						out << iter->first << "\t" << entry.data << std::endl;
 						entry.length = static_cast<size_t>(out.tellp() - entry.offset);
-					}
+					} while (++iter != entries.end());
 				}
 			}
 		}
