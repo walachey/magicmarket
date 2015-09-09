@@ -120,6 +120,7 @@
     <ClCompile Include="Indicators\RSI.cpp" />
     <ClCompile Include="Indicators\SMA.cpp" />
     <ClCompile Include="Indicators\TSI.cpp" />
+    <ClCompile Include="IO\DataConverter.cpp" />
     <ClCompile Include="IO\KeyValueDB.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Market.cpp" />
@@ -141,6 +142,7 @@
     <ClInclude Include="..\deps\lwneuralnetplus\source\shuffle.h" />
     <ClInclude Include="..\deps\lwneuralnetplus\source\trainer.h" />
     <ClInclude Include="Account.h" />
+    <ClInclude Include="DataConverter.h" />
     <ClInclude Include="DeepLearningNetwork.h" />
     <ClInclude Include="DeepLearningTest.h" />
     <ClInclude Include="Event.h" />
@@ -162,6 +164,7 @@
     <ClInclude Include="Indicators\RSI.h" />
     <ClInclude Include="Indicators\SMA.h" />
     <ClInclude Include="Indicators\TSI.h" />
+    <ClInclude Include="IO\DataConverter.h" />
     <ClInclude Include="IO\KeyValueDB.h" />
     <ClInclude Include="Market.h" />
     <ClInclude Include="resource.h" />

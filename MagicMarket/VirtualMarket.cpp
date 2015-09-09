@@ -11,6 +11,9 @@
 #include "TradingDay.h"
 #include "Stock.h"
 #include "ExpertAdvisor.h"
+#include "IO/DataConverter.h"
+#include "IO/KeyValueDB.h"
+
 
 MM::VirtualMarket *virtualMarket = nullptr;
 
@@ -45,6 +48,35 @@ namespace MM
 
 		CSimpleIniA ini;
 		ini.LoadFile("market.ini");
+
+		// Possibly convert some data files first.
+		io::KeyValueDB db("virtual_market.datafiles");
+
+		for (size_t i = 0; i < 10; ++i)
+		{
+			const std::string configName = std::string("Virtual Market Data ") + std::to_string(i + 1);
+			std::string filename = ini.GetValue(configName.c_str(), "Filename", "");
+			if (filename.empty()) continue;
+
+			// Check if already converted once.
+			if (db.get(filename) == "1")
+			{
+				std::cout << "Data file '" << filename << "': \t\tskipping." << std::endl;
+				continue;
+			}
+			std::cout << "Data file '" << filename << "': \t\tconverting file.." << std::endl;
+			std::string filetype = ini.GetValue(configName.c_str(), "Filetype", "");
+			// Try to read the file
+			io::DataConverter converter(filename, filetype);
+			if (converter.convert() == true)
+			{
+				db.put(filename, "1");
+			}
+			else
+			{
+				std::cout << "\t! Reading Data failed!" << std::endl;
+			}
+		}
 
 		int day, month, year;
 		std::string dayString = ini.GetValue("Virtual Market", "Day", "2014-01-30");

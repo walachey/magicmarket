@@ -160,6 +160,9 @@
     <ClCompile Include="IO\KeyValueDB.cpp">
       <Filter>Source Files\IO</Filter>
     </ClCompile>
+    <ClCompile Include="IO\DataConverter.cpp">
+      <Filter>Source Files\IO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -258,6 +261,10 @@
       <Filter>Source Files\Experts\Technical</Filter>
     </ClInclude>
     <ClInclude Include="IO\KeyValueDB.h">
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="DataConverter.h" />
+    <ClInclude Include="IO\DataConverter.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
   </ItemGroup>

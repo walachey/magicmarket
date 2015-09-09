@@ -12,6 +12,11 @@
 namespace MM
 {
 
+	namespace io
+	{
+		class DataReader;
+	};
+
 	class Tick
 	{
 	public:
@@ -38,14 +43,15 @@ namespace MM
 		friend class Market;
 		friend class Stock;
 		friend class TradingDay;
+		friend class io::DataReader;
 
-		friend std::ostream& operator<< (std::ostream &out, MM::Tick &tick);
-		friend std::istream& operator>> (std::istream &in, MM::Tick &tick);
-		int getOutputBitSize();
+		friend std::ostream& operator<< (std::ostream &out, const MM::Tick &tick);
+		friend std::istream& operator>> (std::istream &in, const MM::Tick &tick);
+		int getOutputBitSize() const;
 	};
 
-	std::ostream& operator<< (std::ostream &out, MM::Tick &tick);
-	std::istream& operator>> (std::istream &in, MM::Tick &tick);
+	std::ostream& operator<< (std::ostream &out, const MM::Tick &tick);
+	std::istream& operator>> (std::istream &in, const MM::Tick &tick);
 };
 
 

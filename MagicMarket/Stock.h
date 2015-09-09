@@ -15,6 +15,11 @@ namespace MM
 	class Trade;
 	class TradingDay;
 
+	namespace io
+	{
+		class DataConverter;
+	};
+
 	class Stock
 	{
 	public:
@@ -40,7 +45,11 @@ namespace MM
 
 	private:
 		std::map<QuantLib::Date, TradingDay*> tradingDays;
+		decltype(Stock::tradingDays) &getAllTradingDays() { return tradingDays; }
 		std::string currencyPair;
+
+		friend class io::DataConverter;
+		friend class io::DataReader;
 	};
 
 

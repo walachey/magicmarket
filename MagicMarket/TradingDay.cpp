@@ -39,7 +39,12 @@ namespace MM
 		return stock->getTradingDay(date + 1);
 	}
 
-	void TradingDay::receiveFreshTick(Tick tick)
+	void TradingDay::serializeTick(const Tick &tick)
+	{
+		getSaveFile() << tick << std::flush;
+	}
+
+	void TradingDay::receiveFreshTick(const Tick &tick)
 	{
 		// check last tick if time is equal
 		if (ticks.size())
@@ -60,7 +65,7 @@ namespace MM
 		ticks.push_back(tick);
 		// save the tick!
 		if (!market.isVirtual())
-			getSaveFile() << tick << std::flush;
+			serializeTick(tick);
 	}
 
 	std::string TradingDay::getSaveFileName()

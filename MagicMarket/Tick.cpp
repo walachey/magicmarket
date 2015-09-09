@@ -26,13 +26,13 @@ namespace MM
 	}
 
 	
-	int Tick::getOutputBitSize()
+	int Tick::getOutputBitSize() const
 	{
 		return sizeof(uint8_t)+sizeof(time)+sizeof(bid)+sizeof(ask);
 	}
 
 	// this expects a binary stream
-	std::ostream& operator<< (std::ostream &out, MM::Tick &tick)
+	std::ostream& operator<< (std::ostream &out, const MM::Tick &tick)
 	{
 		// this is the version of the save format,
 		// is is possible that the format changes; this is for forward-compatibility
@@ -47,7 +47,7 @@ namespace MM
 	}
 
 	// this expects a binary stream
-	std::istream& operator>> (std::istream &in, MM::Tick &tick)
+	std::istream& operator>> (std::istream &in, const MM::Tick &tick)
 	{
 		uint8_t version;
 		in.read((char*)&version, sizeof(version));

@@ -18,7 +18,10 @@ namespace MM
 
 	Stock::~Stock()
 	{
-
+		for (auto &dayData : tradingDays)
+		{
+			delete dayData.second;
+		}
 	}
 
 	TimePeriod Stock::getTimePeriod(const std::time_t &start, const std::time_t &end)

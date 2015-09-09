@@ -12,6 +12,11 @@ namespace MM
 {
 	class Stock;
 
+	namespace io
+	{
+		class DataConverter;
+		class DataReader;
+	};
 
 	class TradingDay
 	{
@@ -25,7 +30,7 @@ namespace MM
 
 		QuantLib::Date getDate() { return date; }
 		
-		void receiveFreshTick(Tick tick);
+		void receiveFreshTick(const Tick &tick);
 
 		// saving & loading
 		std::ostream& getSaveFile();
@@ -38,6 +43,8 @@ namespace MM
 		QuantLib::Date date;
 		Tick &getTickByIndex(size_t index) { return ticks[index]; }
 		std::vector<Tick> ticks;
+		void serializeTick(const Tick &tick);
+
 		std::fstream *saveFile;
 		Stock *stock;
 
@@ -45,6 +52,8 @@ namespace MM
 
 		friend class TimePeriod;
 		friend class VirtualMarket;
+		friend class io::DataConverter;
+		friend class io::DataReader;
 	};
 
 
