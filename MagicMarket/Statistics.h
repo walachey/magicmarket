@@ -18,6 +18,7 @@ namespace MM
 			Variable(name, std::bind([&] { return *source; }), description) {};
 
 		double get() const { return accessor(); }
+		std::string getS() const;
 		std::string name;
 		std::string originalName;
 		std::string description;

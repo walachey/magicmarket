@@ -10,6 +10,12 @@ MM::Statistics statistics;
 
 namespace MM
 {
+	std::string Variable::getS() const
+	{
+		const double val = get();
+		if (std::isnan(val)) return "nan";
+		else return std::to_string(val);
+	}
 
 	Statistics::Statistics()
 	{
@@ -77,7 +83,7 @@ namespace MM
 
 		for (const Variable &var : variables)
 		{
-			outputStream << config.delimiter << var.get();
+			outputStream << config.delimiter << var.getS();
 		}
 		// flush file to allow killing the application without losses
 		outputStream << std::endl << std::flush;
