@@ -5,10 +5,16 @@
 
 namespace MM
 {
-	ExpertAdvisor::ExpertAdvisor()
+	void ExpertAdvisor::onNewDay()
 	{
 		lastMood = 0.0f;
 		lastCertainty = 0.0f;
+
+		reset();
+	}
+
+	ExpertAdvisor::ExpertAdvisor()
+	{
 	}
 
 	ExpertAdvisor::~ExpertAdvisor()
@@ -33,6 +39,12 @@ namespace MM
 		lastMood = mood;
 		lastCertainty = certainty;
 		market.updateMood(getName(), mood, certainty);
+	}
+
+	void ExpertAdvisor::declareExports() const
+	{
+		exportVariable(getName() + "_mood", std::bind(&ExpertAdvisor::getLastMood, this), "mood");
+		exportVariable(getName() + "_cert", std::bind(&ExpertAdvisor::getLastCertainty, this), "certainty");
 	}
 
 	void ExpertAdvisor::exportVariable(std::string name, std::function<double()> accessor, std::string description) const

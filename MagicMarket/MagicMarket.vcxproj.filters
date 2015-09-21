@@ -35,12 +35,12 @@
     <Filter Include="Source Files\IO">
       <UniqueIdentifier>{44141a74-0d40-4366-b6a6-a889ece41d2e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Evaluation\VM">
+      <UniqueIdentifier>{fd5291a5-3dfd-4296-834c-8e04df780485}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="thirdparty\json11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Helpers.cpp">
@@ -100,9 +100,6 @@
     <ClCompile Include="Tick.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="VirtualMarket.cpp">
-      <Filter>Source Files\Evaluation</Filter>
-    </ClCompile>
     <ClCompile Include="Indicators\ATR.cpp">
       <Filter>Source Files\Indicators</Filter>
     </ClCompile>
@@ -114,9 +111,6 @@
     </ClCompile>
     <ClCompile Include="Indicators\ADX.cpp">
       <Filter>Source Files\Indicators</Filter>
-    </ClCompile>
-    <ClCompile Include="Statistics.cpp">
-      <Filter>Source Files\Evaluation</Filter>
     </ClCompile>
     <ClCompile Include="Indicators\KRI.cpp">
       <Filter>Source Files\Indicators</Filter>
@@ -163,6 +157,18 @@
     <ClCompile Include="IO\DataConverter.cpp">
       <Filter>Source Files\IO</Filter>
     </ClCompile>
+    <ClCompile Include="Evaluation\Statistics.cpp">
+      <Filter>Source Files\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="Evaluation\VirtualMarket.cpp">
+      <Filter>Source Files\Evaluation</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\json11.cpp">
+      <Filter>Source Files\thirdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="Evaluation\VM\Profiler.cpp">
+      <Filter>Source Files\Evaluation\VM</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -173,7 +179,6 @@
     <ClInclude Include="Tick.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="TimePeriod.h" />
-    <ClInclude Include="thirdparty\json11.hpp" />
     <ClInclude Include="Helpers.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -195,7 +200,6 @@
     <ClInclude Include="..\deps\lwneuralnetplus\source\trainer.h">
       <Filter>Source Files\lwneuralnetplus</Filter>
     </ClInclude>
-    <ClInclude Include="VirtualMarket.h" />
     <ClInclude Include="DeepLearningNetwork.h">
       <Filter>Deep Learning</Filter>
     </ClInclude>
@@ -217,9 +221,6 @@
     </ClInclude>
     <ClInclude Include="Indicators\ADX.h">
       <Filter>Source Files\Indicators</Filter>
-    </ClInclude>
-    <ClInclude Include="Statistics.h">
-      <Filter>Source Files\Evaluation</Filter>
     </ClInclude>
     <ClInclude Include="Indicators\KRI.h">
       <Filter>Source Files\Indicators</Filter>
@@ -266,6 +267,18 @@
     <ClInclude Include="DataConverter.h" />
     <ClInclude Include="IO\DataConverter.h">
       <Filter>Source Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="Evaluation\Statistics.h">
+      <Filter>Source Files\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="Evaluation\VirtualMarket.h">
+      <Filter>Source Files\Evaluation</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\json11.hpp">
+      <Filter>Source Files\thirdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="Evaluation\VM\Profiler.h">
+      <Filter>Source Files\Evaluation\VM</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

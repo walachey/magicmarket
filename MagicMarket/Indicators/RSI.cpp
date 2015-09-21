@@ -8,13 +8,16 @@ namespace MM
 {
 	namespace Indicators
 	{
+		void RSI::reset()
+		{
+			rsi = std::numeric_limits<double>::quiet_NaN();
+		}
 
 		RSI::RSI(std::string currencyPair, int history, int seconds) :
 			currencyPair(currencyPair),
 			history(history),
 			seconds(seconds)
 		{
-			rsi   = std::numeric_limits<double>::quiet_NaN();
 			moves = Indicators::get<Moves>(currencyPair, history, seconds);
 		}
 

@@ -16,7 +16,7 @@ namespace MM
 			Base();
 			virtual ~Base();
 
-			virtual std::string getName() override { return "Indicator"; }
+			virtual std::string getName() const override { return "Indicator"; }
 			virtual void execute(const std::time_t &secondsSinceStart, const std::time_t &time) override { update(secondsSinceStart, time); };
 			virtual void onNewTick(const std::string &currencyPair, const QuantLib::Date &date, const std::time_t &time) override {};
 			virtual bool operator== (const Base &other) const = 0;

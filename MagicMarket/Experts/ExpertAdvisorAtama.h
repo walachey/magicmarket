@@ -40,10 +40,11 @@ namespace MM
 			~TrainingData();
 		};
 	public:
+		virtual void reset() override;
 		ExpertAdvisorAtama();
 		virtual ~ExpertAdvisorAtama();
 
-		virtual std::string getName() { return "atama"; };
+		virtual std::string getName() const override { return "atama"; };
 
 		//virtual void execute(std::time_t secondsPassed);
 		virtual void onNewTick(const std::string &currencyPair, const QuantLib::Date &date, const std::time_t &time);

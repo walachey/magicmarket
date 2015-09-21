@@ -67,6 +67,7 @@ namespace MM
 		
 		std::time_t getLastTickTime() { return lastTickTime; }
 
+
 		std::vector<Indicators::Base*> &getIndicators() { return indicators; }
 
 	private:
@@ -82,6 +83,7 @@ namespace MM
 		// to notify agents
 		std::vector<Event> events;
 		std::time_t lastTickTime;
+		QuantLib::Date lastTickDate;
 
 		// for the communication protocol
 		void *zmqContext;
@@ -99,6 +101,9 @@ namespace MM
 
 		// Interface for the virtual market
 	private:
+		void onNewTickMessageReceived(const std::string &pair, QuantLib::Decimal bid, QuantLib::Decimal ask, std::time_t time);
+		void onNewTradeMessageReceived(Trade *trade);
+		void saveAndClearTrades();
 		friend class VirtualMarket;
 		std::chrono::milliseconds sleepDuration;
 		bool isVirtualModeEnabled;

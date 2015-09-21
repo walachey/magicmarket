@@ -13,6 +13,7 @@ namespace MM
 		class Moves : public Base
 		{
 		public:
+			virtual void reset() override;
 			Moves(std::string currencyPair, int history, int seconds);
 			virtual ~Moves();
 

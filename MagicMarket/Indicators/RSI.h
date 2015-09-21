@@ -15,6 +15,7 @@ namespace MM
 		class RSI : public Base
 		{
 		public:
+			virtual void reset() override;
 			RSI(std::string currencyPair, int history, int seconds);
 			virtual ~RSI();
 

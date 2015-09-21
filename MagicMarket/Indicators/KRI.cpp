@@ -8,16 +8,18 @@ namespace MM
 {
 	namespace Indicators
 	{
+		void KRI::reset()
+		{
+			kri = std::numeric_limits<double>::quiet_NaN();
+		}
 
 		KRI::KRI(std::string currencyPair, int history, int seconds) :
 			currencyPair(currencyPair),
 			history(history),
 			seconds(seconds)
 		{
-			kri = std::numeric_limits<double>::quiet_NaN();
 			sma = Indicators::get<SMA>(currencyPair, history, seconds);
 		}
-
 
 		KRI::~KRI()
 		{

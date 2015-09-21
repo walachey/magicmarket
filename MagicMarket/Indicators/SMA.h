@@ -13,6 +13,7 @@ namespace MM
 		class SMA : public Base
 		{
 		public:
+			virtual void reset() override;
 			SMA(std::string currencyPair, int history, int seconds, std::function<double()>valueProvider = nullptr);
 			virtual ~SMA();
 

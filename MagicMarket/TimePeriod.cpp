@@ -18,6 +18,8 @@ namespace MM
 		if (valueFunction_ != nullptr)
 			valueFunction = valueFunction_;
 		else valueFunction = &Tick::getMid;
+
+		cacheDirty = true;
 	}
 
 	TimePeriod::TimePeriod(const TimePeriod &other)
@@ -26,12 +28,53 @@ namespace MM
 		startTime = other.startTime;
 		endTime = other.endTime;
 		valueFunction = other.valueFunction;
+
+		cacheDirty = true;
 	}
 
 
 	TimePeriod::~TimePeriod()
 	{
 	}
+
+	bool TimePeriod::checkInitCache()
+	{
+		if (!cacheDirty) return true;
+		// for now, assume we are always evaluating one single day
+		assert(dateFromTime(startTime) == dateFromTime(endTime));
+
+		ticksEnd = ticksBegin = std::vector<Tick>::iterator();
+
+		TradingDay *day = stock->getTradingDay(dateFromTime(endTime));
+		if (day == nullptr) return false;
+
+		ticksTotalBegin = day->ticks.begin();
+		ticksTotalEnd = day->ticks.end();
+		ticksBegin = day->ticks.end();
+		ticksEnd   = day->ticks.end();
+
+		bool endSet(false);
+		std::vector<Tick> &ticks = day->getTicks();
+		for (size_t i = ticks.size() - 1; i >= 0; --i)
+		{
+			const Tick &tick = ticks[i];
+			if (!endSet && (tick.getTime() < endTime))
+			{
+				ticksEnd = std::next(ticks.begin(), i + 1);
+				endSet = true;
+			}
+
+			if (tick.getTime() < startTime)
+			{
+				ticksBegin = std::next(ticks.begin(), i + 1);
+				break;
+			}
+		}
+
+		cacheDirty = false;
+		return true;
+	}
+
 
 	void TimePeriod::setValueFunction(QuantLib::Decimal(Tick::*fun)()const)
 	{
@@ -40,19 +83,13 @@ namespace MM
 	
 	PossibleDecimal TimePeriod::getHigh()
 	{
-		assert(dateFromTime(startTime) == dateFromTime(endTime)); // for now, assume we are always evaluating one single day
-		TradingDay *day = stock->getTradingDay(dateFromTime(endTime));
-		if (day == nullptr) return nullptr;
+		if (!checkInitCache()) return nullptr;
 
 		QuantLib::Decimal max = 0.0;
 		int count = 0;
 
-		std::vector<Tick> &ticks = day->getTicks();
-		for (Tick &tick : ticks)
+		for (const Tick &tick : *this)
 		{
-			if (tick.getTime() < startTime) continue;
-			if (tick.getTime() > endTime) break;
-
 			QuantLib::Decimal value = (tick.*valueFunction)();
 			if ((count == 0) || (value > max))
 				max = value;
@@ -65,19 +102,13 @@ namespace MM
 
 	PossibleDecimal TimePeriod::getLow()
 	{
-		assert(dateFromTime(startTime) == dateFromTime(endTime)); // for now, assume we are always evaluating one single day
-		TradingDay *day = stock->getTradingDay(dateFromTime(endTime));
-		if (day == nullptr) return nullptr;
+		if (!checkInitCache()) return nullptr;
 
 		QuantLib::Decimal min = 0.0;
 		int count = 0;
 
-		std::vector<Tick> &ticks = day->getTicks();
-		for (Tick &tick : ticks)
+		for (const Tick &tick : *this)
 		{
-			if (tick.getTime() < startTime) continue;
-			if (tick.getTime() > endTime) break;
-
 			QuantLib::Decimal value = (tick.*valueFunction)();
 			if ((count == 0) || (value < min))
 				min = value;
@@ -90,53 +121,45 @@ namespace MM
 
 	PossibleDecimal TimePeriod::getOpen()
 	{
-		TradingDay *day = stock->getTradingDay(dateFromTime(endTime));
-		if (day == nullptr) return nullptr;
+		if (!checkInitCache()) return nullptr;
+		if (ticksBegin == ticksTotalBegin) return nullptr;
+		if (ticksBegin == ticksTotalEnd) return nullptr;
 
-		// get first tick before period begin
-		std::vector<Tick> &ticks = day->getTicks();
-		for (size_t i = 0, ii = ticks.size(); i < ii; ++i)
-		{
-			if (ticks[i].getTime() < startTime) continue;
-			if (i == 0) return nullptr;
-
-			return PossibleDecimal(new QuantLib::Decimal((ticks[i-1].*valueFunction)()));
-		}
-
-		return nullptr;
+		const Tick & tick = *(ticksBegin - 1);
+		return PossibleDecimal(new QuantLib::Decimal((tick.*valueFunction)()));
 	}
 
 	PossibleDecimal TimePeriod::getClose()
 	{
-		TradingDay *day = stock->getTradingDay(dateFromTime(endTime));
-		if (day == nullptr) return nullptr;
+		if (!checkInitCache()) return nullptr;
 
-		// get last tick before period end - might also be before start
-		std::vector<Tick> &ticks = day->getTicks();
-		for (std::vector<Tick>::reverse_iterator iter = ticks.rbegin(); iter != ticks.rend(); ++iter)
+		Tick *tick = nullptr;
+		if (ticksEnd != ticksTotalEnd)
 		{
-			Tick &tick = *iter;
-			if (tick.getTime() > endTime) continue;
-			return PossibleDecimal(new QuantLib::Decimal((tick.*valueFunction)()));
+			tick = &*(ticksEnd - 1);
 		}
-
-		return nullptr;
+		else
+		{
+			TradingDay *day = stock->getTradingDay(dateFromTime(endTime));
+			assert(day != nullptr);
+			tick = &day->ticks.back();
+		}
+		
+		if (tick == nullptr) return nullptr;
+		return PossibleDecimal(new QuantLib::Decimal((tick->*valueFunction)()));
 	}
 
 	PossibleDecimal TimePeriod::getAverage()
 	{
-		assert(dateFromTime(startTime) == dateFromTime(endTime)); // for now, assume we are always evaluating one single day
-		TradingDay *day = stock->getTradingDay(dateFromTime(endTime));
-		if (day == nullptr) return nullptr;
-
+		if (!checkInitCache()) return nullptr;
+		
 		QuantLib::Decimal sum = 0.0;
 		int count = 0;
 
-		std::vector<Tick> &ticks = day->getTicks();
-		for (Tick &tick : ticks)
+		for (Tick &tick : *this)
 		{
-			if (tick.getTime() < startTime) continue;
-			if (tick.getTime() > endTime) break;
+			assert (tick.getTime() >= startTime);
+			assert (tick.getTime() < endTime);
 			sum += (tick.*valueFunction)();
 			count += 1;
 		}
@@ -180,25 +203,25 @@ namespace MM
 
 	std::vector<double> TimePeriod::toVector(int secondsInterval)
 	{
-		assert(dateFromTime(startTime) == dateFromTime(endTime)); // for now, assume we are always evaluating one single day
-		TradingDay *day = stock->getTradingDay(dateFromTime(endTime));
-		if (day == nullptr) return std::vector<double>();
+		if (!checkInitCache()) return{};
 
-		const int totalEntries = (endTime - startTime) / secondsInterval + 1;
+		const int totalEntries = static_cast<int>(endTime - startTime) / secondsInterval + 1;
 		std::vector<double> values;
 		values.reserve(totalEntries);
 
-		std::vector<Tick> &ticks = day->getTicks();
 		std::time_t currentTime = startTime;
-		size_t currentIndex = 0;
+		auto currentTick = ticksBegin;
+		auto lastTick    = currentTick;
 		while (currentTime < (endTime + secondsInterval))
 		{
 			// search right tick for time
-			while ((currentIndex < ticks.size()) && (ticks[currentIndex].getTime() < currentTime))
-				++currentIndex;
-			const size_t index = (size_t)std::max((int)currentIndex - 1, 0);
-			assert((int)index >= 0 && index < ticks.size());
-			Tick &tick = ticks[index];
+			while ((currentTick != ticksEnd) && (currentTick->getTime() < currentTime))
+			{
+				lastTick = currentTick;
+				++currentTick;
+			}
+			
+			Tick &tick = *lastTick;
 			assert(tick.getTime() < currentTime || market.isVirtual());
 			values.push_back((tick.*valueFunction)());
 			currentTime += secondsInterval;
@@ -209,6 +232,8 @@ namespace MM
 
 	bool TimePeriod::expandStartTime(int seconds)
 	{
+		cacheDirty = true;
+
 		std::time_t newTime = startTime - seconds;
 		if (newTime > endTime) return false;
 		startTime = newTime;
@@ -217,6 +242,8 @@ namespace MM
 
 	bool TimePeriod::expandEndTime(int seconds)
 	{
+		cacheDirty = true;
+
 		std::time_t newTime = endTime + seconds;
 		if (newTime < startTime) return false;
 		endTime = newTime;
@@ -225,6 +252,8 @@ namespace MM
 
 	bool TimePeriod::shift(int seconds)
 	{
+		cacheDirty = true;
+
 		startTime += seconds;
 		endTime += seconds;
 		return true;
@@ -232,6 +261,8 @@ namespace MM
 
 	bool TimePeriod::setStock(std::string currencyPair)
 	{
+		cacheDirty = true;
+
 		Stock *s = market.getStock(currencyPair);
 		if (s == nullptr) return false;
 		return setStock(s);
@@ -239,6 +270,8 @@ namespace MM
 
 	bool TimePeriod::setStock(Stock *stock)
 	{
+		cacheDirty = true;
+
 		this->stock = stock;
 		return true;
 	}

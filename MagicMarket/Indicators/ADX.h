@@ -16,6 +16,7 @@ namespace MM
 		class ADX : public Base
 		{
 		public:
+			virtual void reset() override;
 			ADX(std::string currencyPair, int history, int seconds);
 			virtual ~ADX();
 

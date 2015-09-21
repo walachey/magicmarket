@@ -36,6 +36,11 @@ namespace MM
 		free(outputValues);
 	}
 
+	void ExpertAdvisorAtama::reset()
+	{
+
+	}
+
 	ExpertAdvisorAtama::ExpertAdvisorAtama()
 	{
 		currentState = State::NONE;
@@ -165,7 +170,7 @@ namespace MM
 		ANN::trainer ANNTrainer(ANN, "saves/ANN_error.log", "saves/ANN_accuracy.log");
 		ANNTrainer.set_iomanager(this);
 		ANNTrainer.set_max_epochs(2500);
-		ANNTrainer.set_min_error(0.1);
+		ANNTrainer.set_min_error(0.1f);
 
 		ANNTrainer.load_training("RAM");
 		int epochs = ANNTrainer.train_online(true);

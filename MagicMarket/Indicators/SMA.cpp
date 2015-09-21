@@ -8,15 +8,20 @@ namespace MM
 	namespace Indicators
 	{
 
+		void SMA::reset()
+		{
+			sma = std::numeric_limits<double>::quiet_NaN();
+			sma2 = std::numeric_limits<double>::quiet_NaN();
+			sma2abs = std::numeric_limits<double>::quiet_NaN();
+		}
+
 		SMA::SMA(std::string currencyPair, int history, int seconds, std::function<double()> valueProvider) :
 			currencyPair(currencyPair),
 			history(history),
 			seconds(seconds),
 			valueProvider(valueProvider)
 		{
-			sma     = std::numeric_limits<double>::quiet_NaN();
-			sma2    = std::numeric_limits<double>::quiet_NaN();
-			sma2abs = std::numeric_limits<double>::quiet_NaN();
+
 		}
 
 

@@ -51,7 +51,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -72,7 +72,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <WarningLevel>Level3</WarningLevel>
@@ -87,6 +87,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalLibraryDirectories>..\;D:\Users\David\forex\MagicMarket\libzmq\bin\Win32\Release\v120\static;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;QuantLib-vc120-mt-gd.lib;libzmq-mt-sgd-4_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -101,6 +102,9 @@
     <ClCompile Include="Account.cpp" />
     <ClCompile Include="DeepLearningNetwork.cpp" />
     <ClCompile Include="DeepLearningTest.cpp" />
+    <ClCompile Include="Evaluation\Statistics.cpp" />
+    <ClCompile Include="Evaluation\VirtualMarket.cpp" />
+    <ClCompile Include="Evaluation\VM\Profiler.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="Experts\ExpertAdvisor.cpp" />
     <ClCompile Include="Experts\ExpertAdvisorAtama.cpp" />
@@ -124,14 +128,12 @@
     <ClCompile Include="IO\KeyValueDB.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Market.cpp" />
-    <ClCompile Include="Statistics.cpp" />
     <ClCompile Include="Stock.cpp" />
     <ClCompile Include="thirdparty\json11.cpp" />
     <ClCompile Include="Tick.cpp" />
     <ClCompile Include="TimePeriod.cpp" />
     <ClCompile Include="Trade.cpp" />
     <ClCompile Include="TradingDay.cpp" />
-    <ClCompile Include="VirtualMarket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\deps\lwneuralnetplus\all.h" />
@@ -145,6 +147,9 @@
     <ClInclude Include="DataConverter.h" />
     <ClInclude Include="DeepLearningNetwork.h" />
     <ClInclude Include="DeepLearningTest.h" />
+    <ClInclude Include="Evaluation\Statistics.h" />
+    <ClInclude Include="Evaluation\VirtualMarket.h" />
+    <ClInclude Include="Evaluation\VM\Profiler.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="Experts\ExpertAdvisor.h" />
     <ClInclude Include="Experts\ExpertAdvisorAtama.h" />
@@ -168,14 +173,12 @@
     <ClInclude Include="IO\KeyValueDB.h" />
     <ClInclude Include="Market.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="Statistics.h" />
     <ClInclude Include="Stock.h" />
     <ClInclude Include="thirdparty\json11.hpp" />
     <ClInclude Include="Tick.h" />
     <ClInclude Include="TimePeriod.h" />
     <ClInclude Include="Trade.h" />
     <ClInclude Include="TradingDay.h" />
-    <ClInclude Include="VirtualMarket.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MagicMarket.rc" />

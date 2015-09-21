@@ -12,20 +12,21 @@ namespace MM
 {
 	namespace Indicators
 	{
-
-		ADX::ADX(std::string currencyPair, int history, int seconds) : 
-			currencyPair(currencyPair),
-			history(history),
-			seconds(seconds)
+		void ADX::reset()
 		{
 			pDIMA = std::numeric_limits<double>::quiet_NaN();
 			mDIMA = std::numeric_limits<double>::quiet_NaN();
 			adx = std::numeric_limits<double>::quiet_NaN();
-
-			moves = Indicators::get<Moves>(currencyPair, history, seconds);
-			atr   = Indicators::get<ATR>(currencyPair, history, seconds);
 		}
 
+		ADX::ADX(std::string currencyPair, int history, int seconds) :
+			currencyPair(currencyPair),
+			history(history),
+			seconds(seconds)
+		{
+			moves = Indicators::get<Moves>(currencyPair, history, seconds);
+			atr = Indicators::get<ATR>(currencyPair, history, seconds);
+		}
 
 		ADX::~ADX()
 		{

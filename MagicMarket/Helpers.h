@@ -46,5 +46,9 @@ namespace MM
 	namespace Debug
 	{
 		void serialize(const std::map<std::string, std::vector<double>> &series, std::string filename);
+		// Serializes to a pandas-friendly CSV format.
+		void serializeCSV(const std::map<std::string, std::vector<double>> &series, std::string filename, bool append = false);
+		// Serializes to a python-friendly JSON format.
+		void serializeJSON(const std::map<std::string, std::vector<double>> &series, std::string filename);
 	};
 };

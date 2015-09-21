@@ -10,14 +10,18 @@ namespace MM
 	namespace Indicators
 	{
 
+		void TSI::reset()
+		{
+			tsi = std::numeric_limits<double>::quiet_NaN();
+			momentumDoubleMA = std::numeric_limits<double>::quiet_NaN();
+			absMomentumDoubleMA = std::numeric_limits<double>::quiet_NaN();
+		}
+
 		TSI::TSI(std::string currencyPair, int history, int seconds) :
 			currencyPair(currencyPair),
 			history(history),
 			seconds(seconds)
 		{
-			tsi = std::numeric_limits<double>::quiet_NaN();
-			momentumDoubleMA    = std::numeric_limits<double>::quiet_NaN();
-			absMomentumDoubleMA = std::numeric_limits<double>::quiet_NaN();
 			moves = Indicators::get<Moves>(currencyPair, 2 * history, seconds);
 		}
 

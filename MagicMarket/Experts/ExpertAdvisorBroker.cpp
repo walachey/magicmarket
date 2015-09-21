@@ -10,10 +10,14 @@
 
 namespace MM
 {
-
-	ExpertAdvisorBroker::ExpertAdvisorBroker()
+	void ExpertAdvisorBroker::reset()
 	{
 		lastExecutionActionTime = 0;
+	}
+
+	
+	ExpertAdvisorBroker::ExpertAdvisorBroker()
+	{
 	}
 
 
@@ -29,15 +33,15 @@ namespace MM
 		if ((lastExecutionActionTime != 0) && (time < lastExecutionActionTime + ONEMINUTE)) return;
 
 		std::vector<ExpertAdvisor*> &experts = market.getExperts();
-		float avgMood = 0.0f;
-		float certaintySum = 0.0f;
-		float avgCertaintyNormalized = 0.0f;
+		double avgMood = 0.0;
+		double certaintySum = 0.0;
+		double avgCertaintyNormalized = 0.0;
 		int expertCount = 0;
 
 		for (ExpertAdvisor *& expert : experts)
 		{
 			if (expert == this) continue;
-			if (expert->getLastCertainty() == 0.0f) continue;
+			if (expert->getLastCertainty() == 0.0) continue;
 
 			avgMood += expert->getLastCertainty() * expert->getLastMood();
 			avgCertaintyNormalized += expert->getLastCertainty() * expert->getLastMood();
@@ -45,25 +49,25 @@ namespace MM
 			expertCount += 1;
 		}
 
-		if (certaintySum != 0.0f)
+		if (certaintySum != 0.0)
 			avgMood /= certaintySum;
-		float avgCertainty = 0.0f;
+		double avgCertainty = 0.0;
 		if (expertCount != 0)
 		{
-			avgCertainty = std::abs(avgCertaintyNormalized) / (float)expertCount;
+			avgCertainty = std::abs(avgCertaintyNormalized) / static_cast<double>(expertCount);
 		}
 
-		const float confidenceMargin = 0.4f;
-		float ownCertainty = std::min(1.0f, avgCertainty / confidenceMargin);
-		const float unanimityMargin = 0.25; // if the experts are very confident but all say different things - nope...
-		float ownMood = 0.0f;
-		if (avgMood <= -unanimityMargin) ownMood = -1.0f;
-		else if (avgMood >= +unanimityMargin) ownMood = +1.0f;
+		const double confidenceMargin = 0.4;
+		double ownCertainty = std::min(1.0, avgCertainty / confidenceMargin);
+		const double unanimityMargin = 0.25; // if the experts are very confident but all say different things - nope...
+		double ownMood = 0.0;
+		if (avgMood <= -unanimityMargin) ownMood = -1.0;
+		else if (avgMood >= +unanimityMargin) ownMood = +1.0;
 		setMood(ownMood, ownCertainty);
 
 		// okay, now execute whatever shit we need to satisfy our raving bunch of experts
 		if (ownCertainty < 1.0) return;
-		if (ownMood == 0.0f) return;
+		if (ownMood == 0.0) return;
 		
 		// let's do this shit
 		Trade::Type type = (avgMood > 0.0f) ? Trade::T_BUY : Trade::T_SELL;

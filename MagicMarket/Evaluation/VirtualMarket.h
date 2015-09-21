@@ -14,30 +14,34 @@ namespace MM
 	class TradingDay;
 	class Tick;
 
+	namespace vm
+	{
+		class Profiler;
+	};
+
 	struct VirtualTradeMetaInfo
 	{
 		Trade::Type type;
 		std::time_t openingTime;
-		int snapshotIndex;
 		double profit;
 
 		std::time_t closingTime;
-		int closingSnapshotIndex;
-		VirtualTradeMetaInfo(Trade::Type type, std::time_t openingTime, int snapshotIndex) :
+		// whether the trade was automatically closed at the end of a day
+		int forcefulClose;
+		VirtualTradeMetaInfo(Trade::Type type, std::time_t openingTime) :
 			type(type),
 			openingTime(openingTime),
-			snapshotIndex(snapshotIndex)
+			forcefulClose(0)
 		{
 			profit = 0.0;
 			closingTime = 0;
-			closingSnapshotIndex = -1;
 		}
 
-		void VirtualTradeMetaInfo::setClosed(double profit, std::time_t closingTime, int closingSnapshotIndex)
+		void VirtualTradeMetaInfo::setClosed(double profit, std::time_t closingTime, int closingSnapshotIndex, bool forceful = false)
 		{
 			this->profit = profit;
 			this->closingTime = closingTime;
-			this->closingSnapshotIndex = closingSnapshotIndex;
+			this->forcefulClose = forceful ? 1 : 0;
 		}
 	};
 
@@ -61,13 +65,11 @@ namespace MM
 		// config
 		bool isSilent;
 
-		// for easier merging of data sets
-		int getLastSnapshotIndex() { return snapshotIndex; }
 	private:
 		std::queue<std::string> pendingMessages;
 
 		void init();
-		void evaluateTrade(const Trade &trade);
+		void evaluateTrade(const Trade &trade, bool forceful = false);
 		int tradeCounter;
 		std::vector<Trade> trades;
 		std::map<int32_t, VirtualTradeMetaInfo> tradesMetaInfo;
@@ -82,19 +84,44 @@ namespace MM
 		// the secondary currencies follow the timing of the primary one
 		std::vector<TradingDay*> secondaryCurrencies;
 		std::vector<std::vector<Tick>::iterator> secondaryCurrenciesIterators;
+		
 		// config
-		QuantLib::Date date;
-		int fromHour, toHour;
+		struct _config
+		{
+			QuantLib::Date datePeriodBegin, datePeriodEnd;
+			QuantLib::Date date;
+			int fromHour, toHour;
+		} config;
 		
 
+		void evaluateDay();
+		void advanceDay(bool noevaluation = false);
+		void cleanUpDayData();
+		void prepareDayData();
+		bool isOutOfPeriod();
+
 		// evaluation and statistics
-		QuantLib::Decimal totalProfitPips;
-		int wonTrades, lostTrades;
-		void takeMoodSnapshot();
-		int snapshotIndex; // for easier evaluation of other data
-		void evaluateMood();
-		void evaluateTrades();
-		std::map<std::string, std::vector<double>> moodFunctions;
+		struct _estimation
+		{
+			double buyCertainty;
+			double sellCertainty;
+
+			_estimation() : buyCertainty(0.0), sellCertainty(0.0) {}
+		} currentEstimation;
+
+		struct _results
+		{
+			QuantLib::Decimal totalProfitPips;
+			double wonTrades, lostTrades;
+
+			// IO stuff
+			bool tradesHeaderPrinted;
+			_results() : totalProfitPips(0.0), wonTrades(0.0), lostTrades(0.0), tradesHeaderPrinted(false){}
+		} results;
+
+		vm::Profiler *profiler;
+		void predictTradeEfficiency();
+		void saveTrades();
 	};
 
 

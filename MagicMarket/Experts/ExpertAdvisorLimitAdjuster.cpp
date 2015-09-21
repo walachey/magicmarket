@@ -1,10 +1,17 @@
 #include "ExpertAdvisorLimitAdjuster.h"
 #include "Market.h"
+#include "Statistics.h"
 #include "Trade.h"
 #include "Stock.h"
 
 namespace MM
 {
+
+	void ExpertAdvisorLimitAdjuster::reset()
+	{
+		hourOfDay = -1;
+	}
+
 	ExpertAdvisorLimitAdjuster::ExpertAdvisorLimitAdjuster()
 	{
 	}
@@ -13,6 +20,21 @@ namespace MM
 	ExpertAdvisorLimitAdjuster::~ExpertAdvisorLimitAdjuster()
 	{
 	}
+
+	void ExpertAdvisorLimitAdjuster::declareExports() const
+	{
+		ExpertAdvisor::declareExports();
+
+		statistics.addVariable(Variable("hour_of_day", [&](){ return static_cast<double>(this->hourOfDay); }, "Hour of the trading day (GMT)."));
+	}
+
+
+	void ExpertAdvisorLimitAdjuster::execute(const std::time_t &secondsSinceStart, const std::time_t &timestamp)
+	{
+		std::tm *time = std::gmtime(&timestamp);
+		hourOfDay = static_cast<int>(time->tm_hour);
+	}
+
 
 	void ExpertAdvisorLimitAdjuster::onNewTick(const std::string &currencyPair, const QuantLib::Date &date, const std::time_t &time)
 	{
@@ -121,9 +143,7 @@ namespace MM
 		}
 
 		// only accept new trades in good market hours
-		std::time_t timestamp = market.getLastTickTime();
-		std::tm *time = std::gmtime(&timestamp);
-		if (time->tm_hour < 11 || time->tm_hour > 15) return false;
+		if (hourOfDay < 11 || hourOfDay > 15) return false;
 		return true;
 	}
 

@@ -13,6 +13,7 @@ namespace MM
 		class ATR : public Base
 		{
 		public:
+			void reset() override;
 			ATR(std::string currencyPair, int history, int seconds);
 			virtual ~ATR();
 

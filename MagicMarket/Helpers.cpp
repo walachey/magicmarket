@@ -217,6 +217,55 @@ namespace MM
 	{
 		void serialize(const std::map<std::string, std::vector<double>> &series, std::string filename)
 		{
+			if (filename.find(".json") != std::string::npos)
+				return serializeJSON(series, filename);
+			if (filename.find(".csv") != std::string::npos)
+				return serializeCSV(series, filename);
+			assert(false);
+			return;
+		}
+
+		void serializeCSV(const std::map<std::string, std::vector<double>> &series, std::string filename, bool append)
+		{
+			std::ios_base::openmode mode = std::ios_base::out;
+			if (append) mode |= std::ios_base::app;
+			std::fstream out(filename, mode);
+			if (!out.good()) return;
+
+			// headlines if new file
+			if (!append)
+			{
+				for (auto iter = series.begin(); iter != series.end(); ++iter)
+				{
+					if (iter != series.begin()) out << ",";
+					out << iter->first;
+				}
+				out << std::endl;
+			}
+
+			// and now the rows!
+			size_t index = 0;
+			bool reachedEnd = false;
+			
+			while (index < series.begin()->second.size())
+			{
+				for (auto iter = series.begin(); iter != series.end(); ++iter)
+				{
+					if (iter != series.begin())
+					{
+						out << ",";
+	
+					}
+					if (index >= iter->second.size()) out << "nan";
+					else
+						out << iter->second[index];
+				}
+				out << std::endl;
+			}
+		}
+
+		void serializeJSON(const std::map<std::string, std::vector<double>> &series, std::string filename)
+		{
 			std::fstream out(filename.c_str(), std::ios_base::out);
 			out << "{\n";
 			bool firstPair = true;

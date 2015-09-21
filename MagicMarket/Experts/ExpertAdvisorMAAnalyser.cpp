@@ -9,17 +9,18 @@ std::vector<float> v;
 
 namespace MM
 {
-	ExpertAdvisorMAAnalyser::ExpertAdvisorMAAnalyser()
+	void ExpertAdvisorMAAnalyser::reset()
 	{
 		lastMASave = 0;
 	}
 
+	ExpertAdvisorMAAnalyser::ExpertAdvisorMAAnalyser()
+	{
+	}
 
 	ExpertAdvisorMAAnalyser::~ExpertAdvisorMAAnalyser()
 	{
 	}
-
-
 
 	void ExpertAdvisorMAAnalyser::execute(const std::time_t &secondsSinceStart, const std::time_t &time)
 	{

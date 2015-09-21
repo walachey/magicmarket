@@ -8,12 +8,16 @@ namespace MM
 	namespace Indicators
 	{
 
+		void ATR::reset()
+		{
+			value = std::numeric_limits<double>::quiet_NaN();
+		}
+
 		ATR::ATR(std::string currencyPair, int history, int seconds) :
 			currencyPair(currencyPair),
 			history(history),
 			seconds(seconds)
 		{
-			value = std::numeric_limits<double>::quiet_NaN();
 		}
 
 

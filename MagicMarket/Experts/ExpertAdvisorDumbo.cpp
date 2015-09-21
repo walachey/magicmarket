@@ -11,6 +11,11 @@ const int END_HOUR = 20;
 
 namespace MM
 {
+	void ExpertAdvisorDumbo::reset()
+	{
+
+	}
+
 	ExpertAdvisorDumbo::ExpertAdvisorDumbo()
 	{
 	}

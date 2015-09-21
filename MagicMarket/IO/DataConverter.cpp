@@ -159,6 +159,7 @@ namespace MM
 				std::cout << "Using gaincapital reader to read " << filename << std::endl;
 				break;
 			default:
+				std::cout << "No reader for this file available." << std::endl;
 				return false;
 			};
 			assert(!!reader);

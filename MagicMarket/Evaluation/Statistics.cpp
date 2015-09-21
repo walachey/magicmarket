@@ -66,20 +66,18 @@ namespace MM
 			if (!outputStream.good()) return;
 
 			// print header row
-			outputStream << "time" << config.delimiter << "snapshot index";
+			outputStream << "time";
 			for (const Variable &var : variables)
 			{
 				outputStream << config.delimiter << var.name;
 
 				descriptionStream << var.name << config.delimiter << var.description << std::endl;
 			}
+			outputStream << std::endl << std::flush;
 		}
 
 		// get all observations and log them
-		int lastVirtualMarketSnapshotIndex = -1;
-		if (market.isVirtual())
-			lastVirtualMarketSnapshotIndex = virtualMarket->getLastSnapshotIndex();
-		outputStream << market.getLastTickTime() << config.delimiter << lastVirtualMarketSnapshotIndex;
+		outputStream << market.getLastTickTime();
 
 		for (const Variable &var : variables)
 		{

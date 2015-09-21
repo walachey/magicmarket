@@ -15,6 +15,7 @@ namespace MM
 		class KRI : public Base
 		{
 		public:
+			virtual void reset() override;
 			KRI(std::string currencyPair, int history, int seconds);
 			virtual ~KRI();
 

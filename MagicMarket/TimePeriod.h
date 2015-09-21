@@ -54,5 +54,14 @@ namespace MM
 		Stock *stock;
 		std::time_t startTime;
 		std::time_t endTime;
+
+		// cache functionality - for faster access
+		std::vector<Tick>::iterator ticksBegin, ticksEnd, ticksTotalBegin, ticksTotalEnd;
+		bool cacheDirty;
+		bool checkInitCache();
+		bool isCacheGood() { return !cacheDirty; }
+
+		std::vector<Tick>::iterator begin() { return ticksBegin; }
+		std::vector<Tick>::iterator end() { return ticksEnd; }
 	};
 };

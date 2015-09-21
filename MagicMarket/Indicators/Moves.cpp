@@ -7,19 +7,23 @@ namespace MM
 {
 	namespace Indicators
 	{
+		void Moves::reset()
+		{
+			plusDMMA = std::numeric_limits<double>::quiet_NaN();
+			minusDMMA = std::numeric_limits<double>::quiet_NaN();
+			upMA = std::numeric_limits<double>::quiet_NaN();
+			downMA = std::numeric_limits<double>::quiet_NaN();
+
+			momentumMA = std::numeric_limits<double>::quiet_NaN();
+			momentumAbsMA = std::numeric_limits<double>::quiet_NaN();
+		}
 
 		Moves::Moves(std::string currencyPair, int history, int seconds) :
 			currencyPair(currencyPair),
 			history(history),
 			seconds(seconds)
 		{
-			plusDMMA  = std::numeric_limits<double>::quiet_NaN();
-			minusDMMA = std::numeric_limits<double>::quiet_NaN();
-			upMA   = std::numeric_limits<double>::quiet_NaN();
-			downMA = std::numeric_limits<double>::quiet_NaN();
-
-			momentumMA    = std::numeric_limits<double>::quiet_NaN();
-			momentumAbsMA = std::numeric_limits<double>::quiet_NaN();
+		
 		}
 
 		Moves::~Moves()

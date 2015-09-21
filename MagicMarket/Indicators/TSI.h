@@ -15,6 +15,7 @@ namespace MM
 		class TSI : public Base
 		{
 		public:
+			virtual void reset() override;
 			TSI(std::string currencyPair, int history, int seconds);
 			virtual ~TSI() {}
 

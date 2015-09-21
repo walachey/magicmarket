@@ -189,7 +189,7 @@ int main(int argc, char ** argv)
 	const int timedeltaSeconds = config.timedeltaSeconds;
 
 	const int startingHour = 8;
-	const int closingHour  = 16;
+	const int closingHour  = 18;
 
 	int periodBeginTickIndex = 0;
 	long currentTimeSeconds  = 0;

@@ -39,6 +39,7 @@ namespace MM
 	{
 		isVirtualModeEnabled = false;
 		lastTickTime = 0;
+		lastTickDate = QuantLib::Date();
 	}
 
 
@@ -112,15 +113,21 @@ namespace MM
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorTSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorDumbo()));
-		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorMAAnalyser()));
+		//experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorMAAnalyser()));
 		//experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorAtama()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorLimitAdjuster()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorBroker()));
 
 		for (ExpertAdvisor * const & indicator : indicators)
+		{
 			indicator->declareExports();
+			indicator->onNewDay();
+		}
 		for (ExpertAdvisor * const & expert : experts)
+		{
 			expert->declareExports();
+			expert->onNewDay();
+		}
 	}
 
 	void Market::run()
@@ -163,6 +170,23 @@ namespace MM
 			for (Event &event : events)
 			{
 				lastTickTime = std::max(lastTickTime, event.time);
+				/*
+					Quickly reset experts when event for new day occurs.
+					This is mainly important for the virtual market but it should be done here;
+					this decreases the divergence between the virtual market execution and the real one.
+					Additionally it increases the probability of finding reset-related bugs early on.
+				*/
+				const QuantLib::Date &date = event.date;
+				if (date != lastTickDate)
+				{
+					lastTickDate = date;
+
+					for (ExpertAdvisor *&expert : experts)
+						expert->onNewDay();
+					for (Indicators::Base *&indicator : indicators)
+						indicator->onNewDay();
+				}
+
 				switch (event.type)
 				{
 				case Event::Type::NEW_TICK:
@@ -245,7 +269,7 @@ namespace MM
 			" " << accepted->getStopLossPrice() << 
 			" " << accepted->lotSize;
 		send(os.str());
-
+		assert(trades.size() < 10);
 		return nullptr;
 	}
 
@@ -326,6 +350,40 @@ namespace MM
 		return data;
 	}
 
+	void Market::onNewTickMessageReceived(const std::string &pair, QuantLib::Decimal bid, QuantLib::Decimal ask, std::time_t time)
+	{
+		Tick tick;
+		tick.bid = bid;
+		tick.ask = ask;
+		tick.time = time;
+
+		getStock(pair, true)->receiveFreshTick(tick);
+		// notify the experts asap
+		addEvent(Event(Event::Type::NEW_TICK, pair, QuantLib::Date::todaysDate(), tick.time));
+	}
+
+	void Market::onNewTradeMessageReceived(Trade *trade)
+	{
+		trade->load();
+		trades.push_back(trade);
+	}
+
+	// When updating the trades either trough the virtual market or by a new comprehensive update orders message.
+	void Market::saveAndClearTrades()
+	{
+		// remove all (non virtual) trades
+		for (size_t i = 0; i < trades.size(); ++i)
+		{
+			Trade *& trade = trades[i];
+			// if (trade.isVirtual()) continue;
+			trade->save();
+			delete trade;
+			trades[i] = nullptr;
+		}
+		trades.erase(std::remove(std::begin(trades), std::end(trades), nullptr), std::end(trades));
+		assert(trades.size() == 0); // for now
+	}
+
 	void Market::parseMessage(const std::string &message)
 	{
 		//std::cout << "received:\n\t" << message << std::endl;
@@ -340,13 +398,10 @@ namespace MM
 		if (type == 'T')
 		{
 			std::string pair;
-			Tick tick;
-			is >> pair >> tick.bid >> tick.ask >> tick.time;
-			getStock(pair, true)->receiveFreshTick(tick);
-			//std::cout << "Fresh tick:\n\t" << tick << std::endl;
-
-			// notify the experts asap
-			addEvent(Event(Event::Type::NEW_TICK, pair, QuantLib::Date::todaysDate(), tick.time));
+			QuantLib::Decimal bid, ask;
+			std::time_t time;
+			is >> pair >> bid >> ask >> time;
+			onNewTickMessageReceived(pair, bid, ask, time);
 		}
 		else if (type == 'R')
 		{
@@ -355,17 +410,8 @@ namespace MM
 		}
 		else if (type == 'O')
 		{
-			// remove all (non virtual) trades
-			for (size_t i = 0; i < trades.size(); ++i)
-			{
-				Trade *& trade = trades[i];
-				// if (trade.isVirtual()) continue;
-				trade->save();
-				delete trade;
-				trades[i] = nullptr;
-			}
-			trades.erase(std::remove(std::begin(trades), std::end(trades), nullptr), std::end(trades));
-			assert(trades.size() == 0); // for now
+			saveAndClearTrades();
+
 
 			// dummy trade
 			/*Trade *trade = new Trade();
@@ -403,18 +449,18 @@ namespace MM
 				if (order["type"].int_value() == 0) trade->type = Trade::T_BUY;
 				else trade->type = Trade::T_SELL;
 				
-				trade->load();
-
-				trades.push_back(trade);
+				onNewTradeMessageReceived(trade);
 			}
 
 		}
 		else if (type == 'A')
 		{
-			is >> account.leverage
-				>> account.balance
-				>> account.margin
-				>> account.marginFree;
+			QuantLib::Decimal leverage, balance, margin, marginFree;
+			is >> leverage
+				>> balance
+				>> margin
+				>> marginFree;
+			account.update(leverage, balance, margin, marginFree);
 		}
 		else if (isVirtual() && (type == 'C'))
 		{
