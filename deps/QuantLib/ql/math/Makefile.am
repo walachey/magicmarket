@@ -1,6 +1,6 @@
 
 SUBDIRS = copulas distributions integrals interpolations \
-          matrixutilities optimization randomnumbers solvers1d \
+          matrixutilities ode optimization randomnumbers solvers1d \
           statistics
 
 AM_CPPFLAGS = -I${top_srcdir} -I${top_builddir}
@@ -27,6 +27,8 @@ this_include_HEADERS = \
 	linearleastsquaresregression.hpp \
 	matrix.hpp \
 	modifiedbessel.hpp \
+	pascaltriangle.hpp \
+	polynomialmathfunction.hpp \
 	primenumbers.hpp \
 	quadratic.hpp \
 	rounding.hpp \
@@ -44,6 +46,8 @@ libMath_la_SOURCES = \
 	incompletegamma.cpp \
 	matrix.cpp \
 	modifiedbessel.cpp \
+	pascaltriangle.cpp \
+	polynomialmathfunction.cpp \
 	primenumbers.cpp \
 	quadratic.cpp \
 	richardsonextrapolation.cpp \

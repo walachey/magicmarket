@@ -32,7 +32,11 @@
 #include <ql/methods/finitedifferences/operators/secondderivativeop.hpp>
 #include <ql/experimental/finitedifferences/fdmextendedornsteinuhlenbeckop.hpp>
 
-#if !defined(QL_NO_UBLAS_SUPPORT)
+#if defined(QL_NO_UBLAS_SUPPORT)
+
+#include <ql/methods/finitedifferences/utilities/fdmdirichletboundary.hpp>
+
+#else
 
 #if defined(QL_PATCH_MSVC)
 #pragma warning(push)
@@ -187,7 +191,13 @@ namespace QuantLib {
 
         for (FdmBoundaryConditionSet::const_iterator iter=bcSet_.begin();
             iter < bcSet_.end(); ++iter) {
-            valueOfDerivative=(*iter)->applyAfterApplying(y, valueOfDerivative);
+            const boost::shared_ptr<FdmDirichletBoundary> dirichletBC =
+                 boost::dynamic_pointer_cast<FdmDirichletBoundary>(*iter);
+
+            if (dirichletBC != 0) {
+                valueOfDerivative=
+                    dirichletBC->applyAfterApplying(y, valueOfDerivative);
+            }
         }
 
         return std::exp(-u)*valueOfDerivative;
