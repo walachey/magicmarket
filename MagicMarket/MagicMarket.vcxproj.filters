@@ -38,6 +38,9 @@
     <Filter Include="Source Files\Evaluation\VM">
       <UniqueIdentifier>{fd5291a5-3dfd-4296-834c-8e04df780485}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{d1b22b49-84bd-438a-b7c6-216b10fea80d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -169,6 +172,12 @@
     <ClCompile Include="Evaluation\VM\Profiler.cpp">
       <Filter>Source Files\Evaluation\VM</Filter>
     </ClCompile>
+    <ClCompile Include="Interfaces\Expert.pb.cc">
+      <Filter>Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\ExpertAdvisorExternal.cpp">
+      <Filter>Source Files\Experts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -279,6 +288,12 @@
     </ClInclude>
     <ClInclude Include="Evaluation\VM\Profiler.h">
       <Filter>Source Files\Evaluation\VM</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\Expert.pb.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\ExpertAdvisorExternal.h">
+      <Filter>Source Files\Experts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

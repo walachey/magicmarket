@@ -18,6 +18,7 @@ namespace filesystem = std::tr2::sys;
 #include "Trade.h"
 #include "TradingDay.h"
 #include "ExpertAdvisor.h"
+#include "ExpertAdvisorExternal.h"
 #include "ExpertAdvisorLimitAdjuster.h"
 #include "ExpertAdvisorRSI.h"
 #include "ExpertAdvisorTSI.h"
@@ -118,6 +119,22 @@ namespace MM
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorLimitAdjuster()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorBroker()));
 
+		// And now the external interfaces.
+		for (int i = 0; i < 255; ++i)
+		{
+			const std::string configName = std::string("External Agent ") + std::to_string(i + 1);
+			std::string endpoint = ini.GetValue(configName.c_str(), "Endpoint", "");
+			if (endpoint.empty()) break;
+
+			auto externalAgent = new ExpertAdvisorExternal();
+			bool connected = externalAgent->connect(endpoint);
+
+			if (connected)
+				experts.push_back(static_cast<ExpertAdvisor*>(externalAgent));
+			else
+				delete externalAgent;
+		}
+
 		for (ExpertAdvisor * const & indicator : indicators)
 		{
 			indicator->declareExports();
@@ -126,6 +143,11 @@ namespace MM
 		for (ExpertAdvisor * const & expert : experts)
 		{
 			expert->declareExports();
+		}
+
+		for (ExpertAdvisor * const & expert : experts)
+		{
+			expert->afterExportsDeclared();
 			expert->onNewDay();
 		}
 	}

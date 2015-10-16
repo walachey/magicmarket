@@ -11,6 +11,7 @@ namespace MM
 {
 	TimePeriod::TimePeriod(Stock *stock_, const std::time_t &startTime_, const std::time_t &endTime_, QuantLib::Decimal((Tick::*valueFunction_)()const)) : stock(nullptr), startTime(0), endTime(0), valueFunction(nullptr)
 	{
+		tradingDay = nullptr;
 		stock = stock_;
 		startTime = startTime_;
 		endTime = endTime_;
@@ -24,6 +25,7 @@ namespace MM
 
 	TimePeriod::TimePeriod(const TimePeriod &other)
 	{
+		tradingDay = other.tradingDay;
 		stock = other.stock;
 		startTime = other.startTime;
 		endTime = other.endTime;
@@ -45,7 +47,7 @@ namespace MM
 
 		ticksEnd = ticksBegin = std::vector<Tick>::iterator();
 
-		TradingDay *day = stock->getTradingDay(dateFromTime(endTime));
+		TradingDay *day = (this->tradingDay != nullptr) ? this->tradingDay : stock->getTradingDay(dateFromTime(endTime));
 		if (day == nullptr) return false;
 
 		ticksTotalBegin = day->ticks.begin();
@@ -258,6 +260,15 @@ namespace MM
 		endTime += seconds;
 		return true;
 	}
+
+	void TimePeriod::setTradingDay(TradingDay *day)
+	{
+		cacheDirty = true;
+
+		tradingDay = day;
+		stock = nullptr;
+	}
+
 
 	bool TimePeriod::setStock(std::string currencyPair)
 	{

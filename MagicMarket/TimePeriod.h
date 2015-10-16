@@ -16,6 +16,7 @@ namespace MM
 	typedef std::shared_ptr<QuantLib::Decimal> PossibleDecimal;
 
 	class Stock;
+	class TradingDay;
 
 	class TimePeriod
 	{
@@ -35,6 +36,9 @@ namespace MM
 		// sets the time period to point to another stock
 		bool setStock(std::string currencyPair);
 		bool setStock(Stock *stock);
+		// virtual market speciality: set a certain trading day (which might already have all the future information).
+		// That way, you'll have to jump through hoops to incorporate future data points.
+		void setTradingDay(TradingDay *day);
 
 		// accessors
 		PossibleDecimal getClose();
@@ -51,7 +55,10 @@ namespace MM
 		std::time_t getDuration() const { return endTime - startTime; }
 	private:
 		QuantLib::Decimal(Tick::*valueFunction)() const;
+		// Normally, the time period is created from a stock.
 		Stock *stock;
+		// In certain circumstances (virtual market) you can also force a specific trading day instance.
+		TradingDay *tradingDay;
 		std::time_t startTime;
 		std::time_t endTime;
 

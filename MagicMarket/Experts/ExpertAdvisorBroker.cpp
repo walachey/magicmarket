@@ -42,6 +42,7 @@ namespace MM
 		{
 			if (expert == this) continue;
 			if (expert->getLastCertainty() == 0.0) continue;
+			if (!expert->isExecutive()) continue;
 
 			avgMood += expert->getLastCertainty() * expert->getLastMood();
 			avgCertaintyNormalized += expert->getLastCertainty() * expert->getLastMood();
@@ -119,6 +120,7 @@ namespace MM
 		trade.lotSize = 0.014;
 		trade.type = type;
 		trade.orderPrice = *close;
+		trade.setStopLossPrice(trade.orderPrice + ONEPIP * 5.0 * ((type == Trade::T_BUY) ? -1.0 : +1.0));
 		market.newTrade(trade);
 
 		std::ostringstream os; os << "@" << currencyPair << " executed " << action << " !!";

@@ -21,7 +21,6 @@ namespace MM
 			seconds(seconds),
 			valueProvider(valueProvider)
 		{
-
 		}
 
 
@@ -31,9 +30,10 @@ namespace MM
 
 		void SMA::declareExports() const
 		{
-			exportVariable("SMA", std::bind(&SMA::getSMA, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
-			exportVariable("SMA2", std::bind(&SMA::getSMA2, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
-			exportVariable("SMA2Abs", std::bind(&SMA::getSMA2Abs, this), "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			assert(seconds > 0 || !customDescription.empty());
+			exportVariable("SMA", std::bind(&SMA::getSMA, this), customDescription + "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("SMA2", std::bind(&SMA::getSMA2, this), customDescription + "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
+			exportVariable("SMA2Abs", std::bind(&SMA::getSMA2Abs, this), customDescription + "period " + std::to_string(seconds) + ", memory " + std::to_string(history));
 		}
 
 		void SMA::update(const std::time_t &secondsSinceStart, const std::time_t &time)

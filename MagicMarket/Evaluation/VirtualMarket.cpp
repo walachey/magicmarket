@@ -55,6 +55,7 @@ namespace MM
 
 		// Possibly convert some data files first.
 		io::KeyValueDB db("saves/virtual_market.datafiles");
+		size_t skipped = 0;
 
 		for (size_t i = 0; i < 10; ++i)
 		{
@@ -65,7 +66,7 @@ namespace MM
 			// Check if already converted once.
 			if (db.get(filename) == "1")
 			{
-				std::cout << "Data file '" << filename << "': \t\tskipping." << std::endl;
+				skipped += 1;
 				continue;
 			}
 			std::cout << "Data file '" << filename << "': \t\tconverting file.." << std::endl;
@@ -81,6 +82,9 @@ namespace MM
 				std::cout << "\t! Reading Data failed!" << std::endl;
 			}
 		}
+
+		if (skipped > 0)
+			std::cout << "Skipped " << skipped << " data input files." << std::endl;
 
 		auto readDate = [&](std::string key)
 		{
@@ -103,6 +107,7 @@ namespace MM
 		market.setSleepDuration(0);
 
 		// feed statistics module
+		statistics.addVariable(Variable("price", &(currentEstimation.currentLeadingPrice), "Current price of the leading currency."));
 		statistics.addVariable(Variable("buy_estimate", &(currentEstimation.buyCertainty), "Future-aware estimation of efficiency of long trade."));
 		statistics.addVariable(Variable("sell_estimate", &(currentEstimation.sellCertainty), "Future-aware estimation of efficiency of short trade."));
 
@@ -249,6 +254,7 @@ namespace MM
 		if (lastTick) previousTime = lastTick->getTime();
 
 		lastTick = &tradingDay->getTickByIndex(tickIndex++);
+		currentEstimation.currentLeadingPrice = lastTick->getMid();
 		sendTickMsg(lastTick, tradingDay);
 		
 		// send all ticks of secondary currencies up to the time of the leading currency
@@ -284,7 +290,7 @@ namespace MM
 		if ((config.toHour > 0) && (previousTime != 0))
 		{
 			std::tm *tm = std::gmtime(&previousTime);
-			printf("\r\tCURRENT TIME IS %d-%02d-%02d %02d:%02d", config.date.year(), static_cast<int>(config.date.month()), config.date.dayOfMonth(), tm->tm_hour, tm->tm_min);
+			printf("\r\tCURRENT TIME IS %d-%02d-%02d %02d:%02d\tTRADES: %02d", config.date.year(), static_cast<int>(config.date.month()), config.date.dayOfMonth(), tm->tm_hour, tm->tm_min, trades.size());
 			if (tm->tm_hour > config.toHour)
 			{
 				// fast forward to end
@@ -335,7 +341,7 @@ namespace MM
 			int tradeType;
 			std::string pair;
 			Trade trade;
-			is >> tradeType >> trade.currencyPair >> trade.orderPrice >> trade.getStopLossPrice() >> trade.getTakeProfitPrice() >> trade.lotSize;
+			is >> tradeType >> trade.currencyPair >> trade.orderPrice >> trade.getTakeProfitPrice() >> trade.getStopLossPrice() >> trade.lotSize;
 			
 			trade.type = (tradeType == 0) ? Trade::T_BUY : Trade::T_SELL;
 			trade.ticketID = ++tradeCounter;
@@ -393,28 +399,30 @@ namespace MM
 		if (!lastTick) return;
 
 		std::time_t time = lastTick->getTime();
-		Stock *stock = tradingDay->stock;
 
-		int lookaheadTime = 30 * ONEMINUTE;
+		const int lookaheadTime = 15 * ONEMINUTE;
 		std::time_t endTime = time + lookaheadTime;
 		if (endTime > tradingDay->ticks.back().getTime()) return;
 
-		TimePeriod period = stock->getTimePeriod(time, endTime);
-		const std::vector<QuantLib::Decimal> price = period.toVector(5 * ONEMINUTE);
+		TimePeriod period = TimePeriod(nullptr, time, endTime, &Tick::getMid);
+		period.setTradingDay(tradingDay);
+		const std::vector<QuantLib::Decimal> price = period.toVector(ONEMINUTE);
 
 		auto assesPrice = [&](QuantLib::Decimal direction)
 		{
-			const QuantLib::Decimal optimumValue = 5.0 * ONEPIP;
+			const QuantLib::Decimal optimumValue = 20.0 * ONEPIP;
 
 			QuantLib::Decimal total = 0.0;
+			QuantLib::Decimal max   = 0.0;
 			for (size_t i = 1; i < price.size(); ++i)
 			{
 				QuantLib::Decimal difference = direction * (price[i] - price[i - 1]);
 				total += difference;
 				if (total < 0.0) break;
+				if (total > max) max = total;
 			}
-			total -= 2.0 * ONEPIP;
-			return direction * std::min(std::max(total, 0.0) / optimumValue, 1.0);
+			max -= 3.0 * ONEPIP;
+			return direction * std::max(max, 0.0) / ONEPIP;
 		};
 
 		PossibleDecimal open;

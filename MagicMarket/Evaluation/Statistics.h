@@ -22,6 +22,9 @@ namespace MM
 		std::string name;
 		std::string originalName;
 		std::string description;
+
+		static Variable NaN();
+		bool isNan() { return originalName == "NaN"; }
 	private:
 		std::function<double()> accessor;
 	};
@@ -36,6 +39,9 @@ namespace MM
 		void enableLogging(bool enable = true) { loggingActive = enable; }
 		void log();
 		void init(void *ini);
+
+		Variable getVariableByNameDescription(std::string name, std::string desc) const;
+
 	private:
 		std::vector<Variable> variables;
 		bool loggingActive;

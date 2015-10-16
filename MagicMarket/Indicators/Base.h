@@ -21,6 +21,10 @@ namespace MM
 			virtual void onNewTick(const std::string &currencyPair, const QuantLib::Date &date, const std::time_t &time) override {};
 			virtual bool operator== (const Base &other) const = 0;
 
+
+			void setCustomDescription(std::string to) { customDescription = to; }
+		protected:
+			std::string customDescription;
 		private:
 			virtual void update(const std::time_t &secondsSinceStart, const std::time_t &time) = 0;
 		};

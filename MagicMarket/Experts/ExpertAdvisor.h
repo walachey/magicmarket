@@ -29,7 +29,8 @@ namespace MM
 		virtual bool acceptNewTrade(Trade *trade) { return true; }
 
 		virtual bool isTechnicalAgent() { return false; }
-
+		// Only certain agents do not function as input features themselves but contribute directly to the outcome.
+		virtual bool isExecutive() const { return false; }
 		// Called by the market when a new day starts. Resets internal state.
 		void onNewDay();
 
@@ -45,6 +46,8 @@ namespace MM
 
 		void exportVariable(std::string name, std::function<double ()> accessor, std::string description) const;
 		virtual void declareExports() const;
+		// Called after all exports have been declared.
+		virtual void afterExportsDeclared() {};
 	private:
 		std::string lastMessage;
 		float lastMood, lastCertainty;

@@ -1,13 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -18,13 +26,24 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -33,7 +52,13 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -43,10 +68,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -64,8 +92,36 @@
       <OutputFile>$(TargetPath)</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>..\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ws2_32.lib;QuantLib-vc120-mt-gd.lib;libzmq-mt-sgd-4_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../lib/$(ConfigurationName)/;..\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobuf.lib;kj.lib;ws2_32.lib;QuantLib-vc140-x64-mt-gd.lib;libzmq-static-v140-mt-sgd-4_2_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <CustomBuildStep>
+      <Command>capnp compile -o c++ $(ProjectDir)Interfaces/Expert.capnp
+ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capnp.cpp</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Generating CAPNP interface files.</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>$(ProjectDir)Interfaces/Expert.capnp.cpp;%(Outputs)</Outputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PreprocessorDefinitions>FANN_NO_DLL;ZMQ_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(TargetPath)</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>../lib/$(ConfigurationName)/;..\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobuf.lib;kj.lib;ws2_32.lib;QuantLib-vc140-x64-mt-gd.lib;libzmq-static-v140-mt-sgd-4_2_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -73,11 +129,11 @@
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PreprocessorDefinitions>FANN_NO_DLL;ZMQ_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CAPNP_LITE;FANN_NO_DLL;ZMQ_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <OutputFile>$(TargetPath)</OutputFile>
@@ -85,8 +141,39 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>..\;D:\Users\David\forex\MagicMarket\libzmq\bin\Win32\Release\v120\static;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ws2_32.lib;QuantLib-vc120-mt-gd.lib;libzmq-mt-sgd-4_1_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../lib/$(ConfigurationName)/;..\;D:\Users\David\forex\MagicMarket\libzmq\bin\Win32\Release\v120\static;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobuf.lib;kj.lib;ws2_32.lib;QuantLib-vc140-x64-mt.lib;libzmq-v140-mt-4_2_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <CustomBuildStep>
+      <Command>capnp compile -o c++ $(ProjectDir)Interfaces/Expert.capnp
+ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capnp.cpp</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Generating CAPNP interface files.</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>$(ProjectDir)Interfaces/Expert.capnp.cpp;%(Outputs)</Outputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PreprocessorDefinitions>CAPNP_LITE;FANN_NO_DLL;ZMQ_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <OutputFile>$(TargetPath)</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <AdditionalLibraryDirectories>../lib/$(ConfigurationName)/;..\;D:\Users\David\forex\MagicMarket\libzmq\bin\Win32\Release\v120\static;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobuf.lib;kj.lib;ws2_32.lib;QuantLib-vc140-x64-mt.lib;libzmq-v140-mt-4_2_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -110,6 +197,7 @@
     <ClCompile Include="Experts\ExpertAdvisorAtama.cpp" />
     <ClCompile Include="Experts\ExpertAdvisorBroker.cpp" />
     <ClCompile Include="Experts\ExpertAdvisorDumbo.cpp" />
+    <ClCompile Include="Experts\ExpertAdvisorExternal.cpp" />
     <ClCompile Include="Experts\ExpertAdvisorLimitAdjuster.cpp" />
     <ClCompile Include="Experts\ExpertAdvisorMAAnalyser.cpp" />
     <ClCompile Include="Experts\ExpertAdvisorRSI.cpp" />
@@ -124,6 +212,7 @@
     <ClCompile Include="Indicators\RSI.cpp" />
     <ClCompile Include="Indicators\SMA.cpp" />
     <ClCompile Include="Indicators\TSI.cpp" />
+    <ClCompile Include="Interfaces\Expert.pb.cc" />
     <ClCompile Include="IO\DataConverter.cpp" />
     <ClCompile Include="IO\KeyValueDB.cpp" />
     <ClCompile Include="main.cpp" />
@@ -155,6 +244,7 @@
     <ClInclude Include="Experts\ExpertAdvisorAtama.h" />
     <ClInclude Include="Experts\ExpertAdvisorBroker.h" />
     <ClInclude Include="Experts\ExpertAdvisorDumbo.h" />
+    <ClInclude Include="Experts\ExpertAdvisorExternal.h" />
     <ClInclude Include="Experts\ExpertAdvisorLimitAdjuster.h" />
     <ClInclude Include="Experts\ExpertAdvisorMAAnalyser.h" />
     <ClInclude Include="Experts\ExpertAdvisorRSI.h" />
@@ -169,6 +259,7 @@
     <ClInclude Include="Indicators\RSI.h" />
     <ClInclude Include="Indicators\SMA.h" />
     <ClInclude Include="Indicators\TSI.h" />
+    <ClInclude Include="Interfaces\Expert.pb.h" />
     <ClInclude Include="IO\DataConverter.h" />
     <ClInclude Include="IO\KeyValueDB.h" />
     <ClInclude Include="Market.h" />

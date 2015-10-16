@@ -105,8 +105,9 @@ namespace MM
 		{
 			double buyCertainty;
 			double sellCertainty;
+			double currentLeadingPrice;
 
-			_estimation() : buyCertainty(0.0), sellCertainty(0.0) {}
+			_estimation() : buyCertainty(0.0), sellCertainty(0.0), currentLeadingPrice(0.0) {}
 		} currentEstimation;
 
 		struct _results

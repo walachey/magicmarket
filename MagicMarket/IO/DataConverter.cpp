@@ -10,7 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
-namespace filesystem = std::tr2::sys;
+namespace filesystem = std::experimental::filesystem;
 
 #include <boost/date_time/local_time/local_time.hpp>
 
@@ -175,7 +175,7 @@ namespace MM
 
 					// possibly clean up old file
 					std::string filename = day.getSavePath();
-					filesystem::remove_filename(filesystem::path(filename.c_str()));
+					filesystem::remove(filesystem::path(filename.c_str()));
 
 					for (const Tick& tick : day.getTicks())
 					{
