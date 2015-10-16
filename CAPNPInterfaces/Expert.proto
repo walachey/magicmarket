@@ -1,0 +1,30 @@
+syntax = "proto2";
+package Interfaces;
+
+message ExpertMessage {
+	enum Type {
+		getName = 0;
+		getPrediction = 1;
+		getRequiredVariables = 2;
+		shutdown = 3;
+		reset = 4;
+		informations = 5;
+	}
+
+	required Type type = 1;
+
+	message Estimation {
+		required double mood = 1;
+		required double certainty = 2;
+	}
+
+	message Information {
+		required bool isExecutive = 1;
+	}
+
+	optional string name = 2;
+	repeated string variableNames = 3;
+	repeated double variables = 4;
+	optional Estimation estimation = 5;
+	optional Information information = 6;
+}
