@@ -200,6 +200,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile Include="Experts\ExpertAdvisorExternal.cpp" />
     <ClCompile Include="Experts\ExpertAdvisorLimitAdjuster.cpp" />
     <ClCompile Include="Experts\Technical\ExpertAdvisorMAAnalyser.cpp" />
+    <ClCompile Include="Experts\Technical\ExpertAdvisorRenko.cpp" />
     <ClCompile Include="Experts\Technical\ExpertAdvisorRSI.cpp" />
     <ClCompile Include="Experts\Technical\ExpertAdvisorStochasticOscillator.cpp" />
     <ClCompile Include="Experts\Technical\ExpertAdvisorTechnical.cpp" />
@@ -210,6 +211,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile Include="Indicators\Base.cpp" />
     <ClCompile Include="Indicators\KRI.cpp" />
     <ClCompile Include="Indicators\Moves.cpp" />
+    <ClCompile Include="Indicators\Renko.cpp" />
     <ClCompile Include="Indicators\RSI.cpp" />
     <ClCompile Include="Indicators\SMA.cpp" />
     <ClCompile Include="Indicators\StochasticOscillator.cpp" />
@@ -249,6 +251,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClInclude Include="Experts\ExpertAdvisorExternal.h" />
     <ClInclude Include="Experts\ExpertAdvisorLimitAdjuster.h" />
     <ClInclude Include="Experts\Technical\ExpertAdvisorMAAnalyser.h" />
+    <ClInclude Include="Experts\Technical\ExpertAdvisorRenko.h" />
     <ClInclude Include="Experts\Technical\ExpertAdvisorRSI.h" />
     <ClInclude Include="Experts\Technical\ExpertAdvisorStochasticOscillator.h" />
     <ClInclude Include="Experts\Technical\ExpertAdvisorTechnical.h" />
@@ -259,6 +262,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClInclude Include="Indicators\Base.h" />
     <ClInclude Include="Indicators\KRI.h" />
     <ClInclude Include="Indicators\Moves.h" />
+    <ClInclude Include="Indicators\Renko.h" />
     <ClInclude Include="Indicators\RSI.h" />
     <ClInclude Include="Indicators\SMA.h" />
     <ClInclude Include="Indicators\StochasticOscillator.h" />

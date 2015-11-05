@@ -184,6 +184,12 @@
     <ClCompile Include="Experts\Technical\ExpertAdvisorStochasticOscillator.cpp">
       <Filter>Source Files\Experts\Technical</Filter>
     </ClCompile>
+    <ClCompile Include="Indicators\Renko.cpp">
+      <Filter>Source Files\Indicators</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\Technical\ExpertAdvisorRenko.cpp">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -305,6 +311,12 @@
       <Filter>Source Files\Experts\Technical</Filter>
     </ClInclude>
     <ClInclude Include="Experts\Technical\ExpertAdvisorStochasticOscillator.h">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClInclude>
+    <ClInclude Include="Indicators\Renko.h">
+      <Filter>Source Files\Indicators</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\Technical\ExpertAdvisorRenko.h">
       <Filter>Source Files\Experts\Technical</Filter>
     </ClInclude>
   </ItemGroup>

@@ -23,6 +23,7 @@ namespace filesystem = std::tr2::sys;
 #include "ExpertAdvisorRSI.h"
 #include "ExpertAdvisorTSI.h"
 #include "ExpertAdvisorStochasticOscillator.h"
+#include "ExpertAdvisorRenko.h"
 #include "ExpertAdvisorBroker.h"
 #include "ExpertAdvisorDumbo.h"
 #include "ExpertAdvisorAtama.h"
@@ -115,6 +116,7 @@ namespace MM
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorTSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorStochasticOscillator()));
+		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRenko()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorDumbo()));
 		//experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorMAAnalyser()));
 		//experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorAtama()));
