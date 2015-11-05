@@ -42,6 +42,11 @@ namespace MM
 
 	namespace Math
 	{
+		template <typename T> int signum(T val)
+		{
+			return (T(0) < val) - (val < T(0));
+		}
+
 		template<typename T> T clamp(T value, T lower, T upper)
 		{
 			if (value < lower) return lower;
@@ -186,6 +191,9 @@ namespace MM
 			const double historyDouble = static_cast<double>(history);
 			return ((historyDouble - 1.0) * oldValue + 2.0 * newValue) / (historyDouble + 1.0);
 		}
+		
+		template int signum(QuantLib::Decimal val);
+		template int signum(float val);
 		template QuantLib::Decimal clamp<QuantLib::Decimal>(QuantLib::Decimal value, QuantLib::Decimal lower, QuantLib::Decimal upper);
 		template std::vector<QuantLib::Decimal> derive<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
 		template QuantLib::Decimal sum<QuantLib::Decimal>(const std::vector<QuantLib::Decimal> &values);
