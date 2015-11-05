@@ -108,8 +108,7 @@ namespace MM
 
 		// feed statistics module
 		statistics.addVariable(Variable("price", &(currentEstimation.currentLeadingPrice), "Current price of the leading currency."));
-		statistics.addVariable(Variable("buy_estimate", &(currentEstimation.buyCertainty), "Future-aware estimation of efficiency of long trade."));
-		statistics.addVariable(Variable("sell_estimate", &(currentEstimation.sellCertainty), "Future-aware estimation of efficiency of short trade."));
+		statistics.addVariable(Variable("price_estimate", &(currentEstimation.priceChangeEstimate), "Future-aware estimation of efficiency of trades."));
 
 		prepareDayData();
 
@@ -408,29 +407,36 @@ namespace MM
 		period.setTradingDay(tradingDay);
 		const std::vector<QuantLib::Decimal> price = period.toVector(ONEMINUTE);
 
-		auto assesPrice = [&](QuantLib::Decimal direction)
+		auto assesPrice = [&]()
 		{
-			const QuantLib::Decimal optimumValue = 20.0 * ONEPIP;
-
-			QuantLib::Decimal total = 0.0;
-			QuantLib::Decimal max   = 0.0;
+			QuantLib::Decimal min = 0.0;
+			QuantLib::Decimal max = 0.0;
+			int lastSign = 0;
 			for (size_t i = 1; i < price.size(); ++i)
 			{
-				QuantLib::Decimal difference = direction * (price[i] - price[i - 1]);
-				total += difference;
-				if (total < 0.0) break;
-				if (total > max) max = total;
+				QuantLib::Decimal currentChange = price[i] - price[0];
+				
+				int sign = Math::signum(currentChange);
+
+				if (lastSign != 0 && sign != lastSign) break;
+				lastSign = sign;
+
+				if (currentChange > max) max = currentChange;
+				if (currentChange < min) min = currentChange;
 			}
-			max -= 3.0 * ONEPIP;
-			return direction * std::max(max, 0.0) / ONEPIP;
+			assert(min == 0.0 || max == 0.0);
+			decltype(min) value = 0.0;
+		
+			if (std::abs(min) > std::abs(max)) value = min;
+			else value = max;
+			return value / ONEPIP;
 		};
 
 		PossibleDecimal open;
 		open = period.getOpen();
 		if (!open) return;
 
-		currentEstimation.buyCertainty  = assesPrice(+1.0);
-		currentEstimation.sellCertainty = assesPrice(-1.0);
+		currentEstimation.priceChangeEstimate = assesPrice();
 	}
 
 	void VirtualMarket::saveTrades()

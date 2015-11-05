@@ -103,11 +103,10 @@ namespace MM
 		// evaluation and statistics
 		struct _estimation
 		{
-			double buyCertainty;
-			double sellCertainty;
+			double priceChangeEstimate;
 			double currentLeadingPrice;
 
-			_estimation() : buyCertainty(0.0), sellCertainty(0.0), currentLeadingPrice(0.0) {}
+			_estimation() : priceChangeEstimate(0.0), currentLeadingPrice(0.0) {}
 		} currentEstimation;
 
 		struct _results
