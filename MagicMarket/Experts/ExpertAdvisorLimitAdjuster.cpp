@@ -67,7 +67,7 @@ namespace MM
 
 			QuantLib::Decimal profitPips = *closePos - trade->orderPrice;
 			if (trade->type == Trade::T_SELL) profitPips = trade->orderPrice - *closePos;
-			if (profitPips > 2.0 * ONEPIP)
+			if (profitPips > 5.0 * ONEPIP)
 			{
 				assert(profitPips >= 0.0);
 				QuantLib::Decimal difference = 0.5 * profitPips;
@@ -121,12 +121,32 @@ namespace MM
 
 	bool ExpertAdvisorLimitAdjuster::acceptNewTrade(Trade *newTrade) 
 	{
-		// close all trades on the same symbol in the opposite direction
+		// Close all trades on the same symbol in the opposite direction.
+		// But only if they are currently profitable. This puts some weight on the assumption that the initial prediction was correct.
 		std::vector<Trade*> toClose;
+		int sameTypeCount = 0;
+
 		for (Trade *&trade : market.getOpenTrades())
 		{
 			if (newTrade->currencyPair != trade->currencyPair) continue;
-			if (newTrade->type == trade->type) continue;
+			if (newTrade->type == trade->type)
+			{
+				sameTypeCount += 1;
+				continue;
+			}
+
+			// Close iff making profit atm.
+			Stock *stock = market.getStock(trade->currencyPair);
+			TimePeriod period = stock->getTimePeriod(market.getLastTickTime());
+			const Tick *lastTick = period.getLastTick();
+			assert(lastTick != nullptr);
+
+			// Do not close trades that are currently at loss.
+			QuantLib::Decimal profit = trade->getProfitAtTick(*lastTick);
+			if (profit <= 0.0)
+			{
+				continue;
+			}
 
 			toClose.push_back(trade);
 		}
@@ -144,6 +164,8 @@ namespace MM
 
 		// only accept new trades in good market hours
 		if (hourOfDay < 11 || hourOfDay > 15) return false;
+		// And only accept up to two trades from each type.
+		if (sameTypeCount >= 2) return false;
 		return true;
 	}
 
