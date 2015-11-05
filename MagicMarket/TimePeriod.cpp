@@ -133,6 +133,13 @@ namespace MM
 
 	PossibleDecimal TimePeriod::getClose()
 	{
+		const Tick *tick = getLastTick();
+		if (tick == nullptr) return nullptr;
+		return PossibleDecimal(new QuantLib::Decimal((tick->*valueFunction)()));
+	}
+
+	const Tick *TimePeriod::getLastTick()
+	{
 		if (!checkInitCache()) return nullptr;
 
 		Tick *tick = nullptr;
@@ -146,9 +153,7 @@ namespace MM
 			assert(day != nullptr);
 			tick = &day->ticks.back();
 		}
-		
-		if (tick == nullptr) return nullptr;
-		return PossibleDecimal(new QuantLib::Decimal((tick->*valueFunction)()));
+		return tick;
 	}
 
 	PossibleDecimal TimePeriod::getAverage()

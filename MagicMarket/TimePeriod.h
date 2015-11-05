@@ -48,6 +48,8 @@ namespace MM
 		PossibleDecimal getAverage();
 		int getMaximumSecondsBetweenTicks(int *totalTicks = nullptr, int *totalChanges = nullptr);
 
+		const Tick *getLastTick();
+
 		std::vector<double> toVector(int secondsInterval);
 
 		std::time_t getStartTime() const { return startTime; }
