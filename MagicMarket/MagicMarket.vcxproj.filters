@@ -127,15 +127,6 @@
     <ClCompile Include="Indicators\TSI.cpp">
       <Filter>Source Files\Indicators</Filter>
     </ClCompile>
-    <ClCompile Include="Experts\ExpertAdvisorMAAnalyser.cpp">
-      <Filter>Source Files\Experts\Technical</Filter>
-    </ClCompile>
-    <ClCompile Include="Experts\ExpertAdvisorRSI.cpp">
-      <Filter>Source Files\Experts\Technical</Filter>
-    </ClCompile>
-    <ClCompile Include="Experts\ExpertAdvisorTechnical.cpp">
-      <Filter>Source Files\Experts\Technical</Filter>
-    </ClCompile>
     <ClCompile Include="Experts\ExpertAdvisorBroker.cpp">
       <Filter>Source Files\Experts\Supervisors</Filter>
     </ClCompile>
@@ -150,9 +141,6 @@
     </ClCompile>
     <ClCompile Include="Experts\ExpertAdvisorDumbo.cpp">
       <Filter>Source Files\Experts</Filter>
-    </ClCompile>
-    <ClCompile Include="Experts\ExpertAdvisorTSI.cpp">
-      <Filter>Source Files\Experts\Technical</Filter>
     </ClCompile>
     <ClCompile Include="IO\KeyValueDB.cpp">
       <Filter>Source Files\IO</Filter>
@@ -177,6 +165,24 @@
     </ClCompile>
     <ClCompile Include="Experts\ExpertAdvisorExternal.cpp">
       <Filter>Source Files\Experts</Filter>
+    </ClCompile>
+    <ClCompile Include="Indicators\StochasticOscillator.cpp">
+      <Filter>Source Files\Indicators</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\Technical\ExpertAdvisorMAAnalyser.cpp">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\Technical\ExpertAdvisorRSI.cpp">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\Technical\ExpertAdvisorTechnical.cpp">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\Technical\ExpertAdvisorTSI.cpp">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\Technical\ExpertAdvisorStochasticOscillator.cpp">
+      <Filter>Source Files\Experts\Technical</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -243,15 +249,6 @@
     <ClInclude Include="Indicators\TSI.h">
       <Filter>Source Files\Indicators</Filter>
     </ClInclude>
-    <ClInclude Include="Experts\ExpertAdvisorMAAnalyser.h">
-      <Filter>Source Files\Experts\Technical</Filter>
-    </ClInclude>
-    <ClInclude Include="Experts\ExpertAdvisorRSI.h">
-      <Filter>Source Files\Experts\Technical</Filter>
-    </ClInclude>
-    <ClInclude Include="Experts\ExpertAdvisorTechnical.h">
-      <Filter>Source Files\Experts\Technical</Filter>
-    </ClInclude>
     <ClInclude Include="Experts\ExpertAdvisorBroker.h">
       <Filter>Source Files\Experts\Supervisors</Filter>
     </ClInclude>
@@ -266,9 +263,6 @@
     </ClInclude>
     <ClInclude Include="Experts\ExpertAdvisorDumbo.h">
       <Filter>Source Files\Experts</Filter>
-    </ClInclude>
-    <ClInclude Include="Experts\ExpertAdvisorTSI.h">
-      <Filter>Source Files\Experts\Technical</Filter>
     </ClInclude>
     <ClInclude Include="IO\KeyValueDB.h">
       <Filter>Source Files\IO</Filter>
@@ -294,6 +288,24 @@
     </ClInclude>
     <ClInclude Include="Experts\ExpertAdvisorExternal.h">
       <Filter>Source Files\Experts</Filter>
+    </ClInclude>
+    <ClInclude Include="Indicators\StochasticOscillator.h">
+      <Filter>Source Files\Indicators</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\Technical\ExpertAdvisorMAAnalyser.h">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\Technical\ExpertAdvisorRSI.h">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\Technical\ExpertAdvisorTechnical.h">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\Technical\ExpertAdvisorTSI.h">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\Technical\ExpertAdvisorStochasticOscillator.h">
+      <Filter>Source Files\Experts\Technical</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -40,6 +40,7 @@ namespace MM
 		template<typename T> T MA(const T &oldValue, const T &newValue, const int &history);
 		// exponential moving average - slightly faster falloff
 		template<typename T> T MA2(const T &oldValue, const T &newValue, const int &history);
+		template<typename T> int checkCrossover(T oldBase, T newBase, T oldLead, T newLead);
 	};
 
 	template<typename T> std::vector<float> toFloatVector(const std::vector<T> &values);

@@ -79,7 +79,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts\Technical;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -109,7 +109,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts\Technical;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
@@ -128,7 +128,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts\Technical;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <WarningLevel>Level3</WarningLevel>
@@ -160,7 +160,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts\Technical;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <WarningLevel>Level3</WarningLevel>
@@ -199,10 +199,11 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile Include="Experts\ExpertAdvisorDumbo.cpp" />
     <ClCompile Include="Experts\ExpertAdvisorExternal.cpp" />
     <ClCompile Include="Experts\ExpertAdvisorLimitAdjuster.cpp" />
-    <ClCompile Include="Experts\ExpertAdvisorMAAnalyser.cpp" />
-    <ClCompile Include="Experts\ExpertAdvisorRSI.cpp" />
-    <ClCompile Include="Experts\ExpertAdvisorTechnical.cpp" />
-    <ClCompile Include="Experts\ExpertAdvisorTSI.cpp" />
+    <ClCompile Include="Experts\Technical\ExpertAdvisorMAAnalyser.cpp" />
+    <ClCompile Include="Experts\Technical\ExpertAdvisorRSI.cpp" />
+    <ClCompile Include="Experts\Technical\ExpertAdvisorStochasticOscillator.cpp" />
+    <ClCompile Include="Experts\Technical\ExpertAdvisorTechnical.cpp" />
+    <ClCompile Include="Experts\Technical\ExpertAdvisorTSI.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Indicators\ADX.cpp" />
     <ClCompile Include="Indicators\ATR.cpp" />
@@ -211,6 +212,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile Include="Indicators\Moves.cpp" />
     <ClCompile Include="Indicators\RSI.cpp" />
     <ClCompile Include="Indicators\SMA.cpp" />
+    <ClCompile Include="Indicators\StochasticOscillator.cpp" />
     <ClCompile Include="Indicators\TSI.cpp" />
     <ClCompile Include="Interfaces\Expert.pb.cc" />
     <ClCompile Include="IO\DataConverter.cpp" />
@@ -246,10 +248,11 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClInclude Include="Experts\ExpertAdvisorDumbo.h" />
     <ClInclude Include="Experts\ExpertAdvisorExternal.h" />
     <ClInclude Include="Experts\ExpertAdvisorLimitAdjuster.h" />
-    <ClInclude Include="Experts\ExpertAdvisorMAAnalyser.h" />
-    <ClInclude Include="Experts\ExpertAdvisorRSI.h" />
-    <ClInclude Include="Experts\ExpertAdvisorTechnical.h" />
-    <ClInclude Include="Experts\ExpertAdvisorTSI.h" />
+    <ClInclude Include="Experts\Technical\ExpertAdvisorMAAnalyser.h" />
+    <ClInclude Include="Experts\Technical\ExpertAdvisorRSI.h" />
+    <ClInclude Include="Experts\Technical\ExpertAdvisorStochasticOscillator.h" />
+    <ClInclude Include="Experts\Technical\ExpertAdvisorTechnical.h" />
+    <ClInclude Include="Experts\Technical\ExpertAdvisorTSI.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="Indicators\ADX.h" />
     <ClInclude Include="Indicators\ATR.h" />
@@ -258,6 +261,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClInclude Include="Indicators\Moves.h" />
     <ClInclude Include="Indicators\RSI.h" />
     <ClInclude Include="Indicators\SMA.h" />
+    <ClInclude Include="Indicators\StochasticOscillator.h" />
     <ClInclude Include="Indicators\TSI.h" />
     <ClInclude Include="Interfaces\Expert.pb.h" />
     <ClInclude Include="IO\DataConverter.h" />

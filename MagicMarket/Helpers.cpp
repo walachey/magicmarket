@@ -192,6 +192,15 @@ namespace MM
 			return ((historyDouble - 1.0) * oldValue + 2.0 * newValue) / (historyDouble + 1.0);
 		}
 		
+		template<typename T> int checkCrossover(T oldBase, T newBase, T oldLead, T newLead)
+		{
+			if (std::isnan(oldBase) || std::isnan(oldLead)) return 0;
+			if (std::isnan(newBase) || std::isnan(newLead)) return 0;
+			if (oldLead < oldBase && newLead > newBase) return +1;
+			if (oldLead > oldBase && newLead < newBase) return -1;
+			return 0;
+		}
+
 		template int signum(QuantLib::Decimal val);
 		template int signum(float val);
 		template QuantLib::Decimal clamp<QuantLib::Decimal>(QuantLib::Decimal value, QuantLib::Decimal lower, QuantLib::Decimal upper);
@@ -209,6 +218,7 @@ namespace MM
 
 		template double MA<double>(const double &oldValue, const double &newValue, const int &history);
 		template double MA2<double>(const double &oldValue, const double &newValue, const int &history);
+		template int checkCrossover(QuantLib::Decimal oldA, QuantLib::Decimal newA, QuantLib::Decimal oldB, QuantLib::Decimal newB);
 	};
 
 	template<typename T> std::vector<float> toFloatVector(const std::vector<T> &values)
