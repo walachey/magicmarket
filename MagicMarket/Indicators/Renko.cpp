@@ -79,11 +79,11 @@ namespace MM
 		std::vector<double> Renko::getBars(int n) const
 		{
 			std::vector<double> subbars;
-			subbars.reserve(n);
+			subbars.resize(n);
 
 			for (int i = 0; i < n; ++i)
 			{
-				const double value = getOffsetIndex(-i);
+				const double value = bars[getOffsetIndex(-i)];
 				if (std::isnan(value)) return {};
 				subbars[n - i - 1] = value;
 			}
