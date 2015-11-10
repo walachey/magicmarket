@@ -82,9 +82,14 @@ namespace MM
 		size_t tickIndex;
 		Tick *lastTick;
 		// the secondary currencies follow the timing of the primary one
+		std::vector<std::string> requiredSecondaryPairs = { "EURCHF", "EURGBP", "GBPUSD", "USDCHF", "USDJPY" };
 		std::vector<TradingDay*> secondaryCurrencies;
 		std::vector<std::vector<Tick>::iterator> secondaryCurrenciesIterators;
 		
+		// This is used to supply variables with required information.
+		std::map<std::string, double> lastKnownPrice;
+		double getLastKnownPrice(std::string currencyPair);
+
 		// config
 		struct _config
 		{
@@ -104,9 +109,8 @@ namespace MM
 		struct _estimation
 		{
 			double priceChangeEstimate;
-			double currentLeadingPrice;
 
-			_estimation() : priceChangeEstimate(0.0), currentLeadingPrice(0.0) {}
+			_estimation() : priceChangeEstimate(0.0) {}
 		} currentEstimation;
 
 		struct _results

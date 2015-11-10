@@ -2,6 +2,10 @@
 
 #include <WinSock2.h>
 
+#include <regex>
+#include <filesystem>
+namespace filesystem = std::tr2::sys;
+
 #include <SimpleIni.h>
 
 #include "Helpers.h"
@@ -60,26 +64,51 @@ namespace MM
 		for (size_t i = 0; i < 10; ++i)
 		{
 			const std::string configName = std::string("Virtual Market Data ") + std::to_string(i + 1);
-			std::string filename = ini.GetValue(configName.c_str(), "Filename", "");
-			if (filename.empty()) continue;
+			const bool isRegexp = ini.GetLongValue(configName.c_str(), "Regexp", 0) == 1;
+			std::string baseFilename = ini.GetValue(configName.c_str(), "Filename", "");
+			if (baseFilename.empty()) continue;
 
-			// Check if already converted once.
-			if (db.get(filename) == "1")
-			{
-				skipped += 1;
-				continue;
-			}
-			std::cout << "Data file '" << filename << "': \t\tconverting file.." << std::endl;
-			std::string filetype = ini.GetValue(configName.c_str(), "Filetype", "");
-			// Try to read the file
-			io::DataConverter converter(filename, filetype);
-			if (converter.convert() == true)
-			{
-				db.put(filename, "1");
-			}
+			std::vector<std::string> filenames;
+
+			if (!isRegexp) filenames = { baseFilename };
 			else
 			{
-				std::cout << "\t! Reading Data failed!" << std::endl;
+				// Get all files in the directory.
+				const std::string directory = ini.GetValue(configName.c_str(), "Directory", ".");
+				// That matches the given filename-regexp.
+				std::regex filePattern(baseFilename);
+
+				filesystem::directory_iterator iter(directory), end;
+				for (; iter != end; ++iter)
+				{
+					const filesystem::path current = *iter;
+					const std::string currentName = current.filename().string();
+					if (!std::regex_match(currentName, filePattern)) continue;
+					
+					filenames.push_back(directory + "/" + currentName);
+				}
+			}
+
+			for (const std::string &filename : filenames)
+			{
+				// Check if already converted once.
+				if (db.get(filename) == "1")
+				{
+					skipped += 1;
+					continue;
+				}
+				std::cout << "Data file '" << filename << "': \t\tconverting file.." << std::endl;
+				std::string filetype = ini.GetValue(configName.c_str(), "Filetype", "");
+				// Try to read the file
+				io::DataConverter converter(filename, filetype);
+				if (converter.convert() == true)
+				{
+					db.put(filename, "1");
+				}
+				else
+				{
+					std::cout << "\t! Reading Data failed!" << std::endl;
+				}
 			}
 		}
 
@@ -107,8 +136,15 @@ namespace MM
 		market.setSleepDuration(0);
 
 		// feed statistics module
-		statistics.addVariable(Variable("price", &(currentEstimation.currentLeadingPrice), "Current price of the leading currency."));
 		statistics.addVariable(Variable("price_estimate", &(currentEstimation.priceChangeEstimate), "Future-aware estimation of efficiency of trades."));
+
+		decltype(requiredSecondaryPairs) allPairs(requiredSecondaryPairs.begin(), requiredSecondaryPairs.end());
+		allPairs.push_back("EURUSD");
+
+		for (const std::string & pair : allPairs)
+		{
+			statistics.addVariable(Variable(pair, std::bind(&VirtualMarket::getLastKnownPrice, this, pair), "Current price of " + pair + "."));
+		}
 
 		prepareDayData();
 
@@ -180,25 +216,39 @@ namespace MM
 		tradingDay = new TradingDay(config.date, market.getStock("EURUSD", true));
 		tradingDay->loadFromFile();
 		
-		// check if the day is even OK - arbitrary required tick count here
-		if (tradingDay->ticks.size() < 15000)
+		auto checkValid = [](TradingDay *tradingDay)
 		{
-			std::cout << "WARNING: day " << config.date << " has not enough ticks: " << tradingDay->ticks.size() << std::endl;
+			return tradingDay->ticks.size() > 15000;
+		};
+
+		auto skipDay = [&](int tickCount, std::string currencyPair)
+		{
+			std::cout << "WARNING: " << currencyPair << " day " << config.date << " has not enough ticks: " << tickCount << std::endl;
 			if (config.date <= config.datePeriodEnd)
 			{
 				advanceDay(true);
 				prepareDayData();
 			}
 			return;
+		};
+
+		// check if the day is even OK - arbitrary required tick count here
+		if (!checkValid(tradingDay))
+		{
+			return skipDay(tradingDay->ticks.size(), tradingDay->getCurrencyPair());
 		}
 
 		tickIndex = 0;
 
-		std::vector<std::string> secondary = { "USDDKK", "USDCHF", "EURCAD", "EURAUD", "EURJPY", "AUDCHF" };
-		for (std::string &pair : secondary)
+		
+		for (std::string &pair : requiredSecondaryPairs)
 		{
-			secondaryCurrencies.push_back(new TradingDay(config.date, market.getStock(pair, true)));
-			secondaryCurrencies.back()->loadFromFile();
+			TradingDay *secondaryDay = new TradingDay(config.date, market.getStock(pair, true));
+			secondaryCurrencies.push_back(secondaryDay);
+			secondaryDay->loadFromFile();
+
+			if (!checkValid(secondaryDay))
+				return skipDay(secondaryDay->ticks.size(), secondaryDay->getCurrencyPair());
 		}
 
 		// fast forward to start of market day
@@ -217,6 +267,13 @@ namespace MM
 				break;
 			}
 		}
+	}
+
+	double VirtualMarket::getLastKnownPrice(std::string currencyPair)
+	{
+		decltype(lastKnownPrice)::iterator iter = lastKnownPrice.find(currencyPair);
+		if (iter == lastKnownPrice.end()) return std::numeric_limits<double>::quiet_NaN();
+		return iter->second;
 	}
 
 	bool VirtualMarket::isOutOfPeriod()
@@ -253,7 +310,6 @@ namespace MM
 		if (lastTick) previousTime = lastTick->getTime();
 
 		lastTick = &tradingDay->getTickByIndex(tickIndex++);
-		currentEstimation.currentLeadingPrice = lastTick->getMid();
 		sendTickMsg(lastTick, tradingDay);
 		
 		// send all ticks of secondary currencies up to the time of the leading currency
@@ -324,6 +380,7 @@ namespace MM
 
 	void VirtualMarket::sendTickMsg(const Tick *tick, TradingDay *day)
 	{
+		lastKnownPrice[day->getCurrencyPair()] = tick->getMid();
 		market.onNewTickMessageReceived(day->getCurrencyPair(), tick->getBid(), tick->getAsk(), tick->getTime());
 	}
 
