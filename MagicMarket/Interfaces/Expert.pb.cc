@@ -77,8 +77,9 @@ void protobuf_AssignDesc_Expert_2eproto() {
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ExpertMessage_Estimation, _internal_metadata_),
       -1);
   ExpertMessage_Information_descriptor_ = ExpertMessage_descriptor_->nested_type(1);
-  static const int ExpertMessage_Information_offsets_[1] = {
+  static const int ExpertMessage_Information_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ExpertMessage_Information, isexecutive_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ExpertMessage_Information, noprediction_),
   };
   ExpertMessage_Information_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
@@ -130,18 +131,19 @@ void protobuf_AddDesc_Expert_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\014Expert.proto\022\nInterfaces\"\253\003\n\rExpertMes"
+    "\n\014Expert.proto\022\nInterfaces\"\350\003\n\rExpertMes"
     "sage\022,\n\004type\030\001 \002(\0162\036.Interfaces.ExpertMe"
     "ssage.Type\022\014\n\004name\030\002 \001(\t\022\025\n\rvariableName"
     "s\030\003 \003(\t\022\021\n\tvariables\030\004 \003(\001\0228\n\nestimation"
     "\030\005 \001(\0132$.Interfaces.ExpertMessage.Estima"
     "tion\022:\n\013information\030\006 \001(\0132%.Interfaces.E"
     "xpertMessage.Information\032-\n\nEstimation\022\014"
-    "\n\004mood\030\001 \002(\001\022\021\n\tcertainty\030\002 \002(\001\032\"\n\013Infor"
-    "mation\022\023\n\013isExecutive\030\001 \002(\010\"k\n\004Type\022\013\n\007g"
-    "etName\020\000\022\021\n\rgetPrediction\020\001\022\030\n\024getRequir"
-    "edVariables\020\002\022\014\n\010shutdown\020\003\022\t\n\005reset\020\004\022\020"
-    "\n\014informations\020\005", 456);
+    "\n\004mood\030\001 \002(\001\022\021\n\tcertainty\030\002 \002(\001\0328\n\013Infor"
+    "mation\022\023\n\013isExecutive\030\001 \002(\010\022\024\n\014noPredict"
+    "ion\030\002 \002(\010\"\221\001\n\004Type\022\013\n\007getName\020\000\022\021\n\rgetPr"
+    "ediction\020\001\022\030\n\024getRequiredVariables\020\002\022\014\n\010"
+    "shutdown\020\003\022\t\n\005reset\020\004\022\020\n\014informations\020\005\022"
+    "\030\n\024getProvidedVariables\020\006\022\n\n\006update\020\007", 517);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Expert.proto", &protobuf_RegisterTypes);
   ExpertMessage::default_instance_ = new ExpertMessage();
@@ -184,6 +186,8 @@ bool ExpertMessage_Type_IsValid(int value) {
     case 3:
     case 4:
     case 5:
+    case 6:
+    case 7:
       return true;
     default:
       return false;
@@ -197,6 +201,8 @@ const ExpertMessage_Type ExpertMessage::getRequiredVariables;
 const ExpertMessage_Type ExpertMessage::shutdown;
 const ExpertMessage_Type ExpertMessage::reset;
 const ExpertMessage_Type ExpertMessage::informations;
+const ExpertMessage_Type ExpertMessage::getProvidedVariables;
+const ExpertMessage_Type ExpertMessage::update;
 const ExpertMessage_Type ExpertMessage::Type_MIN;
 const ExpertMessage_Type ExpertMessage::Type_MAX;
 const int ExpertMessage::Type_ARRAYSIZE;
@@ -496,6 +502,7 @@ void ExpertMessage_Estimation::InternalSwap(ExpertMessage_Estimation* other) {
 
 #ifndef _MSC_VER
 const int ExpertMessage_Information::kIsExecutiveFieldNumber;
+const int ExpertMessage_Information::kNoPredictionFieldNumber;
 #endif  // !_MSC_VER
 
 ExpertMessage_Information::ExpertMessage_Information()
@@ -518,6 +525,7 @@ ExpertMessage_Information::ExpertMessage_Information(const ExpertMessage_Informa
 void ExpertMessage_Information::SharedCtor() {
   _cached_size_ = 0;
   isexecutive_ = false;
+  noprediction_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -557,7 +565,19 @@ ExpertMessage_Information* ExpertMessage_Information::New(::google::protobuf::Ar
 }
 
 void ExpertMessage_Information::Clear() {
-  isexecutive_ = false;
+#define ZR_HELPER_(f) reinterpret_cast<char*>(\
+  &reinterpret_cast<ExpertMessage_Information*>(16)->f)
+
+#define ZR_(first, last) do {\
+  ::memset(&first, 0,\
+           ZR_HELPER_(last) - ZR_HELPER_(first) + sizeof(last));\
+} while (0)
+
+  ZR_(isexecutive_, noprediction_);
+
+#undef ZR_HELPER_
+#undef ZR_
+
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   if (_internal_metadata_.have_unknown_fields()) {
     mutable_unknown_fields()->Clear();
@@ -581,6 +601,21 @@ bool ExpertMessage_Information::MergePartialFromCodedStream(
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
                  input, &isexecutive_)));
           set_has_isexecutive();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_noPrediction;
+        break;
+      }
+
+      // required bool noPrediction = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_noPrediction:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &noprediction_)));
+          set_has_noprediction();
         } else {
           goto handle_unusual;
         }
@@ -618,6 +653,11 @@ void ExpertMessage_Information::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteBool(1, this->isexecutive(), output);
   }
 
+  // required bool noPrediction = 2;
+  if (has_noprediction()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(2, this->noprediction(), output);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -633,6 +673,11 @@ void ExpertMessage_Information::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(1, this->isexecutive(), target);
   }
 
+  // required bool noPrediction = 2;
+  if (has_noprediction()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(2, this->noprediction(), target);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -641,12 +686,33 @@ void ExpertMessage_Information::SerializeWithCachedSizes(
   return target;
 }
 
+int ExpertMessage_Information::RequiredFieldsByteSizeFallback() const {
+  int total_size = 0;
+
+  if (has_isexecutive()) {
+    // required bool isExecutive = 1;
+    total_size += 1 + 1;
+  }
+
+  if (has_noprediction()) {
+    // required bool noPrediction = 2;
+    total_size += 1 + 1;
+  }
+
+  return total_size;
+}
 int ExpertMessage_Information::ByteSize() const {
   int total_size = 0;
 
-  // required bool isExecutive = 1;
-  if (has_isexecutive()) {
+  if (((_has_bits_[0] & 0x00000003) ^ 0x00000003) == 0) {  // All required fields are present.
+    // required bool isExecutive = 1;
     total_size += 1 + 1;
+
+    // required bool noPrediction = 2;
+    total_size += 1 + 1;
+
+  } else {
+    total_size += RequiredFieldsByteSizeFallback();
   }
   if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
@@ -677,6 +743,9 @@ void ExpertMessage_Information::MergeFrom(const ExpertMessage_Information& from)
     if (from.has_isexecutive()) {
       set_isexecutive(from.isexecutive());
     }
+    if (from.has_noprediction()) {
+      set_noprediction(from.noprediction());
+    }
   }
   if (from._internal_metadata_.have_unknown_fields()) {
     mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -696,7 +765,7 @@ void ExpertMessage_Information::CopyFrom(const ExpertMessage_Information& from) 
 }
 
 bool ExpertMessage_Information::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
 
   return true;
 }
@@ -707,6 +776,7 @@ void ExpertMessage_Information::Swap(ExpertMessage_Information* other) {
 }
 void ExpertMessage_Information::InternalSwap(ExpertMessage_Information* other) {
   std::swap(isexecutive_, other->isexecutive_);
+  std::swap(noprediction_, other->noprediction_);
   std::swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
@@ -1281,6 +1351,30 @@ void ExpertMessage_Information::clear_isexecutive() {
   set_has_isexecutive();
   isexecutive_ = value;
   // @@protoc_insertion_point(field_set:Interfaces.ExpertMessage.Information.isExecutive)
+}
+
+// required bool noPrediction = 2;
+bool ExpertMessage_Information::has_noprediction() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+void ExpertMessage_Information::set_has_noprediction() {
+  _has_bits_[0] |= 0x00000002u;
+}
+void ExpertMessage_Information::clear_has_noprediction() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+void ExpertMessage_Information::clear_noprediction() {
+  noprediction_ = false;
+  clear_has_noprediction();
+}
+ bool ExpertMessage_Information::noprediction() const {
+  // @@protoc_insertion_point(field_get:Interfaces.ExpertMessage.Information.noPrediction)
+  return noprediction_;
+}
+ void ExpertMessage_Information::set_noprediction(bool value) {
+  set_has_noprediction();
+  noprediction_ = value;
+  // @@protoc_insertion_point(field_set:Interfaces.ExpertMessage.Information.noPrediction)
 }
 
 // -------------------------------------------------------------------

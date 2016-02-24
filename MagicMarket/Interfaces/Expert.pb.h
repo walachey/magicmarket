@@ -47,11 +47,13 @@ enum ExpertMessage_Type {
   ExpertMessage_Type_getRequiredVariables = 2,
   ExpertMessage_Type_shutdown = 3,
   ExpertMessage_Type_reset = 4,
-  ExpertMessage_Type_informations = 5
+  ExpertMessage_Type_informations = 5,
+  ExpertMessage_Type_getProvidedVariables = 6,
+  ExpertMessage_Type_update = 7
 };
 bool ExpertMessage_Type_IsValid(int value);
 const ExpertMessage_Type ExpertMessage_Type_Type_MIN = ExpertMessage_Type_getName;
-const ExpertMessage_Type ExpertMessage_Type_Type_MAX = ExpertMessage_Type_informations;
+const ExpertMessage_Type ExpertMessage_Type_Type_MAX = ExpertMessage_Type_update;
 const int ExpertMessage_Type_Type_ARRAYSIZE = ExpertMessage_Type_Type_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* ExpertMessage_Type_descriptor();
@@ -239,15 +241,28 @@ class ExpertMessage_Information : public ::google::protobuf::Message {
   bool isexecutive() const;
   void set_isexecutive(bool value);
 
+  // required bool noPrediction = 2;
+  bool has_noprediction() const;
+  void clear_noprediction();
+  static const int kNoPredictionFieldNumber = 2;
+  bool noprediction() const;
+  void set_noprediction(bool value);
+
   // @@protoc_insertion_point(class_scope:Interfaces.ExpertMessage.Information)
  private:
   inline void set_has_isexecutive();
   inline void clear_has_isexecutive();
+  inline void set_has_noprediction();
+  inline void clear_has_noprediction();
+
+  // helper for ByteSize()
+  int RequiredFieldsByteSizeFallback() const;
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   bool isexecutive_;
+  bool noprediction_;
   friend void  protobuf_AddDesc_Expert_2eproto();
   friend void protobuf_AssignDesc_Expert_2eproto();
   friend void protobuf_ShutdownFile_Expert_2eproto();
@@ -329,6 +344,8 @@ class ExpertMessage : public ::google::protobuf::Message {
   static const Type shutdown = ExpertMessage_Type_shutdown;
   static const Type reset = ExpertMessage_Type_reset;
   static const Type informations = ExpertMessage_Type_informations;
+  static const Type getProvidedVariables = ExpertMessage_Type_getProvidedVariables;
+  static const Type update = ExpertMessage_Type_update;
   static inline bool Type_IsValid(int value) {
     return ExpertMessage_Type_IsValid(value);
   }
@@ -526,6 +543,30 @@ inline void ExpertMessage_Information::set_isexecutive(bool value) {
   set_has_isexecutive();
   isexecutive_ = value;
   // @@protoc_insertion_point(field_set:Interfaces.ExpertMessage.Information.isExecutive)
+}
+
+// required bool noPrediction = 2;
+inline bool ExpertMessage_Information::has_noprediction() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void ExpertMessage_Information::set_has_noprediction() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void ExpertMessage_Information::clear_has_noprediction() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void ExpertMessage_Information::clear_noprediction() {
+  noprediction_ = false;
+  clear_has_noprediction();
+}
+inline bool ExpertMessage_Information::noprediction() const {
+  // @@protoc_insertion_point(field_get:Interfaces.ExpertMessage.Information.noPrediction)
+  return noprediction_;
+}
+inline void ExpertMessage_Information::set_noprediction(bool value) {
+  set_has_noprediction();
+  noprediction_ = value;
+  // @@protoc_insertion_point(field_set:Interfaces.ExpertMessage.Information.noPrediction)
 }
 
 // -------------------------------------------------------------------

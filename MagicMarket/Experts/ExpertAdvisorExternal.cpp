@@ -6,7 +6,18 @@
 
 #include "Interfaces\Expert.pb.h"
 
+#include <tuple>
 #include <algorithm>
+
+std::tuple<std::string, std::string> unwrapVariableNameDesc(std::string variableNameDesc)
+{
+	std::istringstream os(variableNameDesc);
+	std::string name, desc;
+	os >> name;
+	std::getline(os, desc);
+	desc.erase(0, 1);
+	return std::make_tuple(name, desc);
+}
 
 namespace MM
 {
@@ -21,8 +32,13 @@ namespace MM
 	ExpertAdvisorExternal::ExpertAdvisorExternal()
 	{
 		executive = false;
+		noPrediction = false;
 	}
 
+	void ExpertAdvisorExternal::declareExports() const
+	{
+		if (!noPrediction) ExpertAdvisor::declareExports();
+	}
 
 	ExpertAdvisorExternal::~ExpertAdvisorExternal()
 	{
@@ -71,6 +87,15 @@ namespace MM
 			return false;
 		}
 
+		onAfterConnectionEstablished();
+
+		std::cout << "\tExpert " << name << " linked." << std::endl;
+
+		return true;
+	}
+
+	void ExpertAdvisorExternal::onAfterConnectionEstablished()
+	{
 		{ // Handshake
 			Interfaces::ExpertMessage message;
 			message.set_type(Interfaces::ExpertMessage_Type::ExpertMessage_Type_getName);
@@ -97,6 +122,7 @@ namespace MM
 			reply = receive();
 			assert(reply.type() == Interfaces::ExpertMessage_Type_informations);
 			executive = reply.information().isexecutive();
+			noPrediction = reply.information().noprediction();
 			std::cout << "\tExpert role:\t" << (executive ? "executive" : "supportive") << std::endl;
 		}
 
@@ -111,9 +137,30 @@ namespace MM
 			requiredVariables = std::vector<std::string>(reply.variablenames().begin(), reply.variablenames().end());
 		}
 
-		std::cout << "\tExpert " << name << " linked." << std::endl;
+		{ // Provided variables
+			Interfaces::ExpertMessage message;
+			message.set_type(Interfaces::ExpertMessage_Type_getProvidedVariables);
+			send(message);
 
-		return true;
+			Interfaces::ExpertMessage reply = receive();
+			assert(reply.type() == Interfaces::ExpertMessage_Type_getProvidedVariables);
+
+			// IFF there are fresh observations, reserve some space for them and register them.
+			std::vector<std::string> providedVariableNames = std::vector<std::string>(reply.variablenames().begin(), reply.variablenames().end());
+			if (!providedVariableNames.empty())
+			{
+				providedVariables.resize(providedVariableNames.size());
+				size_t counter = 0;
+				for (std::string & variableNameDesc : providedVariableNames)
+				{
+					std::string name, desc;
+					std::tie(name, desc) = unwrapVariableNameDesc(variableNameDesc);
+					statistics.addVariable(Variable(name, &providedVariables[counter], desc));
+
+					counter += 1;
+				}
+			}
+		}
 	}
 
 	void ExpertAdvisorExternal::afterExportsDeclared()
@@ -121,11 +168,8 @@ namespace MM
 		size_t varCount = 0;
 		for (const std::string &namedesc : requiredVariables)
 		{
-			std::istringstream os(namedesc);
 			std::string name, desc;
-			os >> name;
-			std::getline(os, desc);
-			desc.erase(0, 1); // Erase first space.
+			std::tie(name, desc) = unwrapVariableNameDesc(namedesc);
 			Variable var = statistics.getVariableByNameDescription(name, desc);
 			const bool isNan = var.isNan();
 			variables.push_back(std::move(var));
@@ -142,16 +186,25 @@ namespace MM
 
 	void ExpertAdvisorExternal::execute(const std::time_t &secondsSinceStart, const std::time_t &time)
 	{
+		// This can either result in a prediction or an update call, depending on what the agent wants.
+		Interfaces::ExpertMessage::Type messageType = Interfaces::ExpertMessage::Type::ExpertMessage_Type_getPrediction;
+		if (noPrediction)
+			messageType = Interfaces::ExpertMessage::Type::ExpertMessage_Type_update;
 		// Construct message made up from all the observed variables.
 		Interfaces::ExpertMessage message;
-		message.set_type(Interfaces::ExpertMessage_Type_getPrediction);
+		message.set_type(messageType);
 		for (const Variable &var : variables)
 			message.add_variables(var.get());
 		send(message);
 		
 		Interfaces::ExpertMessage reply = receive();
 		
-		setMood(reply.estimation().mood(), reply.estimation().certainty());
+		if (!noPrediction)
+			setMood(reply.estimation().mood(), reply.estimation().certainty());
+		else
+		{
+			// todo: update variables
+		}
 	}
 
 

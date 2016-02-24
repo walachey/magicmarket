@@ -22,6 +22,7 @@ namespace MM
 		virtual ~ExpertAdvisorExternal();
 
 		virtual std::string getName() const override { return name; };
+		virtual void declareExports() const override;
 		virtual bool isExecutive() const { return executive; }
 
 		virtual void execute(const std::time_t &secondsSinceStart, const std::time_t &time);
@@ -29,9 +30,11 @@ namespace MM
 
 		bool connect(std::string endpoint);
 		virtual void afterExportsDeclared() override;
+		virtual void onAfterConnectionEstablished();
 
 	private:
 		bool executive;
+		bool noPrediction;
 		std::string name;
 		std::unique_ptr<zmq::context_t> context;
 		std::unique_ptr<zmq::socket_t> socket;
@@ -41,6 +44,7 @@ namespace MM
 
 		std::vector<Variable> variables;
 		std::vector<std::string> requiredVariables;
+		std::vector<double> providedVariables;
 	};
 
 }
