@@ -41,7 +41,11 @@ namespace MM
 			const PossibleDecimal low   = now.getLow();
 			if (!close.get() || !high.get() || !low.get()) return;
 
-			percentK = 100.0 * ((*close - *low) / (*high - *low));
+			const QuantLib::Decimal	totalRange = (*high - *low);
+			if (!std::isnormal(totalRange))
+				percentK = 0.0;
+			else
+				percentK = 100.0 * ((*close - *low) / (*high - *low));
 			percentD = Math::MA(percentD, percentK, 3);
 		}
 	};
