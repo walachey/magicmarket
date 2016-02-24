@@ -28,6 +28,7 @@ namespace MM
 	{
 		if (socket.get() != nullptr)
 		{
+			std::cout << "External Agent: sending shutdown signal to zmq::" << getName() << std::endl;
 			Interfaces::ExpertMessage message;
 			message.set_type(Interfaces::ExpertMessage_Type_shutdown);
 			send(message);

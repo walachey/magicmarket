@@ -58,6 +58,7 @@ namespace MM
 		// called by the market
 		void onReceive(const std::string &message);
 		void execute();
+		bool isRunning() { return running; }
 		// this bypasses the normal central station system
 		void proxySend(const std::string &message);
 		std::string proxyReceive();
@@ -69,6 +70,7 @@ namespace MM
 		std::queue<std::string> pendingMessages;
 
 		void init();
+		bool running = true;
 		void evaluateTrade(const Trade &trade, bool forceful = false);
 		int tradeCounter;
 		std::vector<Trade> trades;
@@ -96,6 +98,7 @@ namespace MM
 			QuantLib::Date datePeriodBegin, datePeriodEnd;
 			QuantLib::Date date;
 			int fromHour, toHour;
+			bool waitOnFinished = true;
 		} config;
 		
 

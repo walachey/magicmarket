@@ -130,6 +130,7 @@ namespace MM
 		sscanf_s(hourString.c_str(), "%d-%d", &config.fromHour, &config.toHour);
 		
 		isSilent = ini.GetValue("Virtual Market", "Silent", "0") == std::string("1");
+		config.waitOnFinished = ini.GetValue("Virtual Market", "WaitOnFinished", "0") == std::string("1");
 
 		// update market to match settings
 		market.setVirtual(true);
@@ -293,8 +294,11 @@ namespace MM
 			{
 				std::cout << "VIRTUAL MARKET IS DONE." << std::endl;
 				std::cout << "YOUR PROFIT:\t\t" << results.totalProfitPips << std::endl;
-				getchar();
-				exit(1);
+				if (config.waitOnFinished)
+				{
+					getchar();
+				}
+				running = false;
 				return;
 			}
 		}

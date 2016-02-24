@@ -252,7 +252,10 @@ namespace MM
 				statistics.log();
 			}
 			if (isVirtual())
+			{
 				virtualMarket->execute();
+				if (!virtualMarket->isRunning()) return;
+			}
 			
 			if (sleepDuration > std::chrono::milliseconds(0))
 				std::this_thread::sleep_for(sleepDuration);
