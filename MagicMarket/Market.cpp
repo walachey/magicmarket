@@ -29,6 +29,8 @@ namespace filesystem = std::tr2::sys;
 #include "ExpertAdvisorAtama.h"
 #include "ExpertAdvisorMAAnalyser.h"
 
+#include "Indicators/LocalRelativeChange.h"
+
 #include "thirdparty/json11.hpp"
 
 #include "DeepLearningTest.h"
@@ -122,6 +124,20 @@ namespace MM
 		//experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorAtama()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorLimitAdjuster()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorBroker()));
+
+		// Enforce some more indicators to exist.
+		{ // scope
+			const std::vector<int> lookbackDurations =
+			{
+				5 * ONEMINUTE,
+				4 * ONEMINUTE,
+				3 * ONEMINUTE,
+				2 * ONEMINUTE,
+				1 * ONEMINUTE
+			};
+			for (const std::string &currencyPair : { "EURUSD", "EURCHF", "EURGBP", "GBPUSD", "USDCHF", "USDJPY", "EURUSD" })
+				Indicators::get<Indicators::LocalRelativeChange>(currencyPair, lookbackDurations);
+		}
 
 		// And now the external interfaces.
 		for (int i = 0; i < 255; ++i)
