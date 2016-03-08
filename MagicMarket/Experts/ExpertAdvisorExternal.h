@@ -45,6 +45,7 @@ namespace MM
 		std::vector<Variable> variables;
 		std::vector<std::string> requiredVariables;
 		std::vector<double> providedVariables;
+		std::vector<std::string> providedVariableNames;
 	};
 
 }

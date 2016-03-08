@@ -16,7 +16,6 @@ _sym_db = _symbol_database.Default()
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='Expert.proto',
   package='Interfaces',
-  syntax='proto2',
   serialized_pb=b'\n\x0c\x45xpert.proto\x12\nInterfaces\"\xe8\x03\n\rExpertMessage\x12,\n\x04type\x18\x01 \x02(\x0e\x32\x1e.Interfaces.ExpertMessage.Type\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x15\n\rvariableNames\x18\x03 \x03(\t\x12\x11\n\tvariables\x18\x04 \x03(\x01\x12\x38\n\nestimation\x18\x05 \x01(\x0b\x32$.Interfaces.ExpertMessage.Estimation\x12:\n\x0binformation\x18\x06 \x01(\x0b\x32%.Interfaces.ExpertMessage.Information\x1a-\n\nEstimation\x12\x0c\n\x04mood\x18\x01 \x02(\x01\x12\x11\n\tcertainty\x18\x02 \x02(\x01\x1a\x38\n\x0bInformation\x12\x13\n\x0bisExecutive\x18\x01 \x02(\x08\x12\x14\n\x0cnoPrediction\x18\x02 \x02(\x08\"\x91\x01\n\x04Type\x12\x0b\n\x07getName\x10\x00\x12\x11\n\rgetPrediction\x10\x01\x12\x18\n\x14getRequiredVariables\x10\x02\x12\x0c\n\x08shutdown\x10\x03\x12\t\n\x05reset\x10\x04\x12\x10\n\x0cinformations\x10\x05\x12\x18\n\x14getProvidedVariables\x10\x06\x12\n\n\x06update\x10\x07'
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -99,7 +98,6 @@ _EXPERTMESSAGE_ESTIMATION = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -136,7 +134,6 @@ _EXPERTMESSAGE_INFORMATION = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],
@@ -202,7 +199,6 @@ _EXPERTMESSAGE = _descriptor.Descriptor(
   ],
   options=None,
   is_extendable=False,
-  syntax='proto2',
   extension_ranges=[],
   oneofs=[
   ],

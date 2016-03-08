@@ -39,6 +39,14 @@ class ExternalAgent(object):
 				reply.estimation.mood = y[0]
 				reply.estimation.certainty = y[1]
 				self.send(reply)
+			elif message.type == Expert_pb2.ExpertMessage.update:
+				x = message.variables
+				y = self.update(x)
+				
+				reply = self.makeReply(Expert_pb2.ExpertMessage.update)
+				for var in y:
+					reply.variables.append(float(var))
+				self.send(reply)
 			elif message.type == Expert_pb2.ExpertMessage.getName:
 				print ("Connection established. PONGing name.")
 				sys.stdout.flush()
@@ -56,13 +64,14 @@ class ExternalAgent(object):
 			elif message.type == Expert_pb2.ExpertMessage.getProvidedVariables:
 				variables = self.getProvidedVariables()
 				reply = self.makeReply(Expert_pb2.ExpertMessage.getProvidedVariables)
-				for var_name in variables:
-					reply.variableNames.append(var_name)
+				if variables is not None:
+					for var_name in variables:
+						reply.variableNames.append(var_name)
 				self.send(reply)
 			elif message.type == Expert_pb2.ExpertMessage.informations:
 				reply = self.makeReply(Expert_pb2.ExpertMessage.informations)
 				reply.information.isExecutive = self.isExecutive()
-				reply.information.noPrediction = self.predict == ExternalAgent.predict
+				reply.information.noPrediction = self.__class__.predict == ExternalAgent.predict
 				self.send(reply)
 			elif message.type == Expert_pb2.ExpertMessage.reset:
 				self.send(self.makeReply(Expert_pb2.ExpertMessage.reset)) # echo

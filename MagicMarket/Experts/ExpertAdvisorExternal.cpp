@@ -38,6 +38,19 @@ namespace MM
 	void ExpertAdvisorExternal::declareExports() const
 	{
 		if (!noPrediction) ExpertAdvisor::declareExports();
+
+		if (!providedVariableNames.empty())
+		{
+			size_t counter = 0;
+			for (const std::string & variableNameDesc : providedVariableNames)
+			{
+				std::string name, desc;
+				std::tie(name, desc) = unwrapVariableNameDesc(variableNameDesc);
+				statistics.addVariable(Variable(name, &providedVariables[counter], desc));
+
+				counter += 1;
+			}
+		}
 	}
 
 	ExpertAdvisorExternal::~ExpertAdvisorExternal()
@@ -123,6 +136,16 @@ namespace MM
 			assert(reply.type() == Interfaces::ExpertMessage_Type_informations);
 			executive = reply.information().isexecutive();
 			noPrediction = reply.information().noprediction();
+			if (noPrediction)
+			{
+				std::cout << "\tAgent does not provide a prediction." << std::endl;
+				if (executive)
+				{
+					executive = false;
+					std::cout << "\t\tWARNING: Forcing role to 'supportive' (requested: 'executive')" << std::endl;
+				}
+			}
+			
 			std::cout << "\tExpert role:\t" << (executive ? "executive" : "supportive") << std::endl;
 		}
 
@@ -146,20 +169,10 @@ namespace MM
 			assert(reply.type() == Interfaces::ExpertMessage_Type_getProvidedVariables);
 
 			// IFF there are fresh observations, reserve some space for them and register them.
-			std::vector<std::string> providedVariableNames = std::vector<std::string>(reply.variablenames().begin(), reply.variablenames().end());
-			if (!providedVariableNames.empty())
-			{
-				providedVariables.resize(providedVariableNames.size());
-				size_t counter = 0;
-				for (std::string & variableNameDesc : providedVariableNames)
-				{
-					std::string name, desc;
-					std::tie(name, desc) = unwrapVariableNameDesc(variableNameDesc);
-					statistics.addVariable(Variable(name, &providedVariables[counter], desc));
-
-					counter += 1;
-				}
-			}
+			providedVariableNames = std::vector<std::string>(reply.variablenames().begin(), reply.variablenames().end());
+			providedVariables.resize(providedVariableNames.size());
+			for (double & variable : providedVariables) variable = std::numeric_limits<double>::quiet_NaN();
+			std::cout << "\tExpert is providing " << providedVariableNames.size() << " custom observations." << std::endl;
 		}
 	}
 
@@ -203,7 +216,11 @@ namespace MM
 			setMood(reply.estimation().mood(), reply.estimation().certainty());
 		else
 		{
-			// todo: update variables
+			assert(reply.variables_size() > 0);
+			assert(reply.variables_size() == providedVariables.size());
+			size_t i = 0, size = reply.variables_size();
+			for (; i < size; ++i)
+				providedVariables[i] = reply.variables(i);
 		}
 	}
 
