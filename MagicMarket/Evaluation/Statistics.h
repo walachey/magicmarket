@@ -14,7 +14,7 @@ namespace MM
 	{
 		Variable(std::string name, std::function<double()> accessor, std::string description) : 
 			name(name), originalName(name), accessor(accessor), description(description) {}
-		Variable(std::string name, double *source, std::string description) : 
+		Variable(std::string name, const double *source, std::string description) : 
 			Variable(name, std::bind([source] { return *source; }), description) {};
 
 		double get() const { return accessor(); }
