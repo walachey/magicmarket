@@ -71,7 +71,7 @@ namespace MM
 
 		double Renko::getCurrentDirection() const
 		{
-			const double value = getOffsetIndex(0);
+			const double value = bars[getOffsetIndex(0)];
 			if (std::isnan(value)) return 0.0;
 			return value;
 		}
