@@ -210,6 +210,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile Include="Indicators\ATR.cpp" />
     <ClCompile Include="Indicators\Base.cpp" />
     <ClCompile Include="Indicators\KRI.cpp" />
+    <ClCompile Include="Indicators\LocalRelativeChange.cpp" />
     <ClCompile Include="Indicators\Moves.cpp" />
     <ClCompile Include="Indicators\Renko.cpp" />
     <ClCompile Include="Indicators\RSI.cpp" />
@@ -261,6 +262,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClInclude Include="Indicators\ATR.h" />
     <ClInclude Include="Indicators\Base.h" />
     <ClInclude Include="Indicators\KRI.h" />
+    <ClInclude Include="Indicators\LocalRelativeChange.h" />
     <ClInclude Include="Indicators\Moves.h" />
     <ClInclude Include="Indicators\Renko.h" />
     <ClInclude Include="Indicators\RSI.h" />
