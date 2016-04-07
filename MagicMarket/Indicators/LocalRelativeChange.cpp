@@ -6,6 +6,8 @@
 
 #include "Helpers.h"
 
+#include <algorithm>
+
 namespace MM
 {
 	namespace Indicators
@@ -38,10 +40,15 @@ namespace MM
 				allLookbacks += ((i == 0) ? "" : ", ") + std::to_string(lookbackDurations[i]);
 			allLookbacks += "}";
 
+			// Do not add the maximum lookback as an observation, because it is 0 all the time.
+			const int maxLookbackDuration = *std::max_element(lookbackDurations.begin(), lookbackDurations.end());
+
 			const std::string namePrefix = currencyPair + "_local_";
 			size_t index = 0;
 			for (int const &lookback : lookbackDurations)
 			{
+				if (lookback == maxLookbackDuration) continue;
+
 				const std::string name = namePrefix + std::to_string(lookback) + "s";
 				const std::string desc = "Local relative change of " + currencyPair + " with lookback " + std::to_string(lookback) + " " + allLookbacks;
 				statistics.addVariable(Variable(name, &lookbackDerivatives[index], desc));
@@ -56,7 +63,6 @@ namespace MM
 			if (stock == nullptr) return;
 
 			int maxLookbackIndex = -1;
-			double maxAbsValue = std::numeric_limits<double>::quiet_NaN();
 			for (size_t i = 0; i < lookbackDurations.size(); ++i)
 			{
 				const int &lookback = lookbackDurations[i];
@@ -71,11 +77,6 @@ namespace MM
 				}
 				else value = *price;
 
-				// Figure out absolute maximum for normalization.
-				const double currentAbsValue = std::abs(value);
-				if (std::isnan(maxAbsValue) || maxAbsValue < currentAbsValue)
-					maxAbsValue = currentAbsValue;
-
 				// Figure out first value of series as the basis for the relative data.
 				if (maxLookbackIndex == -1 || lookback > lookbackDurations[maxLookbackIndex])
 				{
@@ -85,10 +86,18 @@ namespace MM
 
 			// And normalize the data.
 			const double firstDataValue = (maxLookbackIndex == -1) ? std::numeric_limits<double>::quiet_NaN() : lookbackDerivatives[maxLookbackIndex];
+			double maxAbsValue = std::numeric_limits<double>::quiet_NaN();
+			// Center it first, remembering the maximum difference.
 			for (double & value : lookbackDerivatives)
 			{
-				value = (value - firstDataValue) / maxAbsValue;
+				value = (value - firstDataValue);
+				const double absDifference = std::abs(value);
+				if (std::isnan(maxAbsValue) || (absDifference > maxAbsValue))
+					maxAbsValue = absDifference;
 			}
+			// And then normalize it by that maximum.
+			for (double & value : lookbackDerivatives)
+				value /= maxAbsValue;
 		}
 	};
 };
