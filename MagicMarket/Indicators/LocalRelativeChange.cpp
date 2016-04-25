@@ -47,12 +47,12 @@ namespace MM
 			size_t index = 0;
 			for (int const &lookback : lookbackDurations)
 			{
-				if (lookback == maxLookbackDuration) continue;
-
-				const std::string name = namePrefix + std::to_string(lookback) + "s";
-				const std::string desc = "Local relative change of " + currencyPair + " with lookback " + std::to_string(lookback) + " " + allLookbacks;
-				statistics.addVariable(Variable(name, &lookbackDerivatives[index], desc));
-				
+				if (lookback != maxLookbackDuration)
+				{
+					const std::string name = namePrefix + std::to_string(lookback) + "s";
+					const std::string desc = "Local relative change of " + currencyPair + " with lookback " + std::to_string(lookback) + " " + allLookbacks;
+					statistics.addVariable(Variable(name, &lookbackDerivatives[index], desc));
+				}
 				index += 1;
 			}
 		}
