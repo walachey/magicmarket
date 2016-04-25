@@ -129,11 +129,13 @@ namespace MM
 		{ // scope
 			const std::vector<int> lookbackDurations =
 			{
+				30 * ONEMINUTE,
+				15 * ONEMINUTE,
+				10 * ONEMINUTE,
 				5 * ONEMINUTE,
-				4 * ONEMINUTE,
-				3 * ONEMINUTE,
 				2 * ONEMINUTE,
-				1 * ONEMINUTE
+				1 * ONEMINUTE,
+				30 * ONESECOND
 			};
 			for (const std::string &currencyPair : { "EURUSD", "EURCHF", "EURGBP", "GBPUSD", "USDCHF", "USDJPY", "EURUSD" })
 				Indicators::get<Indicators::LocalRelativeChange>(currencyPair, lookbackDurations);
