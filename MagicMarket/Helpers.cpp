@@ -225,8 +225,8 @@ namespace MM
 	{
 		std::vector<float> results;
 		results.reserve(values.size());
-		for (auto & const value : values)
-			results.push_back(value);
+		for (auto const & value : values)
+			results.push_back(static_cast<float>(value));
 		return results;
 	}
 	template std::vector<float> toFloatVector<double>(const std::vector<double> &values);
