@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "EnvironmentVariables.h"
 #include "Market.h"
 #include "Statistics.h"
 #include "VirtualMarket.h"
@@ -39,6 +40,7 @@ int main (int argc, char *argv [])
 	CSimpleIniA ini;
 	ini.LoadFile("market.ini");
 
+	environmentVariables.init(&ini);
 	market.init(&ini);
 	statistics.init(&ini);
 	MM::VirtualMarket::checkInit();

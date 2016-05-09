@@ -8,6 +8,7 @@ namespace filesystem = std::tr2::sys;
 
 #include <SimpleIni.h>
 
+#include "EnvironmentVariables.h"
 #include "Helpers.h"
 #include "Market.h"
 #include "Statistics.h"
@@ -125,6 +126,9 @@ namespace MM
 		config.datePeriodBegin = readDate("Begin");
 		config.datePeriodEnd   = readDate("End");
 		config.date            = config.datePeriodBegin;
+
+		// And set date as environment variable.
+		environmentVariables.set("YEAR", environmentVariables.get("YEAR") + std::to_string(config.datePeriodBegin.year()));
 
 		std::string hourString = ini.GetValue("Virtual Market", "Hours", "0-0");
 		sscanf_s(hourString.c_str(), "%d-%d", &config.fromHour, &config.toHour);
@@ -294,6 +298,9 @@ namespace MM
 			{
 				std::cout << "VIRTUAL MARKET IS DONE." << std::endl;
 				std::cout << "YOUR PROFIT:\t\t" << results.totalProfitPips << std::endl;
+
+				statistics.close();
+
 				if (config.waitOnFinished)
 				{
 					getchar();

@@ -33,6 +33,7 @@ namespace MM
 	{
 	public:
 		Statistics();
+		void close();
 		~Statistics();
 		void addVariable(const Variable &var);
 

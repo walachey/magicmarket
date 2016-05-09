@@ -193,6 +193,9 @@
     <ClCompile Include="Indicators\LocalRelativeChange.cpp">
       <Filter>Source Files\Indicators</Filter>
     </ClCompile>
+    <ClCompile Include="EnvironmentVariables.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -325,6 +328,7 @@
     <ClInclude Include="Indicators\LocalRelativeChange.h">
       <Filter>Source Files\Indicators</Filter>
     </ClInclude>
+    <ClInclude Include="EnvironmentVariables.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MagicMarket.rc" />

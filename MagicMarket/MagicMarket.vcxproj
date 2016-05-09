@@ -189,6 +189,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile Include="Account.cpp" />
     <ClCompile Include="DeepLearningNetwork.cpp" />
     <ClCompile Include="DeepLearningTest.cpp" />
+    <ClCompile Include="EnvironmentVariables.cpp" />
     <ClCompile Include="Evaluation\Statistics.cpp" />
     <ClCompile Include="Evaluation\VirtualMarket.cpp" />
     <ClCompile Include="Evaluation\VM\Profiler.cpp" />
@@ -241,6 +242,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClInclude Include="DataConverter.h" />
     <ClInclude Include="DeepLearningNetwork.h" />
     <ClInclude Include="DeepLearningTest.h" />
+    <ClInclude Include="EnvironmentVariables.h" />
     <ClInclude Include="Evaluation\Statistics.h" />
     <ClInclude Include="Evaluation\VirtualMarket.h" />
     <ClInclude Include="Evaluation\VM\Profiler.h" />

@@ -1,5 +1,9 @@
 #include "Statistics.h"
 
+#include <filesystem>
+namespace filesystem = std::tr2::sys;
+
+#include "EnvironmentVariables.h"
 #include "Market.h"
 #include <SimpleIni.h>
 #include "VirtualMarket.h"
@@ -29,6 +33,13 @@ namespace MM
 
 	Statistics::~Statistics()
 	{
+		close();
+	}
+
+	void Statistics::close()
+	{
+		if (outputStream.is_open())
+			outputStream.close();
 	}
 
 	void Statistics::init(void *_ini)
@@ -73,6 +84,11 @@ namespace MM
 		// try to open for the very first time?
 		if (!outputStream.is_open())
 		{
+			// Allow name replacements.
+			config.outputFilename = environmentVariables.replace(config.outputFilename);
+			// And make sure the folder exists.
+			filesystem::path outputPath = filesystem::path(config.outputFilename).parent_path();
+			filesystem::create_directories(outputPath);
 			// log variable descriptions
 			std::fstream descriptionStream(config.outputFilename + ".info", std::ios_base::out);
 			// open real stream
