@@ -49,6 +49,7 @@ namespace MM
 			certaintySum += expert->getLastCertainty();
 			expertCount += 1;
 		}
+		assert(expertCount <= 1);
 
 		if (certaintySum != 0.0)
 			avgMood /= certaintySum;
@@ -115,9 +116,11 @@ namespace MM
 			return;
 		}
 
+		QuantLib::Decimal lotSize = 0.05 * Math::clamp(avgCertainty, 0.25, 1.0);
+
 		Trade trade;
 		trade.currencyPair = currencyPair;
-		trade.lotSize = 0.014;
+		trade.lotSize = lotSize;
 		trade.type = type;
 		trade.orderPrice = *close;
 		trade.setStopLossPrice(trade.orderPrice + ONEPIP * 5.0 * ((type == Trade::T_BUY) ? -1.0 : +1.0));
