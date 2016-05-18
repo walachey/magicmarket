@@ -28,6 +28,10 @@ namespace MM
 	{
 	}
 
+	void ExpertAdvisorRSI::reset()
+	{
+	}
+
 	void ExpertAdvisorRSI::execute(const std::time_t &secondsSinceStart, const std::time_t &time)
 	{
 		const double rsi1 = rsiShort->getRSI();
@@ -35,37 +39,28 @@ namespace MM
 
 		if (std::isnan(rsi1) || std::isnan(rsi2)) return;
 
-		const double rsi1MA = rsiShortMA->getSMA();
-		const double rsi2MA = rsiLongMA->getSMA();
-
-		if (std::isnan(rsi1MA) || std::isnan(rsi2MA)) return;
-
-		QuantLib::Decimal avgRSI   = (rsi1   + rsi2)   / 2.0;
-		QuantLib::Decimal avgRSIMA = (rsi1MA + rsi2MA) / 2.0;
-
-		const QuantLib::Decimal margin = 30.0;
-
-		market.updateParameter("RSI", avgRSI);
+		const QuantLib::Decimal margin = 20.0;
 
 		double action = 0.0;
 		double confidence = 0.25;
+		double marginDistance = 0.0;
 
-		if (avgRSI > margin && avgRSIMA < margin)
+		if (rsi1 < margin && rsi2 < margin)
 		{
 			action = +1.0;
+			marginDistance = rsi2;
 		}
-		else if (avgRSI < margin && avgRSIMA > margin)
+		else if (rsi1 > 100.0 - margin && rsi2 >  100.0 - margin)
 		{
 			action = -1.0;
-			// mirror the curve
-			avgRSI = 100.0 - avgRSI;
-			avgRSIMA = 100.0 - avgRSIMA;
+			marginDistance = 100.0 - rsi2;
 		}
 
 		if (action != 0.0)
 		{
-			assert(avgRSI >= avgRSIMA);
-			confidence = 4.0 * (avgRSI - avgRSIMA) / margin;
+			assert(marginDistance >= 0.0);
+			assert(marginDistance <= margin);
+			confidence = (margin - marginDistance) / margin;
 			confidence = Math::clamp(confidence, 0.25, 1.0);
 		}
 

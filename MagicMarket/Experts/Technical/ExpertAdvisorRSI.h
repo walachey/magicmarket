@@ -12,7 +12,7 @@ namespace MM
 	class ExpertAdvisorRSI : public ExpertAdvisorTechnical
 	{
 	public:
-		virtual void reset() override {};
+		virtual void reset() override;
 		ExpertAdvisorRSI();
 		virtual ~ExpertAdvisorRSI();
 
