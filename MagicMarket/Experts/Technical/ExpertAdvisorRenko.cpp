@@ -10,9 +10,9 @@
 
 namespace MM
 {
-	ExpertAdvisorRenko::ExpertAdvisorRenko()
+	ExpertAdvisorRenko::ExpertAdvisorRenko(double sensitivity)
 	{
-		renko = Indicators::get<Indicators::Renko>("EURUSD", 20, 5.0 * ONEPIP);
+		renko = Indicators::get<Indicators::Renko>("EURUSD", 20, sensitivity * ONEPIP);
 	}
 
 

@@ -12,7 +12,7 @@ namespace MM
 	{
 	public:
 		virtual void reset() override {}
-		ExpertAdvisorRenko();
+		ExpertAdvisorRenko(double sensitivity = 5.0);
 		virtual ~ExpertAdvisorRenko();
 
 		virtual std::string getName() const override { return "TA_Renko"; };

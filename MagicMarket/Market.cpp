@@ -118,7 +118,8 @@ namespace MM
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorTSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorStochasticOscillator()));
-		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRenko()));
+		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRenko(5.0)));
+		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRenko(10.0)));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorDumbo()));
 		//experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorMAAnalyser()));
 		//experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorAtama()));
