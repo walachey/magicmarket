@@ -21,6 +21,7 @@ namespace filesystem = std::tr2::sys;
 #include "ExpertAdvisorExternal.h"
 #include "ExpertAdvisorLimitAdjuster.h"
 #include "ExpertAdvisorRSI.h"
+#include "ExpertAdvisorCCI.h"
 #include "ExpertAdvisorTSI.h"
 #include "ExpertAdvisorStochasticOscillator.h"
 #include "ExpertAdvisorRenko.h"
@@ -116,6 +117,7 @@ namespace MM
 		setupConnection();
 
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRSI()));
+		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorCCI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorTSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorStochasticOscillator()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRenko(5.0)));

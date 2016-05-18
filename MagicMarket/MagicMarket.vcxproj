@@ -200,6 +200,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile Include="Experts\ExpertAdvisorDumbo.cpp" />
     <ClCompile Include="Experts\ExpertAdvisorExternal.cpp" />
     <ClCompile Include="Experts\ExpertAdvisorLimitAdjuster.cpp" />
+    <ClCompile Include="Experts\Technical\ExpertAdvisorCCI.cpp" />
     <ClCompile Include="Experts\Technical\ExpertAdvisorMAAnalyser.cpp" />
     <ClCompile Include="Experts\Technical\ExpertAdvisorRenko.cpp" />
     <ClCompile Include="Experts\Technical\ExpertAdvisorRSI.cpp" />
@@ -210,6 +211,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile Include="Indicators\ADX.cpp" />
     <ClCompile Include="Indicators\ATR.cpp" />
     <ClCompile Include="Indicators\Base.cpp" />
+    <ClCompile Include="Indicators\CCI.cpp" />
     <ClCompile Include="Indicators\KRI.cpp" />
     <ClCompile Include="Indicators\LocalRelativeChange.cpp" />
     <ClCompile Include="Indicators\Moves.cpp" />
@@ -253,6 +255,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClInclude Include="Experts\ExpertAdvisorDumbo.h" />
     <ClInclude Include="Experts\ExpertAdvisorExternal.h" />
     <ClInclude Include="Experts\ExpertAdvisorLimitAdjuster.h" />
+    <ClInclude Include="Experts\Technical\ExpertAdvisorCCI.h" />
     <ClInclude Include="Experts\Technical\ExpertAdvisorMAAnalyser.h" />
     <ClInclude Include="Experts\Technical\ExpertAdvisorRenko.h" />
     <ClInclude Include="Experts\Technical\ExpertAdvisorRSI.h" />
@@ -263,6 +266,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClInclude Include="Indicators\ADX.h" />
     <ClInclude Include="Indicators\ATR.h" />
     <ClInclude Include="Indicators\Base.h" />
+    <ClInclude Include="Indicators\CCI.h" />
     <ClInclude Include="Indicators\KRI.h" />
     <ClInclude Include="Indicators\LocalRelativeChange.h" />
     <ClInclude Include="Indicators\Moves.h" />

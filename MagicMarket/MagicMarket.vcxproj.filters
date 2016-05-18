@@ -196,6 +196,12 @@
     <ClCompile Include="EnvironmentVariables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Indicators\CCI.cpp">
+      <Filter>Source Files\Indicators</Filter>
+    </ClCompile>
+    <ClCompile Include="Experts\Technical\ExpertAdvisorCCI.cpp">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -329,6 +335,12 @@
       <Filter>Source Files\Indicators</Filter>
     </ClInclude>
     <ClInclude Include="EnvironmentVariables.h" />
+    <ClInclude Include="Indicators\CCI.h">
+      <Filter>Source Files\Indicators</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\Technical\ExpertAdvisorCCI.h">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MagicMarket.rc" />
