@@ -128,7 +128,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts\Technical;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts\Slaves;$(ProjectDir)\Experts\Technical;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <WarningLevel>Level3</WarningLevel>
@@ -160,7 +160,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts\Technical;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts\Slaves;$(ProjectDir)\Experts\Technical;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <WarningLevel>Level3</WarningLevel>
@@ -200,6 +200,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile Include="Experts\ExpertAdvisorDumbo.cpp" />
     <ClCompile Include="Experts\ExpertAdvisorExternal.cpp" />
     <ClCompile Include="Experts\ExpertAdvisorLimitAdjuster.cpp" />
+    <ClCompile Include="Experts\Slaves\ExpertAdvisorMultiCurrency.cpp" />
     <ClCompile Include="Experts\Technical\ExpertAdvisorCCI.cpp" />
     <ClCompile Include="Experts\Technical\ExpertAdvisorMAAnalyser.cpp" />
     <ClCompile Include="Experts\Technical\ExpertAdvisorRenko.cpp" />
@@ -255,6 +256,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClInclude Include="Experts\ExpertAdvisorDumbo.h" />
     <ClInclude Include="Experts\ExpertAdvisorExternal.h" />
     <ClInclude Include="Experts\ExpertAdvisorLimitAdjuster.h" />
+    <ClInclude Include="Experts\Slaves\ExpertAdvisorMultiCurrency.h" />
     <ClInclude Include="Experts\Technical\ExpertAdvisorCCI.h" />
     <ClInclude Include="Experts\Technical\ExpertAdvisorMAAnalyser.h" />
     <ClInclude Include="Experts\Technical\ExpertAdvisorRenko.h" />

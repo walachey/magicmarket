@@ -27,6 +27,7 @@ namespace filesystem = std::tr2::sys;
 #include "ExpertAdvisorRenko.h"
 #include "ExpertAdvisorBroker.h"
 #include "ExpertAdvisorDumbo.h"
+#include "ExpertAdvisorMultiCurrency.h"
 #include "ExpertAdvisorAtama.h"
 #include "ExpertAdvisorMAAnalyser.h"
 
@@ -123,6 +124,7 @@ namespace MM
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRenko(5.0)));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRenko(10.0)));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorDumbo()));
+		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorMultiCurrency()));
 		//experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorMAAnalyser()));
 		//experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorAtama()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorLimitAdjuster()));
@@ -168,6 +170,81 @@ namespace MM
 		for (ExpertAdvisor * const & expert : experts)
 		{
 			expert->declareExports();
+		}
+
+		// Now resort experts to make sure dependencies are evaluated in the correct order.
+		std::list<ExpertAdvisor*> expertsUnsorted(experts.begin(), experts.end());
+		experts.clear();
+		experts.reserve(expertsUnsorted.size());
+
+		while (!expertsUnsorted.empty())
+		{
+			bool addedOne = false;
+
+			for (auto iter = expertsUnsorted.begin(); iter != expertsUnsorted.end();)
+			{
+				ExpertAdvisor *expert = *iter;
+				const std::vector<std::string> dependencies = expert->getRequiredExperts();
+				
+				// Trivial dependencies?
+				if (dependencies.empty())
+				{
+					experts.push_back(expert);
+					iter = expertsUnsorted.erase(iter);
+					addedOne = true;
+					continue;
+				}
+
+				// Normal dependencies.
+				bool dependenciesSatisfied = true;
+				bool requireAll = false;
+				for (std::string const & dep : dependencies)
+				{
+					// Needs all others? (e.g. the broker)
+					if (dep == "*")
+					{
+						requireAll = true;
+						continue;
+					}
+					// Check available experts for name matches.
+					bool found = false;
+					for (ExpertAdvisor * availableExpert : experts)
+					{
+						if (availableExpert->getName() != dep) continue;
+						found = true;
+						break;
+					}
+					if (!found) dependenciesSatisfied = false;
+				}
+				// If an expert needs all others, the condition is different.
+				if (requireAll && (expertsUnsorted.size() > 1))
+					dependenciesSatisfied = false;
+
+				if (dependenciesSatisfied)
+				{
+					experts.push_back(expert);
+					iter = expertsUnsorted.erase(iter);
+					addedOne = true;
+					continue;
+				}
+
+				// Skip this one and try the next.
+				++iter;
+			}
+
+			// Failsafe.
+			if (!addedOne)
+			{
+				std::cerr << "Could not satisfy dependencies of following experts:" << std::endl;
+				for (ExpertAdvisor * expert : expertsUnsorted)
+				{
+					std::string dependencies = "";
+					for (std::string const & dep : expert->getRequiredExperts())
+						dependencies += (dependencies.empty() ? "" : ", ") + dep;
+					std::cerr << "\t- " << expert->getName() << " (depends on " << dependencies << ")" << std::endl;
+				}
+				break;
+			}
 		}
 
 		for (ExpertAdvisor * const & expert : experts)

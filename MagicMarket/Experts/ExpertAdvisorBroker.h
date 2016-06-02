@@ -16,7 +16,7 @@ namespace MM
 
 		//virtual void execute(std::time_t secondsPassed);
 		virtual void onNewTick(const std::string &currencyPair, const QuantLib::Date &date, const std::time_t &time);
-
+		virtual std::vector<std::string> getRequiredExperts() const override { return{ "*" }; }
 	private:
 		std::time_t lastExecutionActionTime;
 	};

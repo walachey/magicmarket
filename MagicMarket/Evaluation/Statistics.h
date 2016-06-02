@@ -43,6 +43,8 @@ namespace MM
 
 		Variable getVariableByNameDescription(std::string name, std::string desc) const;
 
+		const std::vector<Variable> & getVariables() { return variables; };
+
 	private:
 		std::vector<Variable> variables;
 		bool loggingActive;

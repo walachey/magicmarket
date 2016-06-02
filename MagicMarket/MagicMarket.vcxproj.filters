@@ -41,6 +41,9 @@
     <Filter Include="Interfaces">
       <UniqueIdentifier>{d1b22b49-84bd-438a-b7c6-216b10fea80d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Experts\Slaves">
+      <UniqueIdentifier>{f21adca5-fb2c-4182-a917-6ea3ae659e41}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -202,6 +205,9 @@
     <ClCompile Include="Experts\Technical\ExpertAdvisorCCI.cpp">
       <Filter>Source Files\Experts\Technical</Filter>
     </ClCompile>
+    <ClCompile Include="Experts\Slaves\ExpertAdvisorMultiCurrency.cpp">
+      <Filter>Source Files\Experts\Slaves</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -340,6 +346,9 @@
     </ClInclude>
     <ClInclude Include="Experts\Technical\ExpertAdvisorCCI.h">
       <Filter>Source Files\Experts\Technical</Filter>
+    </ClInclude>
+    <ClInclude Include="Experts\Slaves\ExpertAdvisorMultiCurrency.h">
+      <Filter>Source Files\Experts\Slaves</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

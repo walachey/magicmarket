@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <string>
 #include <ctime>
 #include <functional>
@@ -48,6 +49,8 @@ namespace MM
 		virtual void declareExports() const;
 		// Called after all exports have been declared.
 		virtual void afterExportsDeclared() {};
+		// Can be used to make sure that this expert is evaluated after the experts it depends on.
+		virtual std::vector<std::string> getRequiredExperts() const { return{}; }
 	private:
 		std::string lastMessage;
 		float lastMood, lastCertainty;
