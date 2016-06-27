@@ -347,6 +347,8 @@ namespace MM
 				}
 				// too far..?
 				if (tick.getTime() > lastTick->getTime()) break;
+				assert(std::isnormal(tick.getAsk()));
+				assert(std::isnormal(tick.getBid()));
 				sendTickMsg(&tick, day);
 				++iter;
 			}
@@ -356,7 +358,7 @@ namespace MM
 		if ((config.toHour > 0) && (previousTime != 0))
 		{
 			std::tm *tm = std::gmtime(&previousTime);
-			printf("\r\tCURRENT TIME IS %d-%02d-%02d %02d:%02d\tTRADES: %02d", config.date.year(), static_cast<int>(config.date.month()), config.date.dayOfMonth(), tm->tm_hour, tm->tm_min, trades.size());
+			printf("\r\tTIME %d-%02d-%02d %02d:%02d\tTRADES: %02d\tPROFIT: %.0f", config.date.year(), static_cast<int>(config.date.month()), config.date.dayOfMonth(), tm->tm_hour, tm->tm_min, trades.size(), results.totalProfitPips);
 			if (tm->tm_hour > config.toHour)
 			{
 				// fast forward to end
