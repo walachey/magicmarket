@@ -65,12 +65,12 @@ namespace MM
 		std::time_t endTime;
 
 		// cache functionality - for faster access
-		std::vector<Tick>::iterator ticksBegin, ticksEnd, ticksTotalBegin, ticksTotalEnd;
+		std::vector<Tick>::iterator ticksOneBeforeBegin, ticksEnd, ticksTotalBegin, ticksTotalEnd;
 		bool cacheDirty;
 		bool checkInitCache();
 		bool isCacheGood() { return !cacheDirty; }
 
-		std::vector<Tick>::iterator begin() { return ticksBegin; }
+		std::vector<Tick>::iterator begin() { return ticksOneBeforeBegin + 1; }
 		std::vector<Tick>::iterator end() { return ticksEnd; }
 	};
 };

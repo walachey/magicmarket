@@ -45,14 +45,14 @@ namespace MM
 		// for now, assume we are always evaluating one single day
 		assert(dateFromTime(startTime) == dateFromTime(endTime));
 
-		ticksEnd = ticksBegin = std::vector<Tick>::iterator();
+		ticksEnd = ticksOneBeforeBegin = std::vector<Tick>::iterator();
 
 		TradingDay *day = (this->tradingDay != nullptr) ? this->tradingDay : stock->getTradingDay(dateFromTime(endTime));
 		if (day == nullptr) return false;
 
 		ticksTotalBegin = day->ticks.begin();
 		ticksTotalEnd = day->ticks.end();
-		ticksBegin = day->ticks.end();
+		ticksOneBeforeBegin = day->ticks.end();
 		ticksEnd   = day->ticks.end();
 
 		bool endSet(false);
@@ -68,7 +68,7 @@ namespace MM
 
 			if (tick.getTime() < startTime)
 			{
-				ticksBegin = std::next(ticks.begin(), i + 1);
+				ticksOneBeforeBegin = std::next(ticks.begin(), i);
 				break;
 			}
 		}
@@ -124,10 +124,10 @@ namespace MM
 	PossibleDecimal TimePeriod::getOpen()
 	{
 		if (!checkInitCache()) return nullptr;
-		if (ticksBegin == ticksTotalBegin) return nullptr;
-		if (ticksBegin == ticksTotalEnd) return nullptr;
+		if (ticksOneBeforeBegin == ticksTotalBegin) return nullptr;
+		if (ticksOneBeforeBegin == ticksTotalEnd) return nullptr;
 
-		const Tick & tick = *(ticksBegin - 1);
+		const Tick & tick = *ticksOneBeforeBegin;
 		return PossibleDecimal(new QuantLib::Decimal((tick.*valueFunction)()));
 	}
 
@@ -217,7 +217,7 @@ namespace MM
 		values.reserve(totalEntries);
 
 		std::time_t currentTime = startTime;
-		auto currentTick = ticksBegin;
+		auto currentTick = ticksOneBeforeBegin;
 		auto lastTick    = currentTick;
 		while (currentTime < (endTime + secondsInterval))
 		{
