@@ -134,13 +134,15 @@ namespace MM
 		{ // scope
 			const std::vector<int> lookbackDurations =
 			{
+				60 * ONEMINUTE,
 				30 * ONEMINUTE,
 				15 * ONEMINUTE,
 				10 * ONEMINUTE,
 				5 * ONEMINUTE,
 				2 * ONEMINUTE,
 				1 * ONEMINUTE,
-				30 * ONESECOND
+				30 * ONESECOND,
+				0
 			};
 			for (const std::string &currencyPair : { "EURUSD", "EURCHF", "EURGBP", "GBPUSD", "USDCHF", "USDJPY", "EURUSD" })
 				Indicators::get<Indicators::LocalRelativeChange>(currencyPair, lookbackDurations);
@@ -173,85 +175,117 @@ namespace MM
 		}
 
 		// Now resort experts to make sure dependencies are evaluated in the correct order.
-		std::list<ExpertAdvisor*> expertsUnsorted(experts.begin(), experts.end());
-		experts.clear();
-		experts.reserve(expertsUnsorted.size());
-
-		while (!expertsUnsorted.empty())
-		{
-			bool addedOne = false;
-
-			for (auto iter = expertsUnsorted.begin(); iter != expertsUnsorted.end();)
+		{ // scope
+			std::list<ExpertAdvisor*> expertsUnsorted(experts.begin(), experts.end());
+			experts.clear();
+			experts.reserve(expertsUnsorted.size());
+			// Prepare some place for experts that necessarily come last. (e.g.: the broker)
+			std::list<std::pair<int, ExpertAdvisor*>> finalExperts;
+			auto addFinalExpert = [&finalExperts](ExpertAdvisor *expert, int priority)
 			{
-				ExpertAdvisor *expert = *iter;
-				const std::vector<std::string> dependencies = expert->getRequiredExperts();
-				
-				// Trivial dependencies?
-				if (dependencies.empty())
+				auto iter = finalExperts.begin();
+				for (; iter != finalExperts.end(); ++iter)
 				{
-					experts.push_back(expert);
-					iter = expertsUnsorted.erase(iter);
-					addedOne = true;
-					continue;
+					const int &currentPriority = iter->first;
+					if (currentPriority <= priority) continue;
+					break;
 				}
+				finalExperts.insert(iter, std::make_pair(priority, expert));
+			};
 
-				// Normal dependencies.
-				bool dependenciesSatisfied = true;
-				bool requireAll = false;
-				for (std::string const & dep : dependencies)
+			while (!expertsUnsorted.empty())
+			{
+				bool addedOne = false;
+
+				for (auto iter = expertsUnsorted.begin(); iter != expertsUnsorted.end();)
 				{
-					// Needs all others? (e.g. the broker)
-					if (dep == "*")
+					ExpertAdvisor *expert = *iter;
+					const std::vector<std::string> dependencies = expert->getRequiredExperts();
+
+					// Trivial dependencies?
+					if (dependencies.empty())
 					{
-						requireAll = true;
+						experts.push_back(expert);
+						iter = expertsUnsorted.erase(iter);
+						addedOne = true;
 						continue;
 					}
-					// Check available experts for name matches.
-					bool found = false;
-					for (ExpertAdvisor * availableExpert : experts)
+
+					// Normal dependencies.
+					bool dependenciesSatisfied = true;
+					int requireAllPriority = 0;
+					for (std::string const & dep : dependencies)
 					{
-						if (availableExpert->getName() != dep) continue;
-						found = true;
-						break;
+						// Needs all others? (e.g. the broker)
+						if (dep[0] == '*')
+						{
+							requireAllPriority = dep.size();
+							continue;
+						}
+						// Check available experts for name matches.
+						bool found = false;
+						for (ExpertAdvisor * availableExpert : experts)
+						{
+							if (availableExpert->getName() != dep) continue;
+							found = true;
+							break;
+						}
+						if (!found) dependenciesSatisfied = false;
 					}
-					if (!found) dependenciesSatisfied = false;
-				}
-				// If an expert needs all others, the condition is different.
-				if (requireAll && (expertsUnsorted.size() > 1))
-					dependenciesSatisfied = false;
+					// If an expert needs all others, the condition is different.
+					if (requireAllPriority > 0)
+					{
+						addFinalExpert(expert, requireAllPriority);
+						iter = expertsUnsorted.erase(iter);
+						addedOne = true;
+						continue;
+					}
 
-				if (dependenciesSatisfied)
+					if (dependenciesSatisfied)
+					{
+						experts.push_back(expert);
+						iter = expertsUnsorted.erase(iter);
+						addedOne = true;
+						continue;
+					}
+
+					// Skip this one and try the next.
+					++iter;
+				}
+
+				// Failsafe.
+				if (!addedOne)
 				{
-					experts.push_back(expert);
-					iter = expertsUnsorted.erase(iter);
-					addedOne = true;
-					continue;
+					std::cerr << "Could not satisfy dependencies of following experts:" << std::endl;
+					for (ExpertAdvisor * expert : expertsUnsorted)
+					{
+						std::string dependencies = "";
+						for (std::string const & dep : expert->getRequiredExperts())
+							dependencies += (dependencies.empty() ? "" : ", ") + dep;
+						std::cerr << "\t- " << expert->getName() << " (depends on " << dependencies << ")" << std::endl;
+					}
+					break;
 				}
-
-				// Skip this one and try the next.
-				++iter;
 			}
-
-			// Failsafe.
-			if (!addedOne)
-			{
-				std::cerr << "Could not satisfy dependencies of following experts:" << std::endl;
-				for (ExpertAdvisor * expert : expertsUnsorted)
-				{
-					std::string dependencies = "";
-					for (std::string const & dep : expert->getRequiredExperts())
-						dependencies += (dependencies.empty() ? "" : ", ") + dep;
-					std::cerr << "\t- " << expert->getName() << " (depends on " << dependencies << ")" << std::endl;
-				}
-				break;
-			}
-		}
+			// Now add the final experts.
+			for (auto &finalExpert : finalExperts)
+				experts.push_back(finalExpert.second);
+		} // Expert dependency resolving.
 
 		for (ExpertAdvisor * const & expert : experts)
 		{
 			expert->afterExportsDeclared();
 			expert->onNewDay();
 		}
+
+		// Now print the experts to console.
+		std::ostringstream expertInformation;
+		expertInformation << "Available Indicators: ";
+		for (const ExpertAdvisor * indicator : indicators)
+			expertInformation << indicator->getName() << (indicator == indicators.back()) ? "" : ", ";
+		expertInformation << "\nAvailable Experts: ";
+		for (const ExpertAdvisor * expert: experts)
+			expertInformation << expert->getName() << (expert == experts.back()) ? "" : ", ";
 	}
 
 	void Market::run()
