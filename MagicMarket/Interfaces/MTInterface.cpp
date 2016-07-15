@@ -2,6 +2,7 @@
 #include "UDP.h"
 
 #include "Market.h"
+#include "VirtualMarket.h"
 #include "Trade.h"
 
 #include <iostream>
@@ -59,6 +60,12 @@ namespace Interface
 
 				switch (type)
 				{
+				case MetaTrader::Message::Type::bridgeTick:
+					{
+						MetaTrader::Message::Tick &msg = *reinterpret_cast<MetaTrader::Message::Tick*>(messageContentsPointer);
+						market.onNewTickMessageReceived(msg.pair, msg.bid, msg.ask, msg.timestamp);
+					}
+					break;
 				case MetaTrader::Message::Type::bridgeAccountInfo:
 					{
 						MetaTrader::Message::AccountInfo &msg = *reinterpret_cast<MetaTrader::Message::AccountInfo*>(messageContentsPointer);
@@ -119,6 +126,24 @@ namespace Interface
 				};
 
 			} while (true);
+		}
+
+		void MTInterface::send(std::string data, int probabilityToSendInVirtualMode)
+		{
+			if (market.isVirtual())
+			{
+				//virtualMarket->proxySend(data);
+				if (probabilityToSendInVirtualMode == 0) return;
+				if (probabilityToSendInVirtualMode < 100)
+				{
+					int randomDraw = rand() % 100;
+					if (randomDraw > probabilityToSendInVirtualMode) return;
+				}
+
+				if (virtualMarket->isSilent) return;
+			}
+
+			assert(false);
 		}
 	};
 };

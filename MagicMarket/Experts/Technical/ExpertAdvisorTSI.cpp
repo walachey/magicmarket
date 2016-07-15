@@ -29,8 +29,6 @@ namespace MM
 		const QuantLib::Decimal margin = 25.0;
 		const QuantLib::Decimal range = 100.0 - margin;
 
-		market.updateParameter("TSI", tsiValue);
-
 		const QuantLib::Decimal certainty = (std::abs(tsiValue) - margin) / range;
 		if (tsiValue > margin)
 			return setMood(-1.0, 0.5 + 0.5 * certainty);

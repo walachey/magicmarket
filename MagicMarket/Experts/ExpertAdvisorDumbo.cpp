@@ -51,7 +51,6 @@ namespace MM
 		if (!close || !open) return;
 
 		QuantLib::Decimal iOpenCloseDif = *close - *open;
-		market.updateParameter("m30D", iOpenCloseDif / ONEPIP);
 
 		QuantLib::Decimal magicNumber = 12.0 * ONEPIP;
 		QuantLib::Decimal confidenceFactor = iOpenCloseDif / magicNumber;

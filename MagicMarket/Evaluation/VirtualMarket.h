@@ -59,9 +59,6 @@ namespace MM
 		void onReceive(const std::string &message);
 		void execute();
 		bool isRunning() { return running; }
-		// this bypasses the normal central station system
-		void proxySend(const std::string &message);
-		std::string proxyReceive();
 
 		// config
 		bool isSilent;

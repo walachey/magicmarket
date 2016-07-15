@@ -11,6 +11,7 @@ namespace filesystem = std::tr2::sys;
 
 #include <SimpleIni.h>
 
+#include "Interfaces/MTInterface.h"
 #include "VirtualMarket.h"
 #include "Statistics.h"
 
@@ -65,28 +66,6 @@ namespace MM
 		experts.clear();
 	}
 
-	void Market::setupConnection()
-	{
-		int errorValue;
-		zmqContext = zmq_init(1);
-		assert(zmqContext);
-		zmqListener = zmq_socket(zmqContext, ZMQ_SUB);
-		assert(zmqListener);
-		errorValue = zmq_setsockopt(zmqListener, ZMQ_SUBSCRIBE, "", 0);
-		assert(errorValue == 0);
-		errorValue = zmq_connect(zmqListener, connectionStringListener.c_str());
-		assert(errorValue == 0);
-
-		zmqPublisher = zmq_socket(zmqContext, ZMQ_PUB);
-		assert(zmqPublisher);
-		errorValue = zmq_connect(zmqPublisher, connectionStringSpeaker.c_str());
-		assert(errorValue == 0);
-
-		std::cout << "Listener: \t" << connectionStringListener << std::endl;
-		std::cout << "Speaker: \t" << connectionStringSpeaker << std::endl;
-		std::cout << "..connected" << std::endl;
-	}
-
 	void Market::addEvent(const Event &e)
 	{
 		// todo: check logic? Shouldn't only same-type events be replaced?
@@ -106,16 +85,10 @@ namespace MM
 	void Market::init(void *_ini)
 	{
 		const CSimpleIniA &ini = *(CSimpleIniA*)_ini;
-		uid = ini.GetValue("Metatrader", "UserID", "unknown");
-		accountName = ini.GetValue("Metatrader", "AccountName", "unknown");
-		connectionStringListener = ini.GetValue("Central Station", "Listener", "tcp://127.0.0.1:1985");
-		connectionStringSpeaker = ini.GetValue("Central Station", "Speaker", "tcp://127.0.0.1:1986");
 		int sleepDurationMs;
 		std::istringstream(ini.GetValue("Market", "SleepDuration", "100")) >> sleepDurationMs;
 		sleepDuration = std::chrono::milliseconds(sleepDurationMs);
 		std::cout << "..loaded config" << std::endl;
-
-		setupConnection();
 
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorCCI()));
@@ -298,20 +271,7 @@ namespace MM
 		
 		while (true)
 		{
-			// receive new data over the ZMQ interface
-			std::string data;
-			do
-			{
-				if (isVirtual())
-					data = virtualMarket->proxyReceive();
-				else
-					data = receive();
-
-				if (data.size())
-				{
-					parseMessage(data);
-				}
-			} while (data.size());
+			metatrader.checkIncomingMessages();
 			
 			if (!onlyOnce)
 			{
@@ -394,11 +354,6 @@ namespace MM
 		}
 	}
 
-	std::string Market::getCommandPrefix()
-	{
-		return std::string("C ") + accountName + "|" + uid;
-	}
-
 	Trade *Market::newTrade(Trade trade)
 	{
 		Trade *accepted = new Trade(trade);
@@ -420,7 +375,7 @@ namespace MM
 		else if (trade.type == Trade::T_SELL)
 			tradeType = 1;
 		assert(tradeType != -1);
-
+		/*
 		std::ostringstream os;
 		os << getCommandPrefix() << 
 			" set " << tradeType << 
@@ -429,7 +384,8 @@ namespace MM
 			" " << accepted->getTakeProfitPrice() << 
 			" " << accepted->getStopLossPrice() << 
 			" " << accepted->lotSize;
-		send(os.str());
+		send(os.str());*/
+		assert(false);
 		assert(trades.size() < 10);
 		return nullptr;
 	}
@@ -438,34 +394,24 @@ namespace MM
 	{
 		assert(trade->ticketID != -1);
 
-		std::ostringstream os;
-		os << getCommandPrefix() <<
-			" reset " << trade->ticketID <<
-			" " << trade->getTakeProfitPrice() <<
-			" " << trade->getStopLossPrice();
-		send(os.str());
+		//std::ostringstream os;
+		//os << getCommandPrefix() <<
+		//	" reset " << trade->ticketID <<
+		//	" " << trade->getTakeProfitPrice() <<
+		//	" " << trade->getStopLossPrice();
+		//send(os.str());
+		assert(false);
 	}
 
 	void Market::closeTrade(Trade *trade)
 	{
 		assert(trade->ticketID != -1);
 
-		std::ostringstream os;
-		os << getCommandPrefix() <<
-			" unset " << trade->ticketID;
-		send(os.str());
-	}
-
-	void Market::updateMood(std::string name, float mood, float certainty)
-	{
-		std::ostringstream os; os << "M " << name << " " << mood << " " << certainty;
-		send(os.str());
-	}
-
-	void Market::updateParameter(std::string name, double value)
-	{
-		std::ostringstream os; os << "P " << name << " " << std::setprecision(3) << value;
-		send(os.str());
+		//std::ostringstream os;
+		//os << getCommandPrefix() <<
+		//	" unset " << trade->ticketID;
+		//send(os.str());
+		assert(false);
 	}
 
 	void Market::chat(std::string name, std::string msg)
@@ -474,41 +420,7 @@ namespace MM
 		os << "! " << name
 			<< " " << getLastTickTime()
 			<< " " << msg;
-		send(os.str());
-	}
-
-	std::string Market::receive()
-	{
-		int errorValue;
-		zmq_msg_buf msg;
-
-		errorValue = zmq_msg_recv(&msg.msg, zmqListener, ZMQ_DONTWAIT);
-		if (errorValue == -1 && errno == EAGAIN) return "";
-		assert(errorValue >= 0);
-
-		// we have a 
-		std::string data(static_cast<char*>(zmq_msg_data(&msg.msg)), zmq_msg_size(&msg.msg));
-		assert(data.size() == errorValue);
-
-		// check if more!
-		int32_t more;
-		size_t more_size = sizeof(more);
-		do
-		{
-			msg = zmq_msg_buf();
-			errorValue = zmq_getsockopt(zmqListener, ZMQ_RCVMORE, &more, &more_size);
-			assert(errorValue == 0);
-			if (!more) break;
-
-			errorValue = zmq_msg_recv(&msg.msg, zmqListener, ZMQ_DONTWAIT);
-			if (errorValue == -1)
-			{
-				std::cerr << "ZMQ ERROR (recv): " << zmq_strerror(errno) << std::endl;
-			}
-			assert(errorValue >= 0);
-			data.append(static_cast<char*>(zmq_msg_data(&msg.msg)), zmq_msg_size(&msg.msg));
-		} while (more);
-		return data;
+		// send(os.str());
 	}
 
 	void Market::onNewTickMessageReceived(const std::string &pair, QuantLib::Decimal bid, QuantLib::Decimal ask, std::time_t time)
@@ -543,131 +455,6 @@ namespace MM
 		}
 		trades.erase(std::remove(std::begin(trades), std::end(trades), nullptr), std::end(trades));
 		assert(trades.size() == 0); // for now
-	}
-
-	void Market::parseMessage(const std::string &message)
-	{
-		//std::cout << "received:\n\t" << message << std::endl;
-		if (message.empty()) return;
-
-		std::istringstream is(message);
-		char type;
-		std::string accountName;
-
-		is >> type >> accountName;
-
-		if (type == 'T')
-		{
-			std::string pair;
-			QuantLib::Decimal bid, ask;
-			std::time_t time;
-			is >> pair >> bid >> ask >> time;
-			onNewTickMessageReceived(pair, bid, ask, time);
-		}
-		else if (type == 'R')
-		{
-			std::string uid;
-			is >> uid;
-		}
-		else if (type == 'O')
-		{
-			saveAndClearTrades();
-
-
-			// dummy trade
-			/*Trade *trade = new Trade();
-			trade->currencyPair = "EURUSD";
-			trade->lotSize = 10.;
-			trade->orderPrice = 0.5;
-			trade->stopLossPrice = 0.0;
-			trade->takeProfitPrice = 0.0;
-			trade->ticketID = 213214;
-			trades.push_back(trade);
-			return;*/
-
-			// and fill with current trade data
-			std::string jsonString;
-			getline(is, jsonString);
-			jsonString.erase(0, 1);
-
-			// I don't know yet why this is necessary, TODO
-			if (jsonString[jsonString.length()-1] == '\0') // seems to happen only in virtual mode on debug
-				jsonString = jsonString.substr(0, jsonString.size() - 1);
-
-			std::string errorString;
-			json11::Json jsonData = json11::Json::parse(jsonString, errorString);
-
-			for (auto &order : jsonData.array_items())
-			{
-				Trade *trade = new Trade();
-				trade->currencyPair = order["pair"].string_value();
-				trade->lotSize = order["lots"].number_value();
-				trade->orderPrice = order["open_price"].number_value();
-				trade->setStopLossPrice(order["stop_loss"].number_value());
-				trade->setTakeProfitPrice(order["take_profit"].number_value());
-				trade->ticketID = order["ticket_id"].int_value();
-
-				if (order["type"].int_value() == 0) trade->type = Trade::T_BUY;
-				else trade->type = Trade::T_SELL;
-				
-				onNewTradeMessageReceived(trade);
-			}
-
-		}
-		else if (type == 'A')
-		{
-			QuantLib::Decimal leverage, balance, margin, marginFree;
-			is >> leverage
-				>> balance
-				>> margin
-				>> marginFree;
-			account.update(leverage, balance, margin, marginFree);
-		}
-		else if (isVirtual() && (type == 'C'))
-		{
-			virtualMarket->onReceive(message);
-		}
-		else
-		{
-			// pass
-		}
-	}
-
-	void Market::send(std::string data, int probabilityToSendInVirtualMode)
-	{
-		if (isVirtual())
-		{
-			virtualMarket->proxySend(data);
-			if (probabilityToSendInVirtualMode == 0) return;
-			if (probabilityToSendInVirtualMode < 100)
-			{
-				int randomDraw = rand() % 100;
-				if (randomDraw > probabilityToSendInVirtualMode) return;
-			}
-
-			if (virtualMarket->isSilent) return;
-		}
-
-		zmq_msg_t msg;
-		zmq_msg_init_size(&msg, data.length() + 1);
-		memcpy(zmq_msg_data(&msg), data.c_str(), data.length() + 1);
-
-		int errorValue;
-		errorValue = zmq_msg_send(&msg, zmqPublisher, 0);
-
-		if (errorValue == -1 && errno == EAGAIN)
-			std::cerr << "send currently not possible." << std::endl; // OK
-		else
-		{
-			if (errorValue < 0)
-			{
-				std::cerr << "ZMQ ERROR (send): " << zmq_strerror(errno) << std::endl;
-			}
-			assert(errorValue >= 0);
-		}
-		// std::cout << "SENT:\n\t" << data << std::endl;
-
-		zmq_msg_close(&msg);
 	}
 
 	void Market::addStock(std::string pair)

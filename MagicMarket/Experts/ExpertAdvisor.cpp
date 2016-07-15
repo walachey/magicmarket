@@ -38,7 +38,6 @@ namespace MM
 		
 		lastMood = mood;
 		lastCertainty = certainty;
-		market.updateMood(getName(), mood, certainty);
 	}
 
 	void ExpertAdvisor::declareExports() const

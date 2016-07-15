@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 namespace Interface
 {
@@ -78,6 +79,7 @@ namespace Interface
 			void init(void *ini);
 			void checkIncomingMessages();
 
+			void send(std::string data, int probabilityToSendInVirtualMode);
 		private:
 			void setup();
 

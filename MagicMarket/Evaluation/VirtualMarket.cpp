@@ -450,19 +450,6 @@ namespace MM
 		tradesMetaInfo.at(trade.ticketID).setClosed(profit, market.getLastTickTime(), lastTick->getTime(), forceful);
 	}
 
-	void VirtualMarket::proxySend(const std::string &message)
-	{
-		pendingMessages.push(message);
-	}
-
-	std::string VirtualMarket::proxyReceive()
-	{
-		if (pendingMessages.empty()) return "";
-		std::string value = pendingMessages.front();
-		pendingMessages.pop();
-		return value;
-	}
-
 	void VirtualMarket::predictTradeEfficiency()
 	{
 		if (!lastTick) return;

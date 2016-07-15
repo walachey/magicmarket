@@ -60,8 +60,6 @@ namespace MM
 		void closeTrade(Trade *trade);
 
 		void chat(std::string name, std::string message);
-		void updateMood(std::string name, float mood, float certainty);
-		void updateParameter(std::string name, double value);
 
 		void init(void *ini);
 		void run();
@@ -93,20 +91,6 @@ namespace MM
 		std::vector<Event> events;
 		std::time_t lastTickTime;
 		QuantLib::Date lastTickDate;
-
-		// for the communication protocol
-		void *zmqContext;
-		void *zmqListener;
-		void *zmqPublisher;
-		std::string getCommandPrefix();
-		std::string connectionStringListener, connectionStringSpeaker;
-		std::string accountName, uid;
-
-		void setupConnection();
-		void connectToCentralQueue();
-		void send(std::string, int probabilityToSendInVirtualMode = 100);
-		std::string receive();
-		void parseMessage(const std::string &message);
 
 		// Interface for the virtual market
 	private:

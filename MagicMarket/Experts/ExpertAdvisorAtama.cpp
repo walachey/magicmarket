@@ -144,7 +144,6 @@ namespace MM
 			mood = -1.0f;
 			value = sell;
 		}
-		market.updateParameter("ANN", sum);
 		if (sum != 0.0f) value /= sum;
 		setMood(mood, value);
 	}
