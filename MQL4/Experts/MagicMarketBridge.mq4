@@ -3,42 +3,14 @@
 #property link      "http://www.mql4zmq.org"
 
 // Runtime options to specify.
-extern string trade_direction = "short";
-extern string ZMQ_transport_protocol = "tcp";
-extern string ZMQ_server_address = "127.0.0.1";
-extern string ZMQ_inbound_port = "1985";
-extern string ZMQ_outbound_port = "1986";
-extern int EMA_long = 180;
-extern int EMA_short = 60;
-
-extern int Bridge_Port = 1995;
+extern int Bridge_Port = 5005;
 extern string Bridge_Address = "127.0.0.1";
 
 extern string leading_currency = "EURUSD";
 
-int bridgeSocket;
-string socketReceiveBuffer;
-void socketInit()
-{
-	bridgeSocket = -1;
-	socketReceiveBuffer = "";
-	sock_start();
-	
-	bridgeSocket = sock_connect(Bridge_Port, Bridge_Address, false);
-	if (bridgeSocket == -1)
-		Print("Error: Could not initialise bridge socket.");
-}
-
-
-int socketIsConnected()
-{
-	if (bridgeSocket == -1) return 0;
-	return 1;
-}
-
 string socketReceive()
 {
-	if (bridgeSocket == -1) return "";
+	/*if (bridgeSocket == -1) return "";
 	while (True)
 	{
    	int bufLen = 1; 
@@ -72,32 +44,15 @@ string socketReceive()
    		socketReceiveBuffer = StringSubstr(socketReceiveBuffer, position + 1, StringLen(socketReceiveBuffer)); 
    		return message;
    	}
-	}
+	}*/
 	return "";
 }
 
-int socketSend(string message)
-{
-	if (bridgeSocket == -1) return -1;
-	if (message == 0 || message == "") return 0;
-	
-	int ret = sock_send(bridgeSocket, message);
-	
-	if (ret <= 0)
-	   socketCleanup();
-	return 0;
-}
-
-void socketCleanup()
-{
-	if (bridgeSocket != -1)
-		sock_close(bridgeSocket);
-	bridgeSocket = -1;
-	sock_cleanup();
-}
 
 // helper
-void S2A(string s, char &buffer[])
+char A1[2048];
+char A2[2048];
+void S2A(string s, uchar &buffer[])
 {
 	StringToCharArray(s, buffer);
 	//return buffer;
@@ -112,69 +67,84 @@ string Name()
 }
 
 // Include the libzmq.dll abstration wrapper.
-#include <socket.mqh>
+#include <MetaTraderBridge.mqh>
 
 //+------------------------------------------------------------------+
 //| variable definitions                                             |
 //+------------------------------------------------------------------+
-int speaker,listener,context,start_position,end_position,ticket;
-string outbound_connection_string,inbound_connection_string,keyword,command_string;
-
+int server_link;
+int isConnected() { return (server_link != 0); }
 //+------------------------------------------------------------------+
 //| expert initialization function                                   |
 //+------------------------------------------------------------------+
-int init()
+void connectBridge()
 {
-	socketInit();
-   
-   // Send Notification that bridge is up.
-   // Format: bridge|testaccount UP short EURUSD 1355775144
-   string bridge_up = "bridge|" + Name() + " UP " + trade_direction + " " + Symbol() + " " + TimeCurrent();
-   //StringToCharArray(bridge_up, buffer);
-   socketSend(bridge_up);
-   
-   if (Symbol() == leading_currency)
-      EventSetMillisecondTimer(100);
-   
-//----
-   return(0);
-  }
+	S2A(Bridge_Address, A1);
+	S2A(Symbol(), A2);
+	
+	server_link = mm_init(A1, Bridge_Port, A2);
+	if (server_link == 0)
+	{
+		Print ("Could not connect to bridge.");
+		return;
+	}
+	if (server_link == 1)
+	{
+		Print ("Could not init Winsock.");
+		server_link = 0;
+		return;
+	}
+	if (server_link == 2)
+	{
+		Print ("Could not init socket.");
+		server_link = 0;
+		return;
+	}
+	PrintFormat("Server Link: %d", server_link);
+	mm_sendUp(server_link, TimeCurrent());
+}
+int OnInit()
+{
+	Print ("Connecting to bridge for symbol " + Symbol());
+	connectBridge();
+	if (Symbol() == leading_currency)
+	  EventSetMillisecondTimer(100);
+	return(0);
+}
 //+------------------------------------------------------------------+
 //| expert deinitialization function                                 |
 //+------------------------------------------------------------------+
-int deinit()
+void OnDeinit(const int reason)
 {
-   Print("deinit..");
-   // Delete all objects from the chart.
-   for(int i=ObjectsTotal()-1; i>-1; i--) {
-      ObjectDelete(ObjectName(i));
-   }
-   Comment("");
+	Print("deinit..");
+	// Delete all objects from the chart.
+	for(int i=ObjectsTotal()-1; i>-1; i--) {
+		ObjectDelete(ObjectName(i));
+	}
+	Comment("");
    
-   // Send Notification that bridge is down.
-   // Format: bridge|testaccount DOWN
-   string bridge_up = "bridge|" + Name() + " DOWN";
-   char buffer[1024];
-   S2A(bridge_up, buffer);
-   socketSend(bridge_up);
-   socketCleanup();
+	// Send Notification that bridge is down.
+	// Format: bridge|testaccount DOWN
+	if (isConnected())
+	{
+		mm_sendDown(server_link, TimeCurrent());
+		mm_cleanup(server_link);
+	}
+	server_link = 0;
 
-   Print("doen.");
-   return(0);
+	Print("doen.");
+	return;
 }
 //+------------------------------------------------------------------+
 //| expert start function                                            |
 //+------------------------------------------------------------------+
-//int executeCommands();
-//int publishStock();
-//int publishGeneralData();
 
 void OnTick()
 {
-	if (!socketIsConnected())
+	if (!isConnected())
 	{
 	   Comment("Not connected.");
-	   socketInit();
+	   connectBridge();
 	   return;
 	}
 	Comment("Connected!");
@@ -189,75 +159,20 @@ void OnTick()
 
 void OnTimer()
 {
-	if (!socketIsConnected())
+	if (!isConnected())
 	{
 	   Comment("Not connected!");
 	   return;
 	}
 	//Print("Timering.");
 	Comment("Receiving...");
-	while (executeCommands());
+	//while (executeCommands());
 	Comment("Connected!");
 }
 
 int executeCommands()
 {
-//----
-   
-   
-////////// We expose both the main ZeroMQ API (http://api.zeromq.org/2-1:_start) and the ZeroMQ helper functions. 
-////////// Below is an example of how to receive a message from a source we are subscribed
-////////// to using the main API. Then below that is an example of how to do the same thing
-////////// using the helpers instead.
-
-////////// Receive subscription data via main API //////////
-	/*
-   // Initialize message.
-   int request[1];
-   zmq_msg_init(request);
-   
-   // Check for inbound message.
-   // Note: If we do NOT specify ZMQ_NOBLOCK it will wait here until 
-   //       we recieve a message. This is a problem as this function
-   //       will effectively block the MQL4 'Start' function from firing
-   //       when the next tick arrives if no message has arrived from 
-   //       the publisher. If you want it to block and, therefore, instantly
-   //       receive messages (doesn't have to wait until next tick) then
-   //       change the below line to:
-   //       
-   //       if (zmq_recv(listener, request) != -1)
-   //
-   if (zmq_recv(listener, request, ZMQ_NOBLOCK) != -1) // Will return -1 if no message was received.
-   {
-      // Retrive pointer to message data.
-      string message = zmq_msg_data(request);
-      
-      // Retrive message size.
-      int message_length = zmq_msg_size(request);
-      
-      // Drop excess null's from the pointer.
-      message = StringSubstr(message, 0, message_length);
-      
-      // Print message.
-      Print("Received message: " + message);
-   }
-   
-   // Deallocate message.
-   zmq_msg_close(request);
- */
-////////// Receive subscription data via helper API //////////
-
-   // Note: If we do NOT specify ZMQ_NOBLOCK it will wait here until 
-   //       we recieve a message. This is a problem as this function
-   //       will effectively block the MQL4 'Start' function from firing
-   //       when the next tick arrives if no message has arrived from 
-   //       the publisher. If you want it to block and, therefore, instantly
-   //       receive messages (doesn't have to wait until next tick) then
-   //       change the below line to:
-   //       
-   //       string message2 = s_recv(listener);
-   //
-   string message2 = socketReceive();
+   /*string message2 = socketReceive();
 
    //message2 = "C David|11234 test test";
    if (message2 == "" || message2 == 0) return 0; 
@@ -580,84 +495,49 @@ int executeCommands()
       }         
    }
    
-   
+   */
    return 1;
 }
 
 int publishStock()
 {
-////////// We expose both the main ZeroMQ API (http://api.zeromq.org/2-1:_start) and the ZeroMQ helper functions. 
-////////// Below is an example of how to publish a message using the main API. Then below that is an example of how 
-////////// to do the same thing using the helpers instead.
-
-   // Publish current tick value.
-   string current_tick = "T " + Name() + " " + Symbol() + " " + Bid + " " + Ask + " " + TimeCurrent();
-   
-   char buffer[1024];
-   S2A(current_tick, buffer);
-   if(socketSend(current_tick) == -1)
-      Print("Error sending message: " + current_tick);
-   else
-      ;//Print("Published message: " + current_tick);
-
-  return 0;
+	int error = mm_sendTick(server_link, Bid, Ask, TimeCurrent());
+	if (error == 1)
+	{
+		Print("Error sending tick!");
+		mm_cleanup(server_link);
+		server_link = 0;
+	}
+	else
+	{
+		Print("Tick");
+	}
+	return 0;
 }
-
 
 int publishGeneralData()
 {
-   // Publish the currently open orders.
-   string current_orders = lookup_open_orders(); 
-   
-   // Publish account info.
-   string current_account_info = "A " + Name() + " " + AccountLeverage() + " " + AccountBalance() + " " + AccountMargin() + " " + AccountFreeMargin();
-   
-
-   // Currently open orders.
-   char buffer[1024];
-   S2A(current_orders, buffer);
-   if(socketSend(current_orders) == -1)
-      Print("Error sending message: " + current_orders);
-   else
-      ;//Print("Published message: " + current_orders);   
-   // Current account info.	
-   S2A(current_account_info, buffer);
-   if(socketSend(current_account_info) == -1)
-      Print("Error sending message: " + current_account_info);
-   else
-      ;//Print("Published message: " + current_account_info );
-  
-//----
-   return(0);
-  }
-
-
-//+------------------------------------------------------------------+
-//| Returns the currently open orders.
-//|      => "orders|testaccount1 {:symbol => 'EURUSD', :type => 'sell', ...}, {... "
-//+------------------------------------------------------------------+
-string lookup_open_orders()
-{
-   // Initialize the orders string.
-   string current_orders = "";
-   
-   // Look up the total number of open orders.
-   int total_orders = OrdersTotal();
-   int max_transmit = total_orders;
-   if (max_transmit > 10) max_transmit = 10;
-
-   // Build a json-like string for each order and add it to eh current_orders return string.  
-   for(int position=0; position < max_transmit; position++)
-   {
-      if(OrderSelect(position,SELECT_BY_POS)==false) continue;
-      if (position > 0)
-      current_orders = current_orders + ", ";
-      current_orders = current_orders + "{\"pair\":\"" + OrderSymbol() + "\", \"type\":" + OrderType() + ", \"ticket_id\":" + OrderTicket() + ", \"open_price\":" + OrderOpenPrice() + ", \"take_profit\":" + OrderTakeProfit() + ", \"stop_loss\":" + OrderStopLoss() + ", \"open_time\":" + OrderOpenTime() + ", \"expire_time\":" + OrderExpiration() + ", \"lots\":" + OrderLots() + ", \"profit\":" + OrderProfit() + "}";
-   }
-      
-   // Return the completed string.
-   return ("O " + Name() + " " + "[" + current_orders + "]");
+	// Publish account info.
+	mm_sendAccountInfo(server_link, AccountLeverage(), AccountBalance(), AccountMargin(), AccountFreeMargin());
+	
+	// Look up the total number of open orders.
+	int total_orders = OrdersTotal();
+	int max_transmit = total_orders;
+	if (max_transmit > 10) max_transmit = 10;
+	if (max_transmit == 0) return (0);
+	
+	int batch = mm_beginOrderBatch(server_link);
+	
+	// Build a json-like string for each order and add it to eh current_orders return string.  
+	for(int position=0; position < max_transmit; position++)
+	{
+		if(OrderSelect(position,SELECT_BY_POS)==false) continue;
+		mm_addOrder(batch, OrderType(), OrderTicket(), OrderOpenPrice(), OrderTakeProfit(), OrderStopLoss(), OrderOpenTime(), OrderExpiration(), OrderLots(), OrderProfit());
+	}
+	mm_sendOrderBatch(server_link, batch);
+	return(0);
 }
+
 
 //+------------------------------------------------------------------+
 //| Sends a response to a command. Messages are fomatted:
@@ -665,21 +545,7 @@ string lookup_open_orders()
 //+------------------------------------------------------------------+
 bool send_response(string uid, string response)
 {
-   // Compose response string.
-   string response_string = "R " + Name() + " " + uid + " " + response;
-   char buffer[1024];
-   S2A(response_string, buffer);
-   // Send the message.
-   if(socketSend(response_string) == -1)
-   {
-      Print("Error sending message: " + response_string);
-      return(false);
-   }   
-   else
-   {
-      ;//Print("Published message: " + response_string); 
-      return(true);
-   }
+   return (true);
 } 
 
 //+------------------------------------------------------------------+
