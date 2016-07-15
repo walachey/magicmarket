@@ -31,6 +31,14 @@ public:
 	zmq_msg_t msg;
 };
 
+namespace Interface
+{
+	namespace MetaTrader
+	{
+		class MTInterface;
+	};
+};
+
 namespace MM
 {
 	class ExpertAdvisor;
@@ -79,6 +87,7 @@ namespace MM
 		std::vector<Indicators::Base*> indicators;
 
 		friend class Stock;
+		friend class Interface::MetaTrader::MTInterface;
 
 		// to notify agents
 		std::vector<Event> events;
