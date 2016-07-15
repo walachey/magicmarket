@@ -79,7 +79,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts\Technical;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts\Slaves;$(ProjectDir)\Experts\Technical;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -109,7 +109,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts\Technical;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\boost_1_55_0;..\deps;$(BOOST_DIR);..\deps\simpleini;$(ProjectDir);$(ProjectDir)\Evaluation;$(ProjectDir)\Experts\Slaves;$(ProjectDir)\Experts\Technical;$(ProjectDir)\Experts;..\deps\fann\include;..\deps\lwneuralnetplus\source;..\deps\QuantLib;..\deps\libzmq\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
@@ -222,6 +222,8 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile Include="Indicators\StochasticOscillator.cpp" />
     <ClCompile Include="Indicators\TSI.cpp" />
     <ClCompile Include="Interfaces\Expert.pb.cc" />
+    <ClCompile Include="Interfaces\MTInterface.cpp" />
+    <ClCompile Include="Interfaces\UDP.cpp" />
     <ClCompile Include="IO\DataConverter.cpp" />
     <ClCompile Include="IO\KeyValueDB.cpp" />
     <ClCompile Include="main.cpp" />
@@ -278,6 +280,8 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClInclude Include="Indicators\StochasticOscillator.h" />
     <ClInclude Include="Indicators\TSI.h" />
     <ClInclude Include="Interfaces\Expert.pb.h" />
+    <ClInclude Include="Interfaces\MTInterface.h" />
+    <ClInclude Include="Interfaces\UDP.h" />
     <ClInclude Include="IO\DataConverter.h" />
     <ClInclude Include="IO\KeyValueDB.h" />
     <ClInclude Include="Market.h" />

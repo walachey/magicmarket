@@ -208,6 +208,12 @@
     <ClCompile Include="Experts\Slaves\ExpertAdvisorMultiCurrency.cpp">
       <Filter>Source Files\Experts\Slaves</Filter>
     </ClCompile>
+    <ClCompile Include="Interfaces\MTInterface.cpp">
+      <Filter>Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Interfaces\UDP.cpp">
+      <Filter>Interfaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -349,6 +355,12 @@
     </ClInclude>
     <ClInclude Include="Experts\Slaves\ExpertAdvisorMultiCurrency.h">
       <Filter>Source Files\Experts\Slaves</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\MTInterface.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\UDP.h">
+      <Filter>Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
