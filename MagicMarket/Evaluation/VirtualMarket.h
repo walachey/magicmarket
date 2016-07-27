@@ -8,6 +8,7 @@
 #include <map>
 #include <ctime>
 #include "Trade.h"
+#include "Interfaces/MTInterface.h"
 
 namespace MM
 {
@@ -56,7 +57,7 @@ namespace MM
 		void evaluate();
 
 		// called by the market
-		void onReceive(const std::string &message);
+		template<typename T> void onReceive(const T &data);
 		void execute();
 		bool isRunning() { return running; }
 
@@ -127,7 +128,6 @@ namespace MM
 		void predictTradeEfficiency();
 		void saveTrades();
 	};
-
 
 };
 

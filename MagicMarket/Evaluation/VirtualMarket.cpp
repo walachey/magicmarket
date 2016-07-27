@@ -12,7 +12,6 @@ namespace filesystem = std::tr2::sys;
 #include "Helpers.h"
 #include "Market.h"
 #include "Statistics.h"
-#include "Trade.h"
 #include "Tick.h"
 #include "TradingDay.h"
 #include "Stock.h"
@@ -397,42 +396,45 @@ namespace MM
 		market.onNewTickMessageReceived(day->getCurrencyPair(), tick->getBid(), tick->getAsk(), tick->getTime());
 	}
 
-	void VirtualMarket::onReceive(const std::string &message)
+	template<> void VirtualMarket::onReceive<>(const ::Interface::MetaTrader::Message::NewOrder &data)
 	{
-		assert(message[0] == 'C');
+		Trade trade;
+		trade.currencyPair = "EURUSD";
+		trade.orderPrice = data.orderPrice;
+		trade.getTakeProfitPrice() = data.takeProfitPrice;
+		trade.getStopLossPrice() = data.stopLossPrice;
+		trade.lotSize = data.lotSize;
+		trade.type = (data.type == 0) ? Trade::T_BUY : Trade::T_SELL;
 
-		std::istringstream is(message);
-		std::string accountInfo, command;
-		is >> accountInfo >> accountInfo >> command;
+		trade.ticketID = ++tradeCounter;
+		trade.removeSaveFile();
 
-		if (command == "set")
+		trades.push_back(trade);
+		tradesMetaInfo.emplace(trade.ticketID, VirtualTradeMetaInfo(trade.type, market.getLastTickTime()));
+	}
+
+	template<> void VirtualMarket::onReceive<>(const ::Interface::MetaTrader::Message::CloseOrder &data)
+	{
+		for (auto iter = trades.begin(); iter != trades.end(); ++iter)
 		{
-			int tradeType;
-			std::string pair;
-			Trade trade;
-			is >> tradeType >> trade.currencyPair >> trade.orderPrice >> trade.getTakeProfitPrice() >> trade.getStopLossPrice() >> trade.lotSize;
-			
-			trade.type = (tradeType == 0) ? Trade::T_BUY : Trade::T_SELL;
-			trade.ticketID = ++tradeCounter;
+			Trade &trade = *iter;
+			if (trade.ticketID != data.ticketID) continue;
+			evaluateTrade(trade);
 			trade.removeSaveFile();
-			trades.push_back(trade);
-
-			tradesMetaInfo.emplace(trade.ticketID, VirtualTradeMetaInfo(trade.type, market.getLastTickTime()));
+			trades.erase(iter);
+			break;
 		}
-		else if (command == "unset")
+	}
+
+	template<> void VirtualMarket::onReceive<>(const ::Interface::MetaTrader::Message::UpdateOrder &data)
+	{
+		for (auto iter = trades.begin(); iter != trades.end(); ++iter)
 		{
-			int ticketID;
-			is >> ticketID;
-			
-			for (auto iter = trades.begin(); iter != trades.end(); ++iter)
-			{
-				Trade &trade = *iter;
-				if (trade.ticketID != ticketID) continue;
-				evaluateTrade(trade);
-				trade.removeSaveFile();
-				trades.erase(iter);
-				break;
-			}
+			Trade &trade = *iter;
+			if (trade.ticketID != data.ticketID) continue;
+			trade.getTakeProfitPrice() = data.takeProfitPrice;
+			trade.getStopLossPrice() = data.stopLossPrice;
+			break;
 		}
 	}
 

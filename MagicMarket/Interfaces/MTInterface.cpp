@@ -34,7 +34,7 @@ namespace Interface
 			// Nothing to do if the virtual simulation is used.
 			if (virtualMarketEnabled) return;
 
-			this->port = ini.GetLongValue("Metatrader Interface", "Port", 4301);
+			this->port = ini.GetLongValue("Metatrader Interface", "Port", 5005);
 
 			setup();
 		}
@@ -53,11 +53,11 @@ namespace Interface
 				const std::tuple<SOCKADDR_IN*, std::string*> message = this->socket->recv();
 				const std::string &data = *std::get<1>(message);
 				if (data.size() == 0) break;
-				assert(data.size() > 8);
+				
 				char * const dataPointer = const_cast<char*>((&data[0]));
-				const int32_t &type = *reinterpret_cast<int32_t*>(dataPointer);
-				void * const messageContentsPointer = dataPointer + sizeof(int32_t);
-
+				const int8_t &type = *reinterpret_cast<int8_t*>(dataPointer);
+				void * const messageContentsPointer = dataPointer + sizeof(type);
+				assert(data.size() > 8 || (type == MetaTrader::Message::Type::bridgeOrders));
 				switch (type)
 				{
 				case MetaTrader::Message::Type::bridgeTick:
@@ -70,18 +70,21 @@ namespace Interface
 					{
 						MetaTrader::Message::AccountInfo &msg = *reinterpret_cast<MetaTrader::Message::AccountInfo*>(messageContentsPointer);
 						market.account.update(msg.leverage, msg.balance, msg.margin, msg.freeMargin);
+
+						marketExecutioner = std::move(this->socket->getReplyChannel());
 					}
 					break;
 				case MetaTrader::Message::Type::bridgeOrders:
 					{
 						const size_t oneOrderLength = 7 * sizeof(char) + 2 * sizeof(int32_t) + 3 * sizeof(double) + 2 * sizeof(int32_t) + 2 * sizeof(double);
-						assert(oneOrderLength == 56);
-						if ((data.size() - sizeof(int32_t)) % oneOrderLength != 0)
+						assert(oneOrderLength == 63);
+						const size_t messageLength = data.size() - sizeof(type) - 1;
+						if (messageLength % oneOrderLength != 0)
 						{
 							assert(false);
 							break;
 						}
-						const int numOrders = (data.size() - sizeof(int32_t)) / oneOrderLength;
+						const int numOrders = messageLength / oneOrderLength;
 						MetaTrader::Message::Order *order = reinterpret_cast<MetaTrader::Message::Order*> (messageContentsPointer);
 
 						market.saveAndClearTrades();
@@ -99,6 +102,8 @@ namespace Interface
 							else trade->type = ::MM::Trade::T_SELL;
 
 							market.onNewTradeMessageReceived(trade);
+
+							order += 1;
 						}
 					}
 					break;
@@ -128,22 +133,17 @@ namespace Interface
 			} while (true);
 		}
 
-		void MTInterface::send(std::string data, int probabilityToSendInVirtualMode)
+		template<typename T> void MTInterface::send(const T &data)
 		{
 			if (market.isVirtual())
 			{
-				//virtualMarket->proxySend(data);
-				if (probabilityToSendInVirtualMode == 0) return;
-				if (probabilityToSendInVirtualMode < 100)
-				{
-					int randomDraw = rand() % 100;
-					if (randomDraw > probabilityToSendInVirtualMode) return;
-				}
-
 				if (virtualMarket->isSilent) return;
 			}
-
-			assert(false);
+			marketExecutioner.send(reinterpret_cast<const char*>(&data), sizeof(data));
 		}
+
+		template void MTInterface::send<Message::NewOrder>(const Message::NewOrder &data);
+		template void MTInterface::send<Message::CloseOrder>(const Message::CloseOrder &data);
+		template void MTInterface::send<Message::UpdateOrder>(const Message::UpdateOrder &data);
 	};
 };

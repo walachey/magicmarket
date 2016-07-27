@@ -29,6 +29,7 @@
 #include "Market.h"
 #include "Statistics.h"
 #include "VirtualMarket.h"
+#include "Interfaces/MTInterface.h"
 #include "Trade.h"
 #include "Stock.h"
 #include "TradingDay.h"
@@ -43,6 +44,7 @@ int main (int argc, char *argv [])
 	environmentVariables.init(&ini);
 	market.init(&ini);
 	statistics.init(&ini);
+	metatrader.init(&ini);
 	MM::VirtualMarket::checkInit();
 
 	market.run();

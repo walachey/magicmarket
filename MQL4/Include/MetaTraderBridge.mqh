@@ -10,4 +10,16 @@ int mm_sendError(int link, string message);
 int mm_beginOrderBatch(int link);
 int mm_addOrder(int batch, int type, int ticketID, double openPrice, double takeProfit, double stopLoss, int timestampOpen, int timestampExpire, double lots, double profit);
 int mm_sendOrderBatch(int link, int batch);
+
+#define MM_NEW_ORDER 7
+#define MM_CLOSE_ORDER 8
+#define MM_UPDATE_ORDER 9
+
+int mm_checkCommand(int link);
+int mm_receiveTicketID(int link);
+int mm_receiveOrderType(int link);
+double mm_receiveOrderPrice(int link);
+double mm_receiveTakeProfitPrice(int link);
+double mm_receiveStopLossPrice(int link);
+double mm_receiveLotSize(int link);
 #import

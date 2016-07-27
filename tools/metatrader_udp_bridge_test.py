@@ -48,7 +48,7 @@ while True:
 	elif type == MessageTypes.MM_BRIDGE_ACCOUNTINFO:
 		leverage, balance, margin, free_margin = struct.unpack("=dddd", data[1:])
 		print ("Account: [Margin {:f} free of {:f}] [Balance {:f}] [Leverage {:f}]".format(free_margin, margin, balance, leverage))
-	elif type == MessageTypes.MM_BRIDGE_ACCOUNTINFO:
+	elif type == MessageTypes.MM_BRIDGE_ORDERS:
 		one_msg_len = 56
 		data_len = len(data)
 		current = 1

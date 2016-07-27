@@ -348,9 +348,28 @@ namespace MM
 				virtualMarket->execute();
 				if (!virtualMarket->isRunning()) return;
 			}
-			
-			if (sleepDuration > std::chrono::milliseconds(0))
-				std::this_thread::sleep_for(sleepDuration);
+			else
+			{
+				double totalProfit = 0.0;
+				const int numberOfTrades = trades.size();
+				for (const Trade * trade : trades)
+				{
+					Stock *stock = market.getStock(trade->currencyPair);
+					TimePeriod period = stock->getTimePeriod(lastTickTime);
+					const Tick *lastTick = period.getLastTick();
+					if (lastTick == nullptr)
+					{
+						totalProfit = std::numeric_limits<double>::quiet_NaN();
+						break;
+					}
+					totalProfit += trade->getProfitAtTick(*lastTick);
+				}
+
+				std::cout << "\rTRADES: " << numberOfTrades << "\tPROFIT: " << totalProfit << std::flush;
+
+				if (sleepDuration > std::chrono::milliseconds(0))
+					std::this_thread::sleep_for(sleepDuration);
+			}
 		}
 	}
 
@@ -375,17 +394,18 @@ namespace MM
 		else if (trade.type == Trade::T_SELL)
 			tradeType = 1;
 		assert(tradeType != -1);
-		/*
-		std::ostringstream os;
-		os << getCommandPrefix() << 
-			" set " << tradeType << 
-			" " << accepted->currencyPair << 
-			" " << accepted->orderPrice << 
-			" " << accepted->getTakeProfitPrice() << 
-			" " << accepted->getStopLossPrice() << 
-			" " << accepted->lotSize;
-		send(os.str());*/
-		assert(false);
+
+
+		::Interface::MetaTrader::Message::NewOrder message;
+		message.type = tradeType;
+		message.orderPrice = accepted->orderPrice;
+		message.takeProfitPrice = accepted->getTakeProfitPrice();
+		message.stopLossPrice = accepted->getStopLossPrice();
+		message.lotSize = accepted->lotSize;
+		
+		if (market.isVirtual()) virtualMarket->onReceive(message);
+		else metatrader.send(message);
+
 		assert(trades.size() < 10);
 		return nullptr;
 	}
@@ -394,24 +414,26 @@ namespace MM
 	{
 		assert(trade->ticketID != -1);
 
-		//std::ostringstream os;
-		//os << getCommandPrefix() <<
-		//	" reset " << trade->ticketID <<
-		//	" " << trade->getTakeProfitPrice() <<
-		//	" " << trade->getStopLossPrice();
-		//send(os.str());
-		assert(false);
+		::Interface::MetaTrader::Message::UpdateOrder message;
+
+		message.ticketID = trade->ticketID;
+		message.takeProfitPrice = trade->getTakeProfitPrice();
+		message.stopLossPrice = trade->getStopLossPrice();
+		
+		if (market.isVirtual()) virtualMarket->onReceive(message);
+		else metatrader.send(message);
 	}
 
 	void Market::closeTrade(Trade *trade)
 	{
 		assert(trade->ticketID != -1);
 
-		//std::ostringstream os;
-		//os << getCommandPrefix() <<
-		//	" unset " << trade->ticketID;
-		//send(os.str());
-		assert(false);
+		::Interface::MetaTrader::Message::CloseOrder message;
+
+		message.ticketID = trade->ticketID;
+
+		if (market.isVirtual()) virtualMarket->onReceive(message);
+		else metatrader.send(message);
 	}
 
 	void Market::chat(std::string name, std::string msg)

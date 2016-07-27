@@ -33,6 +33,11 @@ namespace Interface
 			closesocket(this->socket);
 		}
 
+		UDPSocketReplyChannel UDPSocket::getReplyChannel()
+		{
+			return UDPSocketReplyChannel(*this);
+		}
+
 		void UDPSocket::send(const std::string& address, unsigned short port, const char* buffer, int len, int flags)
 		{
 			sockaddr_in add;
@@ -57,25 +62,30 @@ namespace Interface
 				lastSender = std::make_unique<SOCKADDR_IN>();
 			}
 			int len = localBuffer.get()->capacity();
+			localBuffer.get()->resize(len);
 			const char *oldMemoryLocation = &localBuffer.get()->at(0);
 			recv(lastSender.get(), &localBuffer.get()->at(0), len);
 			localBuffer->resize(len);
-			assert(oldMemoryLocation == &localBuffer.get()->at(0));
+			assert(oldMemoryLocation == nullptr || len == 0 || (oldMemoryLocation == &localBuffer.get()->at(0)));
 			return std::make_tuple(lastSender.get(), localBuffer.get());
 		}
 
-		bool UDPSocket::recv(SOCKADDR_IN *sender, char* buffer, int &len, int flags)
+		bool UDPSocket::recv(struct sockaddr_in *sender, char* buffer, int &len, int flags)
 		{
 			int size = sizeof(SOCKADDR_IN);
 			const int ret = recvfrom(this->socket, buffer, len - 1, flags, reinterpret_cast<SOCKADDR *>(sender), &size);
-			if (ret == WSAEWOULDBLOCK)
+			if (ret == SOCKET_ERROR)
 			{
 				buffer[0] = '\0';
 				len = 0;
-				return false;
-			}
-			if (ret < 0)
+
+				const int errorCode = WSAGetLastError();
+				if (errorCode == WSAEWOULDBLOCK)
+				{
+					return false;
+				}
 				throw std::system_error(WSAGetLastError(), std::system_category(), "recvfrom failed");
+			}
 			assert(ret < len);
 			// make the buffer zero terminated
 			buffer[ret] = '\0';
@@ -87,14 +97,14 @@ namespace Interface
 		{
 			sockaddr_in add;
 			add.sin_family = AF_INET;
-			add.sin_addr.s_addr = htonl(INADDR_ANY);
+			add.sin_addr.s_addr = INADDR_ANY; // htonl(INADDR_ANY);
 			add.sin_port = htons(port);
 
 			const bool True = true;
 			setsockopt(this->socket, SOL_SOCKET, SO_REUSEADDR, (const char*) &True, sizeof(True));
 
-			u_long blocking = 0;
-			const int setBlockingResult = ioctlsocket(this->socket, FIONBIO, &blocking);
+			u_long nonblocking = 1;
+			const int setBlockingResult = ioctlsocket(this->socket, FIONBIO, &nonblocking);
 			if (setBlockingResult != NO_ERROR)
 			{
 				throw std::system_error(setBlockingResult, std::system_category(), "ioctlsocket failed with error: " + std::to_string(setBlockingResult));

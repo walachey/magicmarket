@@ -100,6 +100,12 @@ void connectBridge()
 		server_link = 0;
 		return;
 	}
+	if (server_link == 3)
+	{
+		Print ("Could not set nonblocking option.");
+		server_link = 0;
+		return;
+	}
 	PrintFormat("Server Link: %d", server_link);
 	mm_sendUp(server_link, TimeCurrent());
 }
@@ -166,12 +172,153 @@ void OnTimer()
 	}
 	//Print("Timering.");
 	Comment("Receiving...");
-	//while (executeCommands());
-	Comment("Connected!");
+	while (executeCommands());
 }
 
 int executeCommands()
 {
+   int availableCommand = mm_checkCommand(server_link);
+   
+   if (availableCommand == 0)
+   {
+   		Comment("Connected.");
+   		return 0;
+   }
+   if (availableCommand == -1)
+   {
+   		Comment("Reception Problem!");
+   		return 0;
+   }
+   
+   Comment("Received message.");
+   
+   bool selected;
+   int ticketID;
+   double orderPrice;
+   double takeProfitPrice;
+   double stopLossPrice;
+   double lotSize;
+   
+   if (availableCommand == MM_NEW_ORDER)
+   {
+   		int orderType = mm_receiveOrderType(server_link);
+   		orderPrice = NormalizeDouble(mm_receiveOrderPrice(server_link), Digits);
+   		takeProfitPrice = NormalizeDouble(mm_receiveTakeProfitPrice(server_link), Digits);
+   		stopLossPrice = NormalizeDouble(mm_receiveStopLossPrice(server_link), Digits);
+   		lotSize = NormalizeDouble(mm_receiveLotSize(server_link), Digits);
+   		
+   		ticketID = OrderSend(Symbol(),
+                           orderType, 
+                           lotSize,
+                           orderPrice,
+                           3,
+                           0.0,
+                           0.0,
+                           NULL,
+                           0,
+                           TimeCurrent() + 3600,
+                           Green); 
+		if (ticketID < 0)
+		{
+			PrintFormat("OrderSend ERROR #%d (Price: %f, S/L: %f, T/P: %f, Bid: %f, Ask: %f)", GetLastError(), orderPrice, stopLossPrice, takeProfitPrice, Bid, Ask);
+			return(0);
+		}
+		else
+		{
+			double minStopLossLevel = MarketInfo(Symbol(), MODE_STOPLEVEL);
+			double price = Bid;
+			double sign = -1.0;
+			if (orderType == OP_SELL)
+			{
+				price = Ask;
+				sign = 1.0;
+			}
+			double minStopLoss = NormalizeDouble(price + sign * minStopLossLevel * Point, Digits);
+			if ((orderType == OP_BUY) && (minStopLoss < stopLossPrice)) stopLossPrice = minStopLoss;
+			else if ((orderType == OP_SELL) && (minStopLoss > stopLossPrice)) stopLossPrice = minStopLoss;
+			bool res = OrderModify(ticketID, 0, stopLossPrice, takeProfitPrice, 0);
+			if(!res)
+			{
+				Print("OrderModify Error: ", GetLastError());
+    			Print("IMPORTANT: ORDER #", ticketID, " HAS NO STOPLOSS AND TAKEPROFIT");
+    		}
+		}
+		return 1;
+   }
+   
+   if (availableCommand == MM_CLOSE_ORDER)
+   {
+   		ticketID = mm_receiveTicketID(server_link);
+
+   		selected = OrderSelect(StrToInteger(ticketID), SELECT_BY_TICKET);
+      	
+      	if (!selected)
+      	{
+      		Print("Trying to close invalid order.");
+      		return 1;
+      	}
+      	
+		// Send the oder close instructions.
+		bool close_ticket;
+		if (OrderType() == OP_BUY)
+		{
+			close_ticket = OrderClose(OrderTicket(), OrderLots(), Bid, 3, Red);
+		}
+		else if (OrderType() == OP_SELL)
+		{
+			close_ticket = OrderClose(OrderTicket(), OrderLots(), Ask, 3, Red);
+		}
+		else if (OrderType() == OP_BUYLIMIT || OrderType() == OP_BUYSTOP || OrderType() == OP_SELLLIMIT || OrderType() == OP_SELLSTOP)
+		{
+			close_ticket = OrderDelete(OrderTicket());
+		}
+		
+		if (close_ticket == false)
+		{
+			Print("OrderClose failed with error #",GetLastError());
+			return 1;
+		}
+		else
+		{
+			
+			Print("Closed trade: " + ticketID);
+		}
+		return 1;
+   }
+   
+   if (availableCommand == MM_UPDATE_ORDER)
+   {
+   		ticketID = mm_receiveTicketID(server_link);
+   		takeProfitPrice = NormalizeDouble(mm_receiveTakeProfitPrice(server_link), Digits);
+   		stopLossPrice = NormalizeDouble(mm_receiveStopLossPrice(server_link), Digits);
+   		
+   		selected = OrderSelect(StrToInteger(ticketID), SELECT_BY_TICKET);
+   		
+   		if (!selected)
+      	{
+      		Print("Trying to update invalid order.");
+      		return 1;
+      	}
+   		
+   		bool update_ticket = OrderModify(OrderTicket(),
+								OrderOpenPrice(),
+								stopLossPrice,
+								takeProfitPrice, 
+								0, 
+								Blue); 
+   		
+		if (!update_ticket)
+		{
+			Print("OrderModify failed with error #",GetLastError());
+			return(0);
+		}
+		else
+		{
+			Print("New order opened!");
+		}
+		return 1;
+   }
+   
    /*string message2 = socketReceive();
 
    //message2 = "C David|11234 test test";
@@ -510,7 +657,7 @@ int publishStock()
 	}
 	else
 	{
-		Print("Tick");
+		
 	}
 	return 0;
 }
@@ -524,7 +671,7 @@ int publishGeneralData()
 	int total_orders = OrdersTotal();
 	int max_transmit = total_orders;
 	if (max_transmit > 10) max_transmit = 10;
-	if (max_transmit == 0) return (0);
+	//if (max_transmit == 0) return (0);
 	
 	int batch = mm_beginOrderBatch(server_link);
 	

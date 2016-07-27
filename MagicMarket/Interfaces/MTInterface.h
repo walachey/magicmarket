@@ -3,14 +3,10 @@
 #include <memory>
 #include <string>
 
+#include "Interfaces/UDP.h"
+
 namespace Interface
 {
-	namespace Internet
-	{
-		class WSASession;
-		class UDPSocket;
-	};
-
 	namespace MetaTrader
 	{
 		namespace Message
@@ -18,11 +14,14 @@ namespace Interface
 			enum Type
 			{
 				bridgeUp = 1,
-				bridgeDown,
-				bridgeTick,
-				bridgeAccountInfo,
-				bridgeOrders,
-				bridgeError,
+				bridgeDown = 2,
+				bridgeTick = 3,
+				bridgeAccountInfo = 4,
+				bridgeOrders = 5,
+				bridgeError = 6,
+				newOrder = 7,
+				closeOrder = 8,
+				updateOrder = 9
 			};
 #pragma pack(push, 1)
 			struct BridgeUp
@@ -67,6 +66,30 @@ namespace Interface
 				double lots;
 				double profit;
 			};
+
+			struct NewOrder
+			{
+				int32_t messageType = Type::newOrder;
+				int32_t type;
+				double orderPrice;
+				double takeProfitPrice;
+				double stopLossPrice;
+				double lotSize;
+			};
+
+			struct CloseOrder
+			{
+				int32_t messageType = Type::closeOrder;
+				int32_t ticketID;
+			};
+
+			struct UpdateOrder
+			{
+				int32_t messageType = Type::updateOrder;
+				int32_t ticketID;
+				double takeProfitPrice;
+				double stopLossPrice;
+			};
 #pragma pack(pop)
 		};
 		
@@ -79,13 +102,15 @@ namespace Interface
 			void init(void *ini);
 			void checkIncomingMessages();
 
-			void send(std::string data, int probabilityToSendInVirtualMode);
+			template<typename T> void send(const T &data);
 		private:
 			void setup();
 
 			std::unique_ptr<::Interface::Internet::WSASession> session;
 			std::unique_ptr<::Interface::Internet::UDPSocket> socket;
 			int port;
+
+			::Interface::Internet::UDPSocketReplyChannel marketExecutioner;
 		};
 	};
 };
