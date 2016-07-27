@@ -42,13 +42,17 @@ namespace MM
 	bool TimePeriod::checkInitCache()
 	{
 		if (!cacheDirty) return true;
+
 		// for now, assume we are always evaluating one single day
+		if (dateFromTime(startTime) != dateFromTime(endTime)) return false;
 		assert(dateFromTime(startTime) == dateFromTime(endTime));
 
 		ticksEnd = ticksOneBeforeBegin = std::vector<Tick>::iterator();
 
 		TradingDay *day = (this->tradingDay != nullptr) ? this->tradingDay : stock->getTradingDay(dateFromTime(endTime));
 		if (day == nullptr) return false;
+		std::vector<Tick> &ticks = day->getTicks();
+		if (ticks.size() < 3) return false;
 
 		ticksTotalBegin = day->ticks.begin();
 		ticksTotalEnd = day->ticks.end();
@@ -56,7 +60,7 @@ namespace MM
 		ticksEnd   = day->ticks.end();
 
 		bool endSet(false);
-		std::vector<Tick> &ticks = day->getTicks();
+		
 		for (size_t i = ticks.size() - 1; i >= 0; --i)
 		{
 			const Tick &tick = ticks[i];
@@ -71,7 +75,10 @@ namespace MM
 				ticksOneBeforeBegin = std::next(ticks.begin(), i);
 				break;
 			}
+
+			if (i == 0) break;
 		}
+		if (ticksOneBeforeBegin == day->ticks.end()) return false;
 
 		cacheDirty = false;
 		return true;

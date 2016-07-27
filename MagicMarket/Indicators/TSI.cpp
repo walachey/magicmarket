@@ -39,6 +39,12 @@ namespace MM
 			momentumDoubleMA    = Math::MA2(momentumDoubleMA, momentumMA, history);
 			absMomentumDoubleMA = Math::MA2(absMomentumDoubleMA, absMomentumMA, history);
 			
+			if (absMomentumDoubleMA == 0.0)
+			{
+				tsi = std::numeric_limits<double>::quiet_NaN();
+				return;
+			}
+
 			tsi = 100.0 * momentumDoubleMA / absMomentumDoubleMA;
 			assert(tsi >= -101.0);
 			assert(tsi <= 101.0);

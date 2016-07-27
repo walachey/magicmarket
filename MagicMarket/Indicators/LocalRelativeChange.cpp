@@ -91,7 +91,7 @@ namespace MM
 			}
 			assert(minLookbackIndex != -1);
 			assert(maxLookbackIndex != -1);
-			assert(std::isnan(lookbackDerivatives[maxLookbackIndex]) || !std::isnan(lookbackDerivatives[minLookbackIndex]));
+			//assert(std::isnan(lookbackDerivatives[maxLookbackIndex]) || !std::isnan(lookbackDerivatives[minLookbackIndex]));
 
 			if (pricesMissing)
 			{
