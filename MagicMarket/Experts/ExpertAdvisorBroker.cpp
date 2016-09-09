@@ -123,7 +123,8 @@ namespace MM
 		trade.lotSize = lotSize;
 		trade.type = type;
 		trade.orderPrice = *close;
-		trade.setStopLossPrice(trade.orderPrice + ONEPIP * 5.0 * ((type == Trade::T_BUY) ? -1.0 : +1.0));
+		const QuantLib::Decimal initialStopLoss = ONEPIP * market.getInitialStopLoss() * ((type == Trade::T_BUY) ? -1.0 : +1.0);
+		trade.setStopLossPrice(trade.orderPrice + initialStopLoss);
 		market.newTrade(trade);
 
 		std::ostringstream os; os << "@" << currencyPair << " executed " << action << " !!";

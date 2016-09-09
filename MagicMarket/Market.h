@@ -75,9 +75,15 @@ namespace MM
 
 
 		std::vector<Indicators::Base*> &getIndicators() { return indicators; }
-
+		// Value in pips.
+		double getInitialStopLoss() { return tradingConfiguration.initialStopLoss; }
 	private:
 		Account account;
+
+		struct TradingConfiguration_
+		{
+			double initialStopLoss = 0.0;
+		} tradingConfiguration;
 
 		std::map<std::string, Stock*> stocks;
 		std::vector<Trade*> trades;

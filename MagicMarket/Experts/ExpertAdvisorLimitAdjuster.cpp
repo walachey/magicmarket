@@ -99,6 +99,9 @@ namespace MM
 				(((trade->getStopLossPrice() != 0.0) && ((*closePos + ONEPIP) < trade->getStopLossPrice()))
 				|| ((trade->getTakeProfitPrice() != 0.0) && ((*closePos - ONEPIP) > trade->getTakeProfitPrice()))))
 				closeTrade = true;
+			// Now enforce default stop loss.
+			if (market.getInitialStopLoss() != 0.0)
+				closeTrade = closeTrade || (profitPips <= -market.getInitialStopLoss() * ONEPIP);
 
 			if (closeTrade)
 			{
