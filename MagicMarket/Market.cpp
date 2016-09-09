@@ -90,6 +90,8 @@ namespace MM
 		sleepDuration = std::chrono::milliseconds(sleepDurationMs);
 		std::cout << "..loaded config" << std::endl;
 
+		tradingConfiguration.initialStopLoss = ini.GetDoubleValue("Market", "InitialStopLoss", 0.0);
+
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorCCI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorTSI()));
@@ -135,16 +137,6 @@ namespace MM
 				experts.push_back(static_cast<ExpertAdvisor*>(externalAgent));
 			else
 				delete externalAgent;
-		}
-
-		for (ExpertAdvisor * const & indicator : indicators)
-		{
-			indicator->declareExports();
-			indicator->onNewDay();
-		}
-		for (ExpertAdvisor * const & expert : experts)
-		{
-			expert->declareExports();
 		}
 
 		// Now resort experts to make sure dependencies are evaluated in the correct order.
@@ -245,6 +237,15 @@ namespace MM
 				experts.push_back(finalExpert.second);
 		} // Expert dependency resolving.
 
+		for (ExpertAdvisor * const & indicator : indicators)
+		{
+			indicator->declareExports();
+			indicator->onNewDay();
+		}
+		for (ExpertAdvisor * const & expert : experts)
+		{
+			expert->declareExports();
+		}
 		for (ExpertAdvisor * const & expert : experts)
 		{
 			expert->afterExportsDeclared();
@@ -271,7 +272,8 @@ namespace MM
 		
 		while (true)
 		{
-			metatrader.checkIncomingMessages();
+			if (!isVirtual())
+				metatrader.checkIncomingMessages();
 			
 			if (!onlyOnce)
 			{
@@ -350,23 +352,32 @@ namespace MM
 			}
 			else
 			{
-				double totalProfit = 0.0;
-				const int numberOfTrades = trades.size();
-				for (const Trade * trade : trades)
+				if (trades.empty())
 				{
-					Stock *stock = market.getStock(trade->currencyPair);
-					TimePeriod period = stock->getTimePeriod(lastTickTime);
-					const Tick *lastTick = period.getLastTick();
-					if (lastTick == nullptr)
-					{
-						totalProfit = std::numeric_limits<double>::quiet_NaN();
-						break;
-					}
-					totalProfit += trade->getProfitAtTick(*lastTick);
+					std::cout << "\rNo open positions." << std::flush;
 				}
+				else
+				{
+					system("cls");
+					std::cout << "|TRADES\t|\tProfit\t|\tS/L\t|\t|" << std::endl;
+					std::cout << "---------------------------------------------------------" << std::endl;
+					double totalProfit = 0.0;
+					const int numberOfTrades = trades.size();
+					for (Trade * trade : trades)
+					{
+						Stock *stock = market.getStock(trade->currencyPair);
+						TimePeriod period = stock->getTimePeriod(lastTickTime);
+						const Tick *lastTick = period.getLastTick();
+						const QuantLib::Decimal currentProfit = (lastTick != nullptr) ? trade->getProfitAtTick(*lastTick) : std::numeric_limits<double>::quiet_NaN();
+						totalProfit += currentProfit;
 
-				std::cout << "\rTRADES: " << numberOfTrades << "\tPROFIT: " << totalProfit << std::flush;
+						std::cout << "|" << (trade->type == Trade::Type::T_BUY ? "BUY" : "SELL") << "\t|\t"
+							<< (currentProfit / ONEPIP) << "\t|\t" << trade->getStopLossPrice() << "\t|" << std::endl;
 
+					}
+					std::cout << "---------------------------------------------------------" << std::endl;
+					std::cout << "\rTRADES: " << numberOfTrades << "\tPROFIT: " << (totalProfit / ONEPIP) << " pips" << std::flush;
+				}
 				if (sleepDuration > std::chrono::milliseconds(0))
 					std::this_thread::sleep_for(sleepDuration);
 			}
