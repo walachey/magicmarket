@@ -97,6 +97,7 @@ namespace MM
 			QuantLib::Date date;
 			int fromHour, toHour;
 			bool waitOnFinished = true;
+			std::string tradesLogFilename;
 		} config;
 		
 

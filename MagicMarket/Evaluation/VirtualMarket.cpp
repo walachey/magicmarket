@@ -134,7 +134,7 @@ namespace MM
 		
 		isSilent = ini.GetValue("Virtual Market", "Silent", "0") == std::string("1");
 		config.waitOnFinished = ini.GetValue("Virtual Market", "WaitOnFinished", "0") == std::string("1");
-
+		config.tradesLogFilename = ini.GetValue("Virtual Market", "TradesLogFilename", "saves/trades.tsv");
 		// update market to match settings
 		market.setVirtual(true);
 		market.setSleepDuration(0);
@@ -505,7 +505,11 @@ namespace MM
 			mode |= std::ios_base::app;
 		else
 			mode |= std::ios_base::trunc;
-		std::fstream output("saves/trades.tsv", mode);
+		// Open the output file (allow variables in the filename and make sure the path exists).
+		const std::string outputFilename = environmentVariables.replace(config.tradesLogFilename);
+		filesystem::path outputPath = filesystem::path(outputFilename).parent_path();
+		filesystem::create_directories(outputPath);
+		std::fstream output(outputFilename, mode);
 		// headlines only when exporting the trades for the very first day
 		if (!results.tradesHeaderPrinted)
 			output << "Trade ID\tOpening Time\tType\tProfit\tClosing Time\tForced Close" << std::endl;
