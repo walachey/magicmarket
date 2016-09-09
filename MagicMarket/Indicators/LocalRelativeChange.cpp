@@ -130,7 +130,7 @@ namespace MM
 				value = (value - firstDataValue);
 				// Remove the constant linear trend.
 				value = (value - offset * trendGradient);
-				assert(!std::isnan(value));
+				assert(std::isnormal(value) || value == 0.0);
 			}
 			assert(!std::isnan(estimatedStdDeviation));
 			// And then normalize it by estimated stddev.
