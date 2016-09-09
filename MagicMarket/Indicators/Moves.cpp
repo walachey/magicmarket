@@ -9,13 +9,15 @@ namespace MM
 	{
 		void Moves::reset()
 		{
-			plusDMMA = std::numeric_limits<double>::quiet_NaN();
-			minusDMMA = std::numeric_limits<double>::quiet_NaN();
-			upMA = std::numeric_limits<double>::quiet_NaN();
-			downMA = std::numeric_limits<double>::quiet_NaN();
+			plusDMMA = plusDMMA_pushed = std::numeric_limits<double>::quiet_NaN();
+			minusDMMA = minusDMMA_pushed = std::numeric_limits<double>::quiet_NaN();
+			upMA = upMA_pushed = std::numeric_limits<double>::quiet_NaN();
+			downMA = downMA_pushed = std::numeric_limits<double>::quiet_NaN();
 
-			momentumMA = std::numeric_limits<double>::quiet_NaN();
-			momentumAbsMA = std::numeric_limits<double>::quiet_NaN();
+			momentumMA = momentumMA_pushed = std::numeric_limits<double>::quiet_NaN();
+			momentumAbsMA = momentumAbsMA_pushed = std::numeric_limits<double>::quiet_NaN();
+
+			lastMAPush = 0;
 		}
 
 		Moves::Moves(std::string currencyPair, int history, int seconds) :
@@ -59,6 +61,13 @@ namespace MM
 
 			if (!high.get() || !low.get() || !oldHigh.get() || !oldLow.get()) return;
 
+			bool refreshMovingAverages = false;
+			if (time >= (lastMAPush + seconds))
+			{
+				refreshMovingAverages = true;
+				lastMAPush = time;
+			}
+
 			/* Up and Down changes for the ADX */
 			const double upMove   = *high - *oldHigh;
 			const double downMove = *low  - *oldLow;
@@ -70,9 +79,19 @@ namespace MM
 
 			const double historyDouble = static_cast<double>(history);
 
-			plusDMMA = Math::MA(plusDMMA, plusDM, history);
-			minusDMMA = Math::MA(minusDMMA, minusDM, history);
+			plusDMMA = Math::MA(plusDMMA_pushed, plusDM, history);
+			minusDMMA = Math::MA(minusDMMA_pushed, minusDM, history);
 
+			if (refreshMovingAverages)
+			{
+				plusDMMA_pushed = plusDMMA;
+				minusDMMA_pushed = minusDMMA;
+			}
+
+			assert(std::isnormal(plusDMMA) || plusDMMA == 0.0);
+			assert(std::isnormal(minusDMMA) || minusDMMA == 0.0);
+			assert(plusDMMA >= -2.0 && plusDMMA <= +2.0);
+			assert(minusDMMA >= -2.0 && minusDMMA <= +2.0);
 			/* Simple Up and Down moves for the RSI */
 			if (!close.get() || !oldClose.get()) return;
 			const double move = *close - *oldClose;
@@ -80,12 +99,24 @@ namespace MM
 			if (move > 0.0) U = move;
 			else if (move < 0.0) D = -move;
 
-			upMA   = Math::MA(upMA, U, history);
-			downMA = Math::MA(downMA, D, history);
+			upMA   = Math::MA(upMA_pushed, U, history);
+			downMA = Math::MA(downMA_pushed, D, history);
+
+			if (refreshMovingAverages)
+			{
+				upMA_pushed = upMA;
+				downMA_pushed = downMA;
+			}
 
 			/* smoothed momentum for TSI */
-			momentumMA    = Math::MA2(momentumMA, move, history);
-			momentumAbsMA = Math::MA2(momentumAbsMA, std::abs(move), history);
+			momentumMA    = Math::MA2(momentumMA_pushed, move, history);
+			momentumAbsMA = Math::MA2(momentumAbsMA_pushed, std::abs(move), history);
+
+			if (refreshMovingAverages)
+			{
+				momentumMA_pushed = momentumMA;
+				momentumAbsMA_pushed = momentumAbsMA;
+			}
 		}
 	};
 };

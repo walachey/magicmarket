@@ -42,12 +42,21 @@ namespace MM
 
 			double plusDMMA;
 			double minusDMMA;
+			double plusDMMA_pushed;
+			double minusDMMA_pushed;
 
 			double upMA;
 			double downMA;
+			double upMA_pushed;
+			double downMA_pushed;
 
 			double momentumMA;
 			double momentumAbsMA;
+			double momentumMA_pushed;
+			double momentumAbsMA_pushed;
+
+			// Refresh the moving averages only when the time for one period is passed.
+			std::time_t lastMAPush;
 		};
 
 	};
