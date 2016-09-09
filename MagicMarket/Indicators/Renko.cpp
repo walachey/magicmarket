@@ -59,6 +59,8 @@ namespace MM
 
 			bars[currentBarIndex] = direction;
 			currentBarIndex = (currentBarIndex + 1) % bars.size();
+
+			lastBarAt = *price;
 		}
 
 		int Renko::getOffsetIndex(int offset) const
