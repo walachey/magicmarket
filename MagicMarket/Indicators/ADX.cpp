@@ -14,9 +14,10 @@ namespace MM
 	{
 		void ADX::reset()
 		{
-			pDIMA = std::numeric_limits<double>::quiet_NaN();
-			mDIMA = std::numeric_limits<double>::quiet_NaN();
+			pDIMA = pDIMA_pushed = std::numeric_limits<double>::quiet_NaN();
+			mDIMA = mDIMA_pushed = std::numeric_limits<double>::quiet_NaN();
 			adx = std::numeric_limits<double>::quiet_NaN();
+			lastPushedMA = 0;
 		}
 
 		ADX::ADX(std::string currencyPair, int history, int seconds) :
@@ -44,8 +45,15 @@ namespace MM
 			const double pDI = 100.0 * moves->getPlusDMMA()  / atr->getATRMA();
 			const double mDI = 100.0 * moves->getMinusDMMA() / atr->getATRMA();
 
-			pDIMA = Math::MA(pDIMA, pDI, history);
-			mDIMA = Math::MA(mDIMA, mDI, history);
+			pDIMA = Math::MA(pDIMA_pushed, pDI, history);
+			mDIMA = Math::MA(mDIMA_pushed, mDI, history);
+
+			if (time > (lastPushedMA + seconds))
+			{
+				lastPushedMA = time;
+				pDIMA_pushed = pDIMA;
+				mDIMA_pushed = mDIMA;
+			}
 
 			adx = 100.0 * std::abs(pDIMA - mDIMA) / (pDI + mDI);
 		}

@@ -13,8 +13,9 @@ namespace MM
 		void TSI::reset()
 		{
 			tsi = std::numeric_limits<double>::quiet_NaN();
-			momentumDoubleMA = std::numeric_limits<double>::quiet_NaN();
-			absMomentumDoubleMA = std::numeric_limits<double>::quiet_NaN();
+			momentumDoubleMA  = momentumDoubleMA_pushed = std::numeric_limits<double>::quiet_NaN();
+			absMomentumDoubleMA = absMomentumDoubleMA_pushed = std::numeric_limits<double>::quiet_NaN();
+			lastPushed = 0;
 		}
 
 		TSI::TSI(std::string currencyPair, int history, int seconds) :
@@ -36,9 +37,15 @@ namespace MM
 			const double &absMomentumMA = moves->getAbsoluteMomentumMA();
 			if (std::isnan(momentumMA) || std::isnan(absMomentumMA)) return;
 
-			momentumDoubleMA    = Math::MA2(momentumDoubleMA, momentumMA, history);
-			absMomentumDoubleMA = Math::MA2(absMomentumDoubleMA, absMomentumMA, history);
+			momentumDoubleMA    = Math::MA2(momentumDoubleMA_pushed, momentumMA, history);
+			absMomentumDoubleMA = Math::MA2(absMomentumDoubleMA_pushed, absMomentumMA, history);
 			
+			if (time >= (lastPushed + seconds))
+			{
+				momentumDoubleMA_pushed = momentumDoubleMA;
+				absMomentumDoubleMA_pushed = absMomentumDoubleMA;
+			}
+
 			if (absMomentumDoubleMA == 0.0)
 			{
 				tsi = std::numeric_limits<double>::quiet_NaN();

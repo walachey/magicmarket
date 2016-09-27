@@ -36,8 +36,12 @@ namespace MM
 			int seconds;
 			double tsi;
 			double momentumDoubleMA;
+			double momentumDoubleMA_pushed;
 			double absMomentumDoubleMA;
+			double absMomentumDoubleMA_pushed;
 			Moves *moves;
+
+			std::time_t lastPushed;
 		};
 
 	};

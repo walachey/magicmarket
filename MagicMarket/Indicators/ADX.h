@@ -39,8 +39,11 @@ namespace MM
 			int seconds;
 			double pDIMA;
 			double mDIMA;
+			double pDIMA_pushed;
+			double mDIMA_pushed;
 			double adx;
 
+			std::time_t lastPushedMA;
 			Moves *moves;
 			ATR *atr;
 		};
