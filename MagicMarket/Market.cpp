@@ -33,6 +33,7 @@ namespace filesystem = std::tr2::sys;
 #include "ExpertAdvisorMAAnalyser.h"
 
 #include "Indicators/LocalRelativeChange.h"
+#include "Indicators/ADX.h"
 
 #include "thirdparty/json11.hpp"
 
@@ -97,7 +98,7 @@ namespace MM
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorTSI()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorStochasticOscillator()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRenko(5.0)));
-		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRenko(10.0)));
+		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorRenko(20.0)));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorDumbo()));
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorMultiCurrency()));
 		//experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorMAAnalyser()));
@@ -106,6 +107,7 @@ namespace MM
 		experts.push_back(static_cast<ExpertAdvisor*>(new ExpertAdvisorBroker()));
 
 		// Enforce some more indicators to exist.
+		Indicators::get<Indicators::ADX>("EURUSD", 20, 2 * ONEMINUTE);
 		{ // scope
 			const std::vector<int> lookbackDurations =
 			{

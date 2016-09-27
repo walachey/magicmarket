@@ -31,7 +31,7 @@ namespace MM
 			return setMood(0.0, 0.0);
 
 		// When a trend reversal happened, weight it according to how strong the previous trend was.
-		const double mean = Math::sum(bars) / static_cast<double>(N);
+		const double mean = (Math::sum(bars) - bars[N - 1]) / static_cast<double>(N - 1);
 		double mood = +1;
 		if (bars[N - 1] < 0.0) mood = -1;
 

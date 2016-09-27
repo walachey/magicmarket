@@ -12,7 +12,7 @@ namespace MM
 {
 	ExpertAdvisorTSI::ExpertAdvisorTSI()
 	{
-		tsi = Indicators::get<Indicators::TSI>("EURUSD", 20, ONEMINUTE);
+		tsi = Indicators::get<Indicators::TSI>("EURUSD", 14, 2 * ONEMINUTE);
 	}
 
 
@@ -26,7 +26,7 @@ namespace MM
 
 		if (std::isnan(tsiValue)) return;
 
-		const QuantLib::Decimal margin = 25.0;
+		const QuantLib::Decimal margin = 50.0;
 		const QuantLib::Decimal range = 100.0 - margin;
 
 		const QuantLib::Decimal certainty = (std::abs(tsiValue) - margin) / range;

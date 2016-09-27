@@ -14,13 +14,13 @@ namespace MM
 	ExpertAdvisorCCI::ExpertAdvisorCCI()
 	{
 		cciShort = Indicators::get<Indicators::CCI>("EURUSD", 28, ONEMINUTE);
-		cciLong  = Indicators::get<Indicators::CCI>("EURUSD", 15, 5 * ONEMINUTE);
+		cciLong  = Indicators::get<Indicators::CCI>("EURUSD", 7, 5 * ONEMINUTE);
 
 		cciShortMA = Indicators::get<Indicators::SMA>("", 10, 0, std::bind(&Indicators::CCI::getCCI, cciShort));
 		cciLongMA  = Indicators::get<Indicators::SMA>("", 10, 0, std::bind(&Indicators::CCI::getCCI, cciLong));
 
 		cciShortMA->setCustomDescription("CCI(28, 60) ");
-		cciLongMA-> setCustomDescription("CCI(15, 5 * 60) ");
+		cciLongMA-> setCustomDescription("CCI(7, 5 * 60) ");
 	}
 
 

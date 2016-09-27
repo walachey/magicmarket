@@ -13,14 +13,14 @@ namespace MM
 {
 	ExpertAdvisorRSI::ExpertAdvisorRSI()
 	{
-		rsiShort = Indicators::get<Indicators::RSI>("EURUSD", 28, ONEMINUTE);
-		rsiLong  = Indicators::get<Indicators::RSI>("EURUSD", 15, 5 * ONEMINUTE);
+		rsiShort = Indicators::get<Indicators::RSI>("EURUSD", 14, ONEMINUTE);
+		rsiLong  = Indicators::get<Indicators::RSI>("EURUSD", 5, 5 * ONEMINUTE);
 
 		rsiShortMA = Indicators::get<Indicators::SMA>("", 10, 0, std::bind(&Indicators::RSI::getRSI, rsiShort));
 		rsiLongMA  = Indicators::get<Indicators::SMA>("", 10, 0, std::bind(&Indicators::RSI::getRSI, rsiLong));
 
-		rsiShortMA->setCustomDescription("RSI(28, 60) ");
-		rsiLongMA-> setCustomDescription("RSI(15, 5 * 60) ");
+		rsiShortMA->setCustomDescription("RSI(14, 60) ");
+		rsiLongMA-> setCustomDescription("RSI(5, 5 * 60) ");
 	}
 
 

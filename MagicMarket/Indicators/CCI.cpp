@@ -74,7 +74,7 @@ namespace MM
 				typicalPriceMA = Math::MA(typicalPriceMA, typicalPrice, history);
 			}
 
-			cci = (1.0 / 0.0015) * (typicalPrice - typicalPriceMA) / OnlineMAD.MAD;
+			cci = (1.0 / 0.002) * (typicalPrice - typicalPriceMA) / OnlineMAD.MAD;
 			assert(std::isnormal(cci) || cci == 0.0);
 			assert(cci >= -10000.0 && cci <= +10000.0);
 		}
