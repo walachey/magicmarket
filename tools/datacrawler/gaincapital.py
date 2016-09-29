@@ -13,9 +13,9 @@ import calendar
 
 #http://ratedata.gaincapital.com/2014/12%20December/EUR_USD_Week1.zip
 base_url = "http://ratedata.gaincapital.com/"
-currencies = ["EUR_USD"]#["GBP_USD", "USD_JPY", "USD_CHF", "EUR_CHF", "EUR_GBP"]
-years = [str(year) for year in [2015]]
-months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+currencies = ["EUR_USD", "GBP_USD", "USD_JPY", "USD_CHF", "EUR_CHF", "EUR_GBP"]
+years = [str(year) for year in [2016]]
+months = ["January", "February", "March", "April", "May", "June", "July"]#, "August", "September", "October", "November", "December"]
 months = ["{:02d} {}".format(1 + index, month) for (index, month) in enumerate(months)]
 #months = months[0:1]
 skipheaders = 1
