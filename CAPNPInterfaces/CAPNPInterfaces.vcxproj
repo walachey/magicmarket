@@ -162,6 +162,7 @@ REM rename $(TargetDir)*.c++ *.cpp</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -180,6 +181,9 @@ REM rename $(TargetDir)*.c++ *.cpp</Command>
     <CustomBuildStep>
       <Outputs>$(ProjectDir)../MagicMarket/Interfaces/Expert.pb.cc;%(Outputs)</Outputs>
     </CustomBuildStep>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

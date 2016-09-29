@@ -41,6 +41,17 @@ namespace MM
 		// exponential moving average - slightly faster falloff
 		template<typename T> T MA2(const T &oldValue, const T &newValue, const int &history);
 		template<typename T> int checkCrossover(T oldBase, T newBase, T oldLead, T newLead);
+
+		class OnlineMean
+		{
+			int n = 0;
+			double mean = 0.0;
+		public:
+			void reset();
+			void update(double newValue);
+			double get() { return mean; }
+			double preview(double newValue);
+		};
 	};
 
 	template<typename T> std::vector<float> toFloatVector(const std::vector<T> &values);

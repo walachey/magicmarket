@@ -8,6 +8,8 @@ namespace filesystem = std::tr2::sys;
 
 #include <SimpleIni.h>
 
+#include "Indicators/TargetLookbackMean.h"
+
 #include "EnvironmentVariables.h"
 #include "Helpers.h"
 #include "Market.h"
@@ -464,38 +466,12 @@ namespace MM
 
 		TimePeriod period = TimePeriod(nullptr, time, endTime, &Tick::getMid);
 		period.setTradingDay(tradingDay);
-		const std::vector<QuantLib::Decimal> price = period.toVector(ONEMINUTE);
-
-		auto assesPrice = [&]()
-		{
-			QuantLib::Decimal min = 0.0;
-			QuantLib::Decimal max = 0.0;
-			int lastSign = 0;
-			for (size_t i = 1; i < price.size(); ++i)
-			{
-				QuantLib::Decimal currentChange = price[i] - price[0];
-				
-				int sign = Math::signum(currentChange);
-
-				if (lastSign != 0 && sign != lastSign) break;
-				lastSign = sign;
-
-				if (currentChange > max) max = currentChange;
-				if (currentChange < min) min = currentChange;
-			}
-			assert(min == 0.0 || max == 0.0);
-			decltype(min) value = 0.0;
 		
-			if (std::abs(min) > std::abs(max)) value = min;
-			else value = max;
-			return value / ONEPIP;
-		};
-
 		PossibleDecimal open;
 		open = period.getOpen();
 		if (!open) return;
 
-		currentEstimation.priceChangeEstimate = assesPrice();
+		currentEstimation.priceChangeEstimate = Indicators::TargetLookbackMean::calculateTarget(period);
 	}
 
 	void VirtualMarket::saveTrades()

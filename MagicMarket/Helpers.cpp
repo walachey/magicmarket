@@ -219,6 +219,24 @@ namespace MM
 		template double MA<double>(const double &oldValue, const double &newValue, const int &history);
 		template double MA2<double>(const double &oldValue, const double &newValue, const int &history);
 		template int checkCrossover(QuantLib::Decimal oldA, QuantLib::Decimal newA, QuantLib::Decimal oldB, QuantLib::Decimal newB);
+
+		void OnlineMean::reset()
+		{
+			n = 0;
+			mean = 0.0;
+		}
+
+		void OnlineMean::update(double value)
+		{
+			n += 1;
+			const double delta = value - mean;
+			mean += delta / static_cast<double>(n);
+		}
+		double OnlineMean::preview(double value)
+		{
+			const double delta = value - mean;
+			return mean + delta / static_cast<double>(n+1);
+		}
 	};
 
 	template<typename T> std::vector<float> toFloatVector(const std::vector<T> &values)

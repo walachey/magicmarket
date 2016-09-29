@@ -166,6 +166,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PreprocessorDefinitions>CAPNP_LITE;FANN_NO_DLL;ZMQ_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <OutputFile>$(TargetPath)</OutputFile>
@@ -176,6 +177,9 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
       <AdditionalDependencies>libprotobuf.lib;kj.lib;ws2_32.lib;QuantLib-vc140-x64-mt.lib;libzmq-v140-mt-4_2_0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\deps\fann\floatfann.c" />
@@ -220,6 +224,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClCompile Include="Indicators\RSI.cpp" />
     <ClCompile Include="Indicators\SMA.cpp" />
     <ClCompile Include="Indicators\StochasticOscillator.cpp" />
+    <ClCompile Include="Indicators\TargetLookbackMean.cpp" />
     <ClCompile Include="Indicators\TSI.cpp" />
     <ClCompile Include="Interfaces\Expert.pb.cc" />
     <ClCompile Include="Interfaces\MTInterface.cpp" />
@@ -278,6 +283,7 @@ ren $(ProjectDir)Interfaces/Expert.capnp.c++ $(ProjectDir)Interfaces/Expert.capn
     <ClInclude Include="Indicators\RSI.h" />
     <ClInclude Include="Indicators\SMA.h" />
     <ClInclude Include="Indicators\StochasticOscillator.h" />
+    <ClInclude Include="Indicators\TargetLookbackMean.h" />
     <ClInclude Include="Indicators\TSI.h" />
     <ClInclude Include="Interfaces\Expert.pb.h" />
     <ClInclude Include="Interfaces\MTInterface.h" />

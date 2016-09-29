@@ -33,6 +33,7 @@ namespace filesystem = std::tr2::sys;
 #include "ExpertAdvisorMAAnalyser.h"
 
 #include "Indicators/LocalRelativeChange.h"
+#include "Indicators/TargetLookbackMean.h"
 #include "Indicators/ADX.h"
 
 #include "thirdparty/json11.hpp"
@@ -108,6 +109,8 @@ namespace MM
 
 		// Enforce some more indicators to exist.
 		Indicators::get<Indicators::ADX>("EURUSD", 20, 2 * ONEMINUTE);
+		Indicators::get<Indicators::TargetLookbackMean>("EURUSD", 15);
+
 		{ // scope
 			const std::vector<int> lookbackDurations =
 			{

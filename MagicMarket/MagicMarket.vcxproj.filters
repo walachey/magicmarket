@@ -214,6 +214,9 @@
     <ClCompile Include="Interfaces\UDP.cpp">
       <Filter>Interfaces</Filter>
     </ClCompile>
+    <ClCompile Include="Indicators\TargetLookbackMean.cpp">
+      <Filter>Source Files\Experts\Technical</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Market.h" />
@@ -361,6 +364,9 @@
     </ClInclude>
     <ClInclude Include="Interfaces\UDP.h">
       <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Indicators\TargetLookbackMean.h">
+      <Filter>Source Files\Experts\Technical</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
