@@ -32,6 +32,8 @@ namespace filesystem = std::tr2::sys;
 #include "ExpertAdvisorAtama.h"
 #include "ExpertAdvisorMAAnalyser.h"
 
+#include "Indicators/StochasticOscillator.h"
+#include "Indicators/CCI.h"
 #include "Indicators/LocalRelativeChange.h"
 #include "Indicators/TargetLookbackMean.h"
 #include "Indicators/ADX.h"
@@ -124,8 +126,12 @@ namespace MM
 				30 * ONESECOND,
 				0
 			};
-			for (const std::string &currencyPair : { "EURUSD", "EURCHF", "EURGBP", "GBPUSD", "USDCHF", "USDJPY", "EURUSD" })
+			for (const std::string &currencyPair : { "EURUSD", "EURCHF", "EURGBP", "GBPUSD", "USDCHF", "USDJPY" })
+			{
 				Indicators::get<Indicators::LocalRelativeChange>(currencyPair, lookbackDurations);
+				Indicators::get<Indicators::CCI>(currencyPair, 7, 5 * ONEMINUTE);
+				Indicators::get<Indicators::StochasticOscillator>(currencyPair, 14, ONEMINUTE);
+			}
 		}
 
 		// And now the external interfaces.
